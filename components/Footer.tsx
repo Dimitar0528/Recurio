@@ -1,19 +1,15 @@
-"use client"
-import { TrendUpIcon } from "@phosphor-icons/react";
+"use client";
+import { TrendingUp } from "lucide-react";
 
-export default function Footer(){
-    const YEAR = new Date().getFullYear();
+export default function Footer() {
+  const YEAR = new Date().getFullYear();
   return (
     <footer className="py-20 px-6 border-t border-border">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
         <div className="max-w-xs">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-              <TrendUpIcon
-                size={14}
-                weight="bold"
-                className="text-primary-foreground"
-              />
+              <TrendingUp size={14} className="text-primary-foreground" />
             </div>
             <span className="text-lg font-bold">Recurio</span>
           </div>

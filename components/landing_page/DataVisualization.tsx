@@ -1,4 +1,6 @@
-import { EyeIcon } from "@phosphor-icons/react";
+"use client";
+
+import { Eye } from "lucide-react";
 
 export default function DataVisualization() {
   return (
@@ -17,7 +19,11 @@ export default function DataVisualization() {
               <p className="text-muted-foreground text-lg mb-8 leading-relaxed text-center lg:text-left max-w-lg mx-auto lg:mx-0">
                 A 15 €/month subscription isn't a 15 € decision. It's an 1,800 €
                 decision over a decade. When visualized, "small" choices reveal
-                their true <strong className="uppercase text-black dark:text-gray-200">large</strong> scale.
+                their true{" "}
+                <strong className="uppercase text-black dark:text-gray-200">
+                  large
+                </strong>{" "}
+                scale.
               </p>
 
               <div className="grid grid-cols-2 gap-8 border-t border-border pt-8">
@@ -82,7 +88,7 @@ export default function DataVisualization() {
                 </div>
 
                 <div className="pt-4 flex items-start gap-4 p-4 rounded-xl bg-card border border-border">
-                  <EyeIcon className="text-primary mt-1" size={20} />
+                  <Eye className="text-primary mt-1" size={20} />
                   <p className="text-xs text-muted-foreground leading-normal">
                     Calculated based on a single 14.99 €/mo service. This does
                     not account for annual price increases, which Recurio also

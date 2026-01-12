@@ -22,14 +22,12 @@ export const metadata: Metadata = {
   title: "Recurio",
   description: "The only modern subscription management tool you need.",
 };
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+  params
+}: LayoutProps<"/[lang]">) {
   return (
-    <html lang="en" className={notoSans.variable} suppressHydrationWarning>
+    <html lang={(await params).lang} className={notoSans.variable} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider

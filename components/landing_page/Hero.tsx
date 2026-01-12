@@ -1,9 +1,11 @@
-import { ArrowRightIcon } from "@phosphor-icons/react";
+"use client";
+import { ArrowRight } from "lucide-react";
+import { type getDictionary } from "@/app/[lang]/dictionaries";
 
-   const formatter = new Intl.DateTimeFormat("en-US", {
-     month: "short",
-     day: "numeric",
-   });
+const formatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
 type SubscriptionItemProps = {
   name: string;
   price: string | number;
@@ -27,23 +29,31 @@ function SubscriptionItem({ name, price, date, color }: SubscriptionItemProps) {
   );
 }
 
-export default function HeroSection(){
+export default function HeroSection({
+  dictionary,
+}: {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["hero"];
+}) {
   return (
     <section className="pt-32 pb-20 px-6">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
         <div className="lg:text-left text-center">
           <h1 className="lg:mt-10 text-5xl md:text-7xl font-bold tracking-tighter leading-[1.1] mb-6">
-            Subscriptions are <br />
-            <span className="text-muted-foreground">silent.</span> Make them{" "}
-            <span className="text-primary italic">audible.</span>
+            {dictionary.title.part_1} <br />
+            <span className="text-muted-foreground">
+              {dictionary.title.part_2}
+            </span>{" "}
+            {dictionary.title.part_3}{" "}
+            <span className="text-primary italic">
+              {dictionary.title.part_4}
+            </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed lg:mx-0 mx-auto">
-            Recurio brings clarity to your recurring footprint. No aggressive
-            budgeting—just honest data on how your choices compound over time.
+            {dictionary.description}
           </p>
           <div className="flex flex-wrap gap-4">
             <button className="w-fit bg-primary text-primary-foreground px-8 py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:gap-3 transition-all sm:w-xl mx-auto cursor-pointer hover:shadow-lg hover:bg-primary/90 hover:scale-[1.02]">
-              Start tracking for free <ArrowRightIcon weight="bold" />
+              Start tracking for free <ArrowRight />
             </button>
           </div>
         </div>
