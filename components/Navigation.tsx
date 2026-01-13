@@ -1,9 +1,8 @@
 "use client";
 
 import { Moon, Sun, Laptop, TrendingUp } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,21 +38,21 @@ export default function Navigation() {
           <span className="text-xl font-bold tracking-tight">Recurio</span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <a
-            href="#problem"
+          <Link
+            href="/dashboard"
             className="hover:text-foreground transition-colors">
-            Philosophy
-          </a>
-          <a
+            Dashboard
+          </Link>
+          <Link
             href="#features"
             className="hover:text-foreground transition-colors">
             Insights
-          </a>
-          <a
+          </Link>
+          <Link
             href="#pricing"
             className="hover:text-foreground transition-colors">
-            Transparency
-          </a>
+            Reports
+          </Link>
         </div>
         <div className="flex items-center gap-4">
           <LocaleSwitcher />

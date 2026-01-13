@@ -19,9 +19,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Recurio",
+  title: {
+    template: "%s - Recurio",
+    default: "Recurio",
+  },
   description: "The only modern subscription management tool you need.",
+  generator: "Next.js",
+  applicationName: "Recurio",
 };
+
+export async function generateStaticParams() {
+  return [{ lang: "bg" }, { lang: "en" }];
+}
 export default async function RootLayout({
   children,
   params

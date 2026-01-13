@@ -1,11 +1,119 @@
 {
-    "hero": {
-        "title":{
-            "part_1": "Subscriptions are",
-            "part_2": "silent.",
-            "part_3": "Make them",
-            "part_4": "audible."
+    "landing_page": {
+        "metrics": {
+            "efficiency": {
+                "label": "Efficiency Score",
+                "value": "69%",
+                "subtext": "Top 15% of users in your region"
+            },
+            "pending": {
+                "label": "Pending Subscriptions",
+                "value": "02",
+                "subtext": "Expiring in the next 48 hours"
+            },
+            "leak": {
+                "label": "Income Leak",
+                "value": "4.2%",
+                "subtext": "Percentage of net monthly pay"
+            },
+            "annual_burn": {
+                "label": "Annual Burn",
+                "value": "$2,140",
+                "subtext": "Total committed yearly spend"
+            }
         },
-        "description": "Recurio brings clarity to your recurring footprint. No aggressive budgeting—just honest data on how your choices compound over time."
-    }
+        "problem": {
+            "title": "The Problem",
+            "quote": "“We are living in an era of ‘Subscription Creep’. We trade long-term financial freedom for short-term digital convenience, 10 € at a time.”"
+        },
+        "cta": {
+            "title": "Take back the keys.",
+            "subtitle": "Recurio is free for up to 5 subscriptions. No credit card required.",
+            "primary": "Start Tracking Now",
+            "secondary": "Read our Privacy Policy"
+        },
+        "hero_component": {
+            "title":{
+                "part_1": "Subscriptions are",
+                "part_2": "silent.",
+                "part_3": "Make them",
+                "part_4": "audible."
+            },
+            "description": "Recurio brings clarity to your recurring footprint. No aggressive budgeting—just honest data on how your choices compound over time.",
+            "cta": "Start tracking for free",
+            "metrics": {
+                "monthly_burn": "Monthly Burn",
+                "yearly_impact": "Yearly Impact"
+            },
+            "subscription_item": {
+                "renews": "Renews",
+                "paused": "Paused"
+            },
+            "tip": "Tip: Click a subscription to see how it impacts your monthly / yearly burn."
+        },
+        "features_component": {
+            "tagline": "Core Architecture",
+            "heading": {
+                "line_1": "Clarity is a feature,",
+                "line_2": "not an accident."
+            },
+            "intro": "Recurio was built on the principle that if you can't see the total impact, you can't make an informed choice.",
+            "cost_normalization": {
+                "title": "Cost Normalization",
+                "description": "We struggle to compare a 12 €/mo app with a 120 €/year service. Recurio translates every commitment into a single, normalized \"Burn Rate,\" exposing the true weight of your digital footprint.",
+                "monthly": "Monthly",
+                "annual": "Annual Impact"
+            },
+            "time_awareness": {
+                "title": "Time Awareness",
+                "description": "Our detection engine identifies upcoming charges within 7, 14, and 30-day windows. No \"surprise\" renewals.",
+                "proximity": "Renewal proximity: 7 days"
+            },
+            "manual_entry": {
+                "title": "Manual Entry",
+                "description": "Intentionality starts with data entry. By manually adding subs, you confront the cost before the charge happens."
+            },
+            "privacy": {
+                "title": "Privacy by Architecture.",
+                "description": "Your financial footprint is processed and stored exclusively within your browser's secure environment—never on our servers. We don't just protect your data; we ensure we never have custody of it in the first place."
+            }
+        },
+        "data_visualization_component": {
+            "tagline": "LIVE PROJECTION ENGINE",
+            "heading": "The cost of \"Just one more.\"",
+            "description": {
+                "part_1": "A 15 €/month subscription isn't a 15 € decision. It's an 1,800 € decision over a decade. When visualized, \"small\" choices reveal their true",
+                "emphasis": "large",
+                "part_2": "scale."
+            },
+            "stats": {
+                "horizon_value": "10 Years",
+                "horizon_label": "Horizon",
+                "multiplier_value": "120x",
+                "multiplier_label": "Multiplier"
+            },
+            "years": [
+                {
+                    "label": "Year 01 Impact",
+                    "value": "180.00 €",
+                    "barWidth": "10%",
+                    "highlight": false
+                },
+                {
+                    "label": "Year 05 Impact",
+                    "value": "900.00 €",
+                    "barWidth": "40%",
+                    "highlight": false
+                },
+                {
+                    "label": "Year 10 Impact",
+                    "value": "1,800.00 €",
+                    "barWidth": "100%",
+                    "highlight": true
+                }
+            ],
+            "opportunity_cost": "OPPORTUNITY COST",
+            "disclaimer": "Calculated based on a single 14.99 €/mo service. This does not account for annual price increases, which Recurio also tracks."
+        }
+    }   
 }

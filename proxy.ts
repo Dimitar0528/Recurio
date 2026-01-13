@@ -14,7 +14,7 @@ function getLocale(request: NextRequest): string | undefined {
   const locales = Array.from(i18n.locales);
 
   // Get best locale
-  let languages = new Negotiator({ headers: negotiatorHeaders }).languages(
+  const languages = new Negotiator({ headers: negotiatorHeaders }).languages(
     locales
   );
 
