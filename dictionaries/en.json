@@ -114,6 +114,102 @@
             ],
             "opportunity_cost": "OPPORTUNITY COST",
             "disclaimer": "Calculated based on a single 14.99 €/mo service. This does not account for annual price increases, which Recurio also tracks."
+        },
+        "testimonials_component": {
+            "heading": "Feel the Love From Our Users",
+            "description": "Don’t just take our word for it—our users rave about how Recurio has transformed their financial habits. From saving more effectively to tracking expenses effortlessly, here are a few of our top reviews from real people across the globe.",
+            "items": [
+                {
+                    "text": "Absolutely transformed how I manage my finances. Finally, an app that just works.",
+                    "author": "Alex P.",
+                    "stars": 5
+                },
+                {
+                    "text": "The UI is so intuitive! I was tracking expenses in minutes.",
+                    "author": "Samira L.",
+                    "stars": 4
+                },
+                {
+                    "text": "Recurio helped me save for a vacation faster than I ever thought possible.",
+                    "author": "Jordan K.",
+                    "stars": 5
+                },
+                {
+                    "text": "Love the analytics! I can see exactly where my money goes every month.",
+                    "author": "Nina W.",
+                    "stars": 5
+                },
+                {
+                    "text": "Finally, a budgeting app that makes sense and doesn’t overcomplicate things.",
+                    "author": "Marcus T.",
+                    "stars": 4
+                },
+                {
+                    "text": "My partner and I can now sync our spending. Game changer.",
+                    "author": "Leah B.",
+                    "stars": 5
+                },
+                {
+                    "text": "I was skeptical at first, but Recurio keeps me accountable daily.",
+                    "author": "Ethan R.",
+                    "stars": 5
+                },
+                {
+                    "text": "Excellent for freelancers. I can track multiple projects effortlessly.",
+                    "author": "Clara D.",
+                    "stars": 4
+                },
+                {
+                    "text": "Simple, clean, and fast. Exactly what I needed to stay on top of expenses.",
+                    "author": "Omar H.",
+                    "stars": 5
+                },
+                {
+                    "text": "Helps me visualize my yearly budget in a way spreadsheets never could.",
+                    "author": "Sophia M.",
+                    "stars": 5
+                },
+                {
+                    "text": "Finally stopped overspending thanks to the insights Recurio provides.",
+                    "author": "Ryan C.",
+                    "stars": 5
+                },
+                {
+                    "text": "The notifications and reminders are subtle but extremely helpful.",
+                    "author": "Isabella J.",
+                    "stars": 4
+                },
+                {
+                    "text": "I’ve tried other apps, but this one actually keeps me engaged and informed.",
+                    "author": "Dylan S.",
+                    "stars": 5
+                },
+                {
+                    "text": "Tracking my savings goals has never been this satisfying.",
+                    "author": "Emily F.",
+                    "stars": 5
+                },
+                {
+                    "text": "Incredible local-first approach, works perfectly without delays.",
+                    "author": "Leo V.",
+                    "stars": 5
+                },
+                {
+                    "text": "I recommend Recurio to anyone serious about controlling their finances.",
+                    "author": "Hannah Q.",
+                    "stars": 5
+                },
+                {
+                    "text": "The app is lightweight, fast, and the design is aesthetically pleasing.",
+                    "author": "Noah G.",
+                    "stars": 4
+                },
+                {
+                    "text": "I actually enjoy opening it daily to see my spending trends.",
+                    "author": "Maya K.",
+                    "stars": 5
+                }
+            ]
         }
     }   
 }

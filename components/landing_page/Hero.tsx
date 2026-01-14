@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { ArrowRight, Check, Minus, TrendingDown } from "lucide-react";
 import { type getDictionary } from "@/app/[lang]/dictionaries";
+import Link from "next/link";
 
 const formatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -130,12 +131,9 @@ export default function HeroSection({
     );
   };
 
-  const monthlyBurn = useMemo(
-    () => subs.reduce((acc, curr) => (curr.active ? acc + curr.price : acc), 0),
-    [subs]
-  );
+  const monthlyBurn = subs.reduce((acc, curr) => (curr.active ? acc + curr.price : acc), 0);
 
-  const yearlyImpact = useMemo(() => monthlyBurn * 12, [monthlyBurn]);
+  const yearlyImpact = monthlyBurn * 12;
 
   return (
     <section className="pt-32 pb-20 px-6 overflow-hidden">
@@ -156,11 +154,11 @@ export default function HeroSection({
             {dictionary.description}
           </p>
 
-          <div className="flex flex-wrap gap-4">
+          <Link href="/dashboard" className="flex flex-wrap gap-4">
             <button className="w-fit bg-primary text-primary-foreground px-8 py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:gap-3 transition-all sm:w-xl mx-auto cursor-pointer hover:shadow-lg hover:bg-primary/90 hover:scale-[1.02]">
               {dictionary.cta} <ArrowRight />
             </button>
-          </div>
+          </Link>
         </div>
 
         <div className="relative group">

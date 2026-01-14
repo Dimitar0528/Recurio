@@ -13,6 +13,7 @@ import {
 import type { ComponentType } from "react";
 import type { LucideProps } from "lucide-react";
 import { notFound } from "next/navigation";
+import Testimonials from "@/components/landing_page/Testimonials";
 
 type MetricCardProps = {
   label: string;
@@ -80,7 +81,7 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      <section id="problem" className="py-18 px-6 border-y border-border">
+      <section id="problem" className="py-20 px-6 border-y border-border">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-xl font-bold uppercase tracking-[0.3em] text-primary mb-8 underline decoration-2 underline-offset-8">
             {lp.problem.title}
@@ -94,8 +95,10 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
       <Features dictionary={lp.features_component} />
       <Separator />
       <DataVisualization dictionary={lp.data_visualization_component} />
+      <Separator />
+      <Testimonials dictionary={lp.testimonials_component} />
 
-      <section className="pb-16 pt-4 px-6">
+      <section className="py-16 px-6">
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">{lp.cta.title}</h2>
           <p className="text-muted-foreground mb-10 text-lg">
