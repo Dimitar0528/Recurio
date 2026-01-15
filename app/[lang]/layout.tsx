@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-
+import { Toaster } from "sonner";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 
@@ -36,9 +36,13 @@ export default async function RootLayout({
   params
 }: LayoutProps<"/[lang]">) {
   return (
-    <html lang={(await params).lang} className={notoSans.variable} suppressHydrationWarning>
+    <html
+      lang={(await params).lang}
+      className={notoSans.variable}
+      suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Toaster position="top-center" richColors closeButton />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -46,7 +50,7 @@ export default async function RootLayout({
           disableTransitionOnChange
           enableColorScheme>
           <Navigation />
-            <main>{children}</main>
+          <main>{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

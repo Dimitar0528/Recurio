@@ -34,7 +34,7 @@ const ScrollingColumn = ({
         {items.map((item, idx) => (
           <div
             key={idx}
-            className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+            className="bg-card border border-border p-6 rounded-2xl shadow-sm hover:scale-[1.02] transition-transform duration-300">
             <p className="text-sm leading-relaxed mb-4 text-foreground italic">
               "{item.text}"
             </p>
