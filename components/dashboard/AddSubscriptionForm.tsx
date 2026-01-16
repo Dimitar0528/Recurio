@@ -24,7 +24,7 @@ const categoryEnum = z.enum(["Entertainment", "Utilities", "Fitness", "Software"
 const subScriptionStatusEnum = z.enum(["Active", "Paused", "Cancelled"]);
 
 const formSchema = z.object({
-  title: z.string().min(3, "Subscription title must be at least 3 characters."),
+  name: z.string().min(3, "Subscription name must be at least 3 characters."),
   price: z
     .string()
     .min(1, "Price is required.")
@@ -47,7 +47,7 @@ const formSchema = z.object({
 export default function AddSubscriptionForm() {
     const form = useForm({
       defaultValues: {
-        title: "",
+        name: "",
         price: "",
         billingCycle: billingCycleEnum.options[0],
         nextBillDate: new Date().toISOString().split("T")[0],
@@ -70,7 +70,7 @@ return (
     }}>
     <FieldGroup>
       <form.Field
-        name="title"
+        name="name"
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid;
