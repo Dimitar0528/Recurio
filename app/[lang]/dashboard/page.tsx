@@ -10,20 +10,65 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { columns, Subscription } from "@/components/dashboard/columns";
-import { DataTable } from "@/components/dashboard/DataTable";
+import { columns, Subscription } from "@/components/dashboard/data_table/columns";
+import { DataTable } from "@/components/dashboard/data_table/DataTable";
 
 async function getData(): Promise<Subscription[]> {
   // Dummy data for now
   return [
     {
-      id: "728ed52f",
-      name: "Netflix",
-      price: 15.99,
+      id: "a18cd91e",
+      name: "Spotify",
+      price: 9.99,
       billingCycle: "Monthly",
-      nextBillDate: new Date().toISOString().split("T")[0],
+      nextBilling: new Date().toISOString().split("T")[0],
       category: "Entertainment",
-      subscriptionStatus: "Active",
+      status: "Active",
+    },
+    {
+      id: "b72fa03d",
+      name: "Amazon Prime",
+      price: 139.0,
+      billingCycle: "Annual",
+      nextBilling: new Date().toISOString().split("T")[0],
+      category: "Software",
+      status: "Active",
+    },
+    {
+      id: "c91de44a",
+      name: "Adobe Creative Cloud",
+      price: 54.99,
+      billingCycle: "Monthly",
+      nextBilling: new Date().toISOString().split("T")[0],
+      category: "Software",
+      status: "Active",
+    },
+    {
+      id: "d55ab821",
+      name: "iCloud Storage",
+      price: 2.99,
+      billingCycle: "Monthly",
+      nextBilling: new Date().toISOString().split("T")[0],
+      category: "Software",
+      status: "Active",
+    },
+    {
+      id: "e803fa19",
+      name: "Coursera Plus",
+      price: 399.0,
+      billingCycle: "Annual",
+      nextBilling: new Date().toISOString().split("T")[0],
+      category: "Education",
+      status: "Active",
+    },
+    {
+      id: "f4c9127b",
+      name: "Notion",
+      price: 8.0,
+      billingCycle: "Monthly",
+      nextBilling: new Date().toISOString().split("T")[0],
+      category: "Utilities",
+      status: "Active",
     },
     // ...
   ];
@@ -33,40 +78,6 @@ export default async function Page() {
   return (
     <div className="py-24 px-12">
       <DataTable columns={columns} data={data} />
-      <Dialog>
-        <DialogTrigger
-          className={"inline"}
-          render={<div></div>}
-          nativeButton={false}>
-          <Button variant="outline" className="cursor-pointer">
-            + Add Subscription
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[450px]">
-          <DialogHeader>
-            <DialogTitle className={"font-bold text-lg"}>
-              New Subscription
-            </DialogTitle>
-            <DialogDescription>
-              Add a new subscription. Click save when you&apos;re done.
-            </DialogDescription>
-          </DialogHeader>
-          <AddSubscriptionForm />
-          <DialogFooter>
-            <DialogClose render={<div></div>} nativeButton={false}>
-              <Button variant="outline" className="p-4 cursor-pointer">
-                Cancel
-              </Button>
-            </DialogClose>
-            <Button
-              type="submit"
-              form="add-subscription-form"
-              className="p-4 cursor-pointer">
-              Save changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

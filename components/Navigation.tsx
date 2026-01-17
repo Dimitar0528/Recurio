@@ -93,7 +93,7 @@ export default function Navigation() {
                   className={`group transition-colors cursor-pointer ${
                     theme === value ? "bg-accent text-accent-foreground" : ""
                   }`}>
-                  <Icon className="size-4 mr-2" />
+                  <Icon className="size-4 mr-2 group-hover:text-white" />
                   <span>{name}</span>
                 </DropdownMenuItem>
               ))}

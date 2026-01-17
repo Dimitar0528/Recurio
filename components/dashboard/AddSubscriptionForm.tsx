@@ -20,10 +20,11 @@ import {
 } from "@/components/ui/select";
 
 const billingCycleEnum = z.enum(["Monthly", "Annual"])
-const categoryEnum = z.enum(["Entertainment", "Utilities", "Fitness", "Software", "Other"]);
+const categoryEnum = z.enum(["Entertainment", "Utilities", "Fitness", "Software", "Education", "Other"]);
 const subScriptionStatusEnum = z.enum(["Active", "Paused", "Cancelled"]);
 
-const formSchema = z.object({
+export const subscriptionFormSchema = z.object({
+  id: z.uuid(),
   name: z.string().min(3, "Subscription name must be at least 3 characters."),
   price: z
     .string()
@@ -33,15 +34,15 @@ const formSchema = z.object({
       message: "Price must be a positive number.",
     }),
   billingCycle: billingCycleEnum,
-  nextBillDate: z
+  nextBilling: z
     .string()
     .min(1, "Next bill date is required.")
     .transform((value) => new Date(value))
     .refine((date) => date >= new Date(new Date().toDateString()), {
       message: "Date cannot be in the past",
-    }),
+    }).or(z.string()),
     category: categoryEnum,
-    subscriptionStatus: subScriptionStatusEnum
+    status: subScriptionStatusEnum
 });
 
 export default function AddSubscriptionForm() {
@@ -50,12 +51,12 @@ export default function AddSubscriptionForm() {
         name: "",
         price: "",
         billingCycle: billingCycleEnum.options[0],
-        nextBillDate: new Date().toISOString().split("T")[0],
+        nextBilling: new Date().toISOString().split("T")[0],
         category: categoryEnum.options[0],
-        subscriptionStatus: subScriptionStatusEnum.options[0]
+        status: subScriptionStatusEnum.options[0],
       },
       validators: {
-        onSubmit: formSchema,
+        onSubmit: subscriptionFormSchema,
       },
       onSubmit: async ({ value }) => {
         toast.success("Form submitted successfully");
@@ -160,7 +161,7 @@ return (
       </div>
       <div className="grid grid-cols-2 gap-4">
         <form.Field
-          name="nextBillDate"
+          name="nextBilling"
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
@@ -225,7 +226,7 @@ return (
         />
       </div>
       <form.Field
-        name="subscriptionStatus"
+        name="status"
         children={(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid;
