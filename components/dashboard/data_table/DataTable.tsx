@@ -1,7 +1,7 @@
 "use client";
 
-import {useState} from "react";
-import { ArrowDown, Settings2 } from "lucide-react";
+import {useState, useEffect} from "react";
+import { ArrowDown, ChevronRight, ChevronsLeft, ChevronsRight, Settings2, Sparkles } from "lucide-react";
 import {
   ColumnDef,
   flexRender,
@@ -35,16 +35,12 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import AddSubscriptionForm from "@/components/dashboard/AddSubscriptionForm";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type DataTableProps<TData, TValue> ={
   columns: ColumnDef<TData, TValue>[];
@@ -79,10 +75,51 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
+const [hasMounted, setHasMounted] = useState(false);
+useEffect(() => {
+  setHasMounted(true);
+}, []);
+const [isMobile, setIsMobile] = useState(() => {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth < 768;
+});
+useEffect(() => {
+  const handleResize = () => {
+    const isMobile = window.innerWidth < 768;
+    setIsMobile(isMobile);
+    table.setColumnVisibility({
+      select: true,
+      mobile: isMobile,
+      name: !isMobile,
+      price: !isMobile,
+      subscription: !isMobile,
+      billing: !isMobile,
+      nextBilling: !isMobile,
+      status: !isMobile,
+      actions: true,
+    });
+  };
 
+  handleResize();
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, [table]);
+
+if (!hasMounted) {
+  return null;
+}
   return (
-    <>
-      <div className="flex items-center justify-start py-4">
+    <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">
+      <div className="p-2 px-4 border-b border-border bg-primary text-white rounded-2xl flex justify-between items-center">
+        <h2 className="font-bold flex items-center gap-2">
+          <Sparkles size={16} className="text-white" />
+          Subscription Inventory
+        </h2>
+        <span className="text-[11px] font-mono font-bold text-white/80 uppercase">
+          Last updated: Just now
+        </span>
+      </div>
+      <div className="flex items-center justify-start py-4 flex-col md:flex-row">
         <Input
           placeholder="Filter name..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -91,7 +128,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <div className="flex ml-auto gap-2">
+        <div className="flex md:ml-auto gap-2 flex-col md:flex-row mt-2 md:mt-0 items-center">
           <DropdownMenu>
             <DropdownMenuTrigger render={<div></div>} nativeButton={false}>
               <Button variant="outline" className="cursor-pointer">
@@ -106,7 +143,15 @@ export function DataTable<TData, TValue>({
                 <DropdownMenuSeparator />
                 {table
                   .getAllColumns()
-                  .filter((column) => column.getCanHide())
+                  .filter((column) => {
+                    if (!column.getCanHide()) return false;
+
+                    if (isMobile) {
+                      return column.id === "mobile" || column.id === "actions";
+                    }
+
+                    return column.id !== "mobile";
+                  })
                   .map((column) => {
                     return (
                       <DropdownMenuCheckboxItem
@@ -123,37 +168,6 @@ export function DataTable<TData, TValue>({
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Dialog>
-            <DialogTrigger render={<div></div>} nativeButton={false}>
-              <Button variant="outline" className="cursor-pointer">
-                + Add Subscription
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[450px]">
-              <DialogHeader>
-                <DialogTitle className={"font-bold text-lg"}>
-                  New Subscription
-                </DialogTitle>
-                <DialogDescription>
-                  Add a new subscription. Click save when you&apos;re done.
-                </DialogDescription>
-              </DialogHeader>
-              <AddSubscriptionForm />
-              <DialogFooter>
-                <DialogClose render={<div></div>} nativeButton={false}>
-                  <Button variant="outline" className="p-4 cursor-pointer">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button
-                  type="submit"
-                  form="add-subscription-form"
-                  className="p-4 cursor-pointer">
-                  Save changes
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
       <div className="overflow-hidden rounded-md border">
@@ -197,33 +211,82 @@ export function DataTable<TData, TValue>({
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center">
-                  No results.
+                  No results found.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end py-4 flex-col md:flex-row">
         <div className="text-muted-foreground flex-1 text-sm">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}>
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}>
-          Next
-        </Button>
+        <div className="flex items-center space-x-6 lg:space-x-8 flex-col md:flex-row">
+          <div className="flex items-center space-x-2 my-2 md:my-0">
+            <p className="text-sm font-medium">Rows per page</p>
+            <Select
+              value={`${table.getState().pagination.pageSize}`}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value));
+              }}>
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent side="top">
+                {[10, 20, 25, 30, 40, 50].map((pageSize) => (
+                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="hidden cursor-pointer size-8 lg:flex bg-primary/20 dark:bg-primary/20 hover:bg-primary/15 dark:hover:bg-primary/30"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}>
+              <span className="sr-only">Go to first page</span>
+              <ChevronsLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-8 cursor-pointer bg-primary/20 dark:bg-primary/20 hover:bg-primary/15 dark:hover:bg-primary/30"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}>
+              <span className="sr-only">Go to previous page</span>
+              <ChevronsLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-8 cursor-pointer bg-primary/20 dark:bg-primary/20 hover:bg-primary/15 dark:hover:bg-primary/30"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}>
+              <span className="sr-only">Go to next page</span>
+              <ChevronRight />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="hidden cursor-pointer size-8 lg:flex bg-primary/20 dark:bg-primary/20 hover:bg-primary/15 dark:hover:bg-primary/30"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}>
+              <span className="sr-only">Go to last page</span>
+              <ChevronsRight />
+            </Button>
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

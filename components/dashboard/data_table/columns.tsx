@@ -1,8 +1,8 @@
 "use client";
 import * as z from "zod";
 import { ColumnDef } from "@tanstack/react-table";
-import { subscriptionFormSchema } from "../AddSubscriptionForm";
-import { MoreHorizontal, ArrowUpDown } from "lucide-react";
+import type {Subscription} from "@/lib/validations/form";
+import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,13 +16,12 @@ import {
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
 import { Checkbox } from "@/components/ui/checkbox";
 
-export type Subscription = z.infer<typeof subscriptionFormSchema>;
-
 export const columns: ColumnDef<Subscription>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
+        className="cursor-pointer"
         checked={
           table.getIsAllPageRowsSelected() || table.getIsSomePageRowsSelected()
         }
@@ -32,6 +31,7 @@ export const columns: ColumnDef<Subscription>[] = [
     ),
     cell: ({ row }) => (
       <Checkbox
+        className="cursor-pointer"
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
@@ -41,16 +41,59 @@ export const columns: ColumnDef<Subscription>[] = [
     enableHiding: false,
   },
   {
+    id: "mobile",
+    header: () => null,
+    cell: ({ row }) => {
+      const { name, category, price, billingCycle, nextBilling, status } =
+        row.original;
+
+      const formattedPrice = new Intl.NumberFormat("bg-BG", {
+        style: "currency",
+        currency: "EUR",
+      }).format(Number(price));
+
+      return (
+        <div className="flex flex-col gap-2">
+          <div>
+            <div className="font-medium">{name}</div>
+            <div className="text-sm text-muted-foreground">{category}</div>
+          </div>
+
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Billing</span>
+            <span className="font-medium">
+              {formattedPrice} / {billingCycle}
+            </span>
+          </div>
+
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Next</span>
+            <span>{String(nextBilling)}</span>
+          </div>
+
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Status</span>
+            <span>{status}</span>
+          </div>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
-  },
-  {
-    accessorKey: "category",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Category" />
-    ),
+    cell: ({ row }) => {
+      const { name, category } = row.original;
+
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium leading-none">{name}</span>
+          <span className="text-xs text-primary mt-1">{category}</span>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "price",
@@ -59,19 +102,19 @@ export const columns: ColumnDef<Subscription>[] = [
     ),
     cell: ({ row }) => {
       const cost = parseFloat(row.getValue("price"));
-      const formatted = new Intl.NumberFormat("bg-BG", {
+      const { billingCycle } = row.original;
+      const formattedPrice = new Intl.NumberFormat("bg-BG", {
         style: "currency",
         currency: "EUR",
       }).format(cost);
 
-      return <div className="font-medium">{formatted}</div>;
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium leading-none">{formattedPrice}</span>
+          <span className="text-xs text-primary">{billingCycle}</span>
+        </div>
+      );
     },
-  },
-  {
-    accessorKey: "billingCycle",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Billing Cycle" />
-    ),
   },
   {
     accessorKey: "nextBilling",
@@ -88,12 +131,12 @@ export const columns: ColumnDef<Subscription>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original;
+      const subscription = row.original;
 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger render={<div></div>} nativeButton={false}>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
@@ -104,7 +147,7 @@ export const columns: ColumnDef<Subscription>[] = [
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="cursor-pointer"
-                onClick={() => navigator.clipboard.writeText(payment.id)}>
+                onClick={() => navigator.clipboard.writeText(subscription.id)}>
                 Copy ID
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">

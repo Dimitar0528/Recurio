@@ -2,7 +2,6 @@
 
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-import * as z from "zod";
 import {
   Field,
   FieldContent,
@@ -18,32 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const billingCycleEnum = z.enum(["Monthly", "Annual"])
-const categoryEnum = z.enum(["Entertainment", "Utilities", "Fitness", "Software", "Education", "Other"]);
-const subScriptionStatusEnum = z.enum(["Active", "Paused", "Cancelled"]);
-
-export const subscriptionFormSchema = z.object({
-  id: z.uuid(),
-  name: z.string().min(3, "Subscription name must be at least 3 characters."),
-  price: z
-    .string()
-    .min(1, "Price is required.")
-    .transform((value) => Number(value))
-    .refine((value) => !Number.isNaN(value) && value > 0, {
-      message: "Price must be a positive number.",
-    }),
-  billingCycle: billingCycleEnum,
-  nextBilling: z
-    .string()
-    .min(1, "Next bill date is required.")
-    .transform((value) => new Date(value))
-    .refine((date) => date >= new Date(new Date().toDateString()), {
-      message: "Date cannot be in the past",
-    }).or(z.string()),
-    category: categoryEnum,
-    status: subScriptionStatusEnum
-});
+import {
+  subscriptionFormSchema,
+  billingCycleEnum,
+  categoryEnum,
+  subScriptionStatusEnum,
+} from "@/lib/validations/form";
 
 export default function AddSubscriptionForm() {
     const form = useForm({
@@ -59,6 +38,12 @@ export default function AddSubscriptionForm() {
         onSubmit: subscriptionFormSchema,
       },
       onSubmit: async ({ value }) => {
+        const subscription = {
+          id: crypto.randomUUID(),
+          ...value,
+        };
+
+        localStorage.setItem("subscription", JSON.stringify(subscription));
         toast.success("Form submitted successfully");
       },
     });
