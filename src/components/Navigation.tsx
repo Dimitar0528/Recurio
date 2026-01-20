@@ -31,7 +31,7 @@ export default function Navigation() {
 
   const navLinks = [
     { name: "Dashboard", href: "/dashboard" },
-    { name: "Insights", href: "/insights" },
+    { name: "Payments", href: "/payments" },
     { name: "Pricing", href: "/pricing" },
   ];
 

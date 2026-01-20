@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { ArrowRight, Check, Minus, TrendingDown } from "lucide-react";
-import { type getDictionary } from "@/app/[lang]/dictionaries";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 const formatter = new Intl.DateTimeFormat("en-US", {
@@ -21,9 +21,7 @@ type Subscription = {
 
 type SubscriptionItemProps = Subscription & {
   onToggle: (id: string) => void;
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["landing_page"]["hero_component"]["subscription_item"];
+  t: ReturnType<typeof useTranslations>;
 };
 
 function SubscriptionItem({
@@ -34,7 +32,7 @@ function SubscriptionItem({
   active,
   id,
   onToggle,
-  dictionary,
+  t,
 }: SubscriptionItemProps) {
   return (
     <button
@@ -68,7 +66,9 @@ function SubscriptionItem({
             {name}
           </p>
           <p className="text-xs text-muted-foreground">
-            {active ? `${dictionary.renews} ${date}` : dictionary.paused}
+            {active
+              ? `${t("subscription_item.renews")} ${date}`
+              : t("subscription_item.paused")}
           </p>
         </div>
       </div>
@@ -83,13 +83,8 @@ function SubscriptionItem({
   );
 }
 
-export default function HeroSection({
-  dictionary,
-}: {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["landing_page"]["hero_component"];
-}) {
+export default function HeroSection() {
+  const t = useTranslations("landing_page.hero_component")
   const [subs, setSubs] = useState<Subscription[]>([
     {
       id: "1",
@@ -140,23 +135,21 @@ export default function HeroSection({
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
         <div className="lg:text-left text-center">
           <h1 className="lg:mt-10 text-5xl md:text-7xl font-bold tracking-tighter leading-[1.1] mb-6">
-            {dictionary.title.part_1} <br />
+            {t("title.part_1")} <br />
             <span className="text-muted-foreground">
-              {dictionary.title.part_2}
+              {t("title.part_2")}
             </span>{" "}
-            {dictionary.title.part_3}{" "}
-            <span className="text-primary italic">
-              {dictionary.title.part_4}
-            </span>
+            {t("title.part_3")}{" "}
+            <span className="text-primary italic">{t("title.part_4")}</span>
           </h1>
 
           <p className="text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed lg:mx-0 mx-auto">
-            {dictionary.description}
+            {t("description")}
           </p>
 
           <Link href="/dashboard" className="flex flex-wrap gap-4">
             <button className="w-fit bg-primary text-primary-foreground px-8 py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:gap-3 transition-all sm:w-xl mx-auto cursor-pointer hover:shadow-lg hover:bg-primary/90 hover:scale-[1.02]">
-              {dictionary.cta} <ArrowRight />
+              {t("cta")} <ArrowRight />
             </button>
           </Link>
         </div>
@@ -183,7 +176,7 @@ export default function HeroSection({
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="p-4 bg-secondary rounded-lg border border-transparent transition-colors">
                   <p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">
-                    {dictionary.metrics.monthly_burn}
+                    {t("metrics.monthly_burn")}
                   </p>
                   <p className="text-2xl font-bold tabular-nums">
                     {monthlyBurn.toFixed(2)} €
@@ -193,7 +186,7 @@ export default function HeroSection({
                 <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
                   <div className="flex justify-between items-start mb-1">
                     <p className="text-[10px] uppercase font-bold text-primary">
-                      {dictionary.metrics.yearly_impact}
+                      {t("metrics.yearly_impact")}
                     </p>
                     <TrendingDown
                       size={14}
@@ -211,14 +204,14 @@ export default function HeroSection({
                   <SubscriptionItem
                     key={sub.id}
                     {...sub}
-                    dictionary={dictionary.subscription_item}
                     onToggle={toggleSub}
+                    t={t}
                   />
                 ))}
               </div>
 
               <p className="text-center text-sm text-muted-foreground mt-2 italic underline-offset-4 underline">
-                {dictionary.tip}
+                {t("tip")}
               </p>
             </div>
           </div>

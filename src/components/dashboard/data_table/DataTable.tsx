@@ -112,8 +112,7 @@ if (!hasMounted) {
     <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">
       <div className="p-2 px-4 border-b border-border bg-primary text-white rounded-2xl flex justify-between items-center">
         <h2 className="font-bold flex items-center gap-2">
-          <Sparkles size={16} className="text-white" />
-          Subscription Inventory
+          Subscriptions
         </h2>
         <span className="text-[11px] font-mono font-bold text-white/80 uppercase">
           Last updated: Just now

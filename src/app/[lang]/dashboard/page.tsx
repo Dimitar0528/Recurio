@@ -23,6 +23,7 @@ import {
 import AddSubscriptionForm from "@/components/dashboard/AddSubscriptionForm";
 import StatWidget from "@/components/dashboard/StatWidget";
 import InsightsSidebar from "@/components/dashboard/InsightsSidebar";
+import Link from "next/link";
 
 async function getData(): Promise<Subscription[]> {
   return [
@@ -143,12 +144,12 @@ export default async function Page() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-12">
       <div className="max-w-7xl mx-auto px-6 pt-24">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-10 gap-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight mb-2">
+            <h1 className="text-3xl text-center md:text-left font-bold tracking-tight mb-2">
               Workspace
             </h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm text-center md:text-left">
               You have{" "}
               <span className="text-foreground font-medium">12 active</span>{" "}
               subscriptions totaling{" "}
@@ -156,44 +157,42 @@ export default async function Page() {
               month.
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Dialog>
-              <DialogTrigger render={<div></div>} nativeButton={false}>
-                <Button
-                  variant="outline"
-                  className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary dark:hover:bg-primary/85 text-primary-foreground hover:bg-primary/85 hover:text-white p-4">
-                  + Add Subscription
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[450px]">
-                <DialogHeader>
-                  <DialogTitle className={"font-bold text-lg"}>
-                    New Subscription
-                  </DialogTitle>
-                  <DialogDescription>
-                    Add a new subscription. Click save when you&apos;re done.
-                  </DialogDescription>
-                </DialogHeader>
-                <AddSubscriptionForm />
-                <DialogFooter>
-                  <DialogClose render={<div></div>} nativeButton={false}>
-                    <Button variant="outline" className="p-4 cursor-pointer">
-                      Cancel
-                    </Button>
-                  </DialogClose>
-                  <Button
-                    type="submit"
-                    form="add-subscription-form"
-                    className="p-4 cursor-pointer">
-                    Save changes
+          <Dialog>
+            <DialogTrigger render={<div></div>} nativeButton={false}>
+              <Button
+                variant="outline"
+                className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary dark:hover:bg-primary/85 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70">
+                + Add Subscription
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[450px]">
+              <DialogHeader>
+                <DialogTitle className={"font-bold text-lg"}>
+                  New Subscription
+                </DialogTitle>
+                <DialogDescription>
+                  Add a new subscription. Click save when you&apos;re done.
+                </DialogDescription>
+              </DialogHeader>
+              <AddSubscriptionForm />
+              <DialogFooter>
+                <DialogClose render={<div></div>} nativeButton={false}>
+                  <Button variant="outline" className="p-4 cursor-pointer">
+                    Cancel
                   </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
+                </DialogClose>
+                <Button
+                  type="submit"
+                  form="add-subscription-form"
+                  className="p-4 cursor-pointer">
+                  Save changes
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
-        <div className="mb-8 bg-primary/[0.03] border border-primary/20 rounded-2xl p-4 flex items-center justify-between group hover:bg-primary/[0.06] transition-colors cursor-pointer">
+        <Link href="/payments" className="mb-8 bg-primary/[0.03] border border-primary/20 rounded-2xl p-4 flex items-center justify-between group hover:bg-primary/[0.06] transition-colors cursor-pointer">
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />
@@ -210,10 +209,10 @@ export default async function Page() {
               </p>
             </div>
           </div>
-          <button className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          <div className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             Review Schedule <ArrowUpRight size={14} />
-          </button>
-        </div>
+          </div>
+        </Link>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <StatWidget
@@ -227,16 +226,8 @@ export default async function Page() {
             value="1,711.20 €"
             icon={Calendar}
           />
-          <StatWidget
-            label="Active Subs"
-            value="12"
-            icon={PieChart}
-          />
-          <StatWidget
-            label="Income Ratio"
-            value="4.2%"
-            icon={Percent}
-          />
+          <StatWidget label="Active Subs" value="12" icon={PieChart} />
+          <StatWidget label="Income Ratio" value="4.2%" icon={Percent} />
         </div>
 
         <div className="grid lg:grid-cols-12 gap-8">
@@ -246,8 +237,7 @@ export default async function Page() {
             </div>
           </div>
 
-         <InsightsSidebar />
-
+          <InsightsSidebar />
         </div>
       </div>
     </div>

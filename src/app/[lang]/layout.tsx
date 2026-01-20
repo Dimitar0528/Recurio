@@ -5,6 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { routing } from "@/i18n/routing";
+import { notFound } from "next/navigation";
 
 const notoSans = Noto_Sans({variable:'--font-sans'});
 
@@ -29,12 +32,16 @@ export const metadata: Metadata = {
 };
 
 export async function generateStaticParams() {
-  return [{ lang: "bg" }, { lang: "en" }];
+  return routing.locales.map((locale) => ({ locale }));
 }
 export default async function RootLayout({
   children,
   params
 }: LayoutProps<"/[lang]">) {
+  const { lang } = await params;
+    if (!hasLocale(routing.locales, lang)) {
+      notFound();
+    }
   return (
     <html
       lang={(await params).lang}
@@ -42,17 +49,19 @@ export default async function RootLayout({
       suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Toaster position="top-center" richColors closeButton />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          enableColorScheme>
-          <Navigation />
-          <main>{children}</main>
-          <Footer />
-        </ThemeProvider>
+        <NextIntlClientProvider>
+          <Toaster position="top-center" richColors closeButton />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+            enableColorScheme>
+            <Navigation />
+            <main>{children}</main>
+            <Footer />
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

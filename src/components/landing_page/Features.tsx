@@ -1,31 +1,25 @@
 "use client";
 
 import { Calendar, PieChart, CreditCard, ShieldCheck } from "lucide-react";
-import { type getDictionary } from "@/app/[lang]/dictionaries";
-
-export default function Features({
-  dictionary,
-}: {
-  dictionary: Awaited<
-    ReturnType<typeof getDictionary>
-  >["landing_page"]["features_component"];
-}) {
+import { useTranslations } from "next-intl";
+export default function Features() {
+  const t = useTranslations("landing_page.features_component")
   return (
     <section id="features" className="py-18 px-6 border-t border-border">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-xl">
             <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-4">
-              {dictionary.tagline}
+              {t("tagline")}
             </h2>
             <p className="text-4xl font-bold tracking-tight text-foreground mx-auto">
-              {dictionary.heading.line_1}
+              {t("heading.line_1")}
               <br />
-              {dictionary.heading.line_2}
+              {t("heading.line_2")}
             </p>
           </div>
           <p className="text-muted-foreground max-w-xs text-md leading-relaxed">
-            {dictionary.intro}
+            {t("intro")}
           </p>
         </div>
 
@@ -36,24 +30,24 @@ export default function Features({
                 <PieChart size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-3">
-                {dictionary.cost_normalization.title}
+                {t("cost_normalization.title")}
               </h3>
               <p className="text-muted-foreground leading-relaxed">
-                {dictionary.cost_normalization.description}
+                {t("cost_normalization.description")}
               </p>
             </div>
 
             <div className="mt-8 pt-8 border-t border-border flex gap-8 mx-auto md:mx-0">
               <div>
                 <p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">
-                  {dictionary.cost_normalization.monthly}
+                  {t("cost_normalization.monthly")}
                 </p>
                 <p className="text-xl font-mono font-bold">11.99 €</p>
               </div>
               <div className="text-muted-foreground self-center">→</div>
               <div>
                 <p className="text-[10px] uppercase font-bold text-primary mb-1">
-                  {dictionary.cost_normalization.annual}
+                  {t("cost_normalization.annual")}
                 </p>
                 <p className="text-xl font-mono font-bold text-primary">
                   143.88 €
@@ -67,17 +61,17 @@ export default function Features({
               <Calendar size={22} />
             </div>
             <h3 className="text-xl font-bold mb-3">
-              {dictionary.time_awareness.title}
+              {t("time_awareness.title")}
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
-              {dictionary.time_awareness.description}
+              {t("time_awareness.description")}
             </p>
             <div className="mt-auto space-y-2">
               <div className="h-1 w-full bg-border rounded-full overflow-hidden">
                 <div className="h-full bg-primary w-2/3" />
               </div>
               <p className="text-[10px] font-mono text-muted-foreground uppercase">
-                {dictionary.time_awareness.proximity}
+                {t("time_awareness.proximity")}
               </p>
             </div>
           </div>
@@ -87,20 +81,18 @@ export default function Features({
               <CreditCard size={22} color="oklch(0.59 0.20 277)" />
             </div>
             <h3 className="text-xl font-bold mb-3">
-              {dictionary.manual_entry.title}
+              {t("manual_entry.title")}
             </h3>
             <p className="text-sm max-w-md text-muted-foreground leading-relaxed">
-              {dictionary.manual_entry.description}
+              {t("manual_entry.description")}
             </p>
           </div>
 
           <div className="md:col-span-8 bg-gray-900 dark:bg-gray-300 text-background p-8 rounded-2xl flex items-center justify-between overflow-hidden relative">
             <div className="relative z-10 max-w-lg mx-auto md:mx-0">
-              <h3 className="text-xl font-bold mb-3">
-                {dictionary.privacy.title}
-              </h3>
+              <h3 className="text-xl font-bold mb-3">{t("privacy.title")}</h3>
               <p className="text-sm text-background/80 leading-relaxed">
-                {dictionary.privacy.description}
+                {t("privacy.description")}
               </p>
             </div>
             <ShieldCheck

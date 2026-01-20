@@ -1,10 +1,8 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { i18n } from "@/i18n-config";
-import type { Locale } from "@/app/[lang]/dictionaries";
+import { Locale, useLocale } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { ArrowDown, Languages } from "lucide-react";
-import { Route } from "next";
 
 import {
   DropdownMenu,
@@ -14,22 +12,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
+import { routing } from "@/i18n/routing";
 
 export default function LocaleSwitcher() {
-  const pathname = usePathname();
+  const currentLocale = useLocale();
   const router = useRouter();
+  const pathname = usePathname();
 
-  const currentLocale =
-    (pathname?.split("/")[1] as Locale) || i18n.defaultLocale;
-
-  const handleLocaleChange = (newLocale: Locale) => {
-    if (!pathname) return;
-
-    const segments = pathname.split("/");
-    segments[1] = newLocale;
-    const newPath = segments.join("/") as Route;
-
-    router.replace(newPath, { scroll: false });
+  const handleLocaleChange = (nextLocale: Locale) => {
+    router.replace(pathname, { locale: nextLocale, scroll: false });
   };
 
   return (
@@ -49,20 +40,14 @@ export default function LocaleSwitcher() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="min-w-[80px]">
-        {i18n.locales.map((locale) => (
+        {routing.locales.map((locale) => (
           <DropdownMenuItem
             key={locale}
             onClick={() => handleLocaleChange(locale)}
-            className={`group cursor-pointer
-              ${
-                locale === currentLocale
-                  ? "bg-accent text-accent-foreground"
-                  : ""
-              }
+            className={`cursor-pointer ${
+              locale === currentLocale ? "bg-accent text-accent-foreground" : ""
             }`}>
-            <span className="group-hover:text-white group-focus-visible:text-white">
-              {locale.toUpperCase()}
-            </span>
+            {locale.toUpperCase()}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
