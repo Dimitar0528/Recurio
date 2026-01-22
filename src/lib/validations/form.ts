@@ -26,13 +26,10 @@ export const subscriptionFormSchema = z.object({
     .transform((value) => new Date(value))
     .refine((date) => date >= new Date(new Date().toDateString()), {
       message: "Date cannot be in the past",
-    }).or(z.string()),
+    }),
     category: categoryEnum,
     status: subScriptionStatusEnum
 });
 
-export const subscriptionSchema = subscriptionFormSchema.extend({
-    id: z.uuid()
-})
-
-export type Subscription = z.infer<typeof subscriptionSchema>;
+export const subscriptionsResponseSchema = z.array(subscriptionFormSchema);
+export type Subscription = z.infer<typeof subscriptionFormSchema>;

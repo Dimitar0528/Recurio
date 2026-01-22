@@ -18,7 +18,7 @@
             },
             "annual_burn": {
                 "label": "Annual Burn",
-                "value": "$2,140",
+                "value": "2,140 €",
                 "subtext": "Total committed yearly spend"
             }
         },

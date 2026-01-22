@@ -1,7 +1,7 @@
 import { columns } from "@/components/dashboard/data_table/columns";
 import { DataTable } from "@/components/dashboard/data_table/DataTable";
 import { Button } from "@/components/ui/button";
-import type { Subscription } from "@/lib/validations/form";
+import { subscriptionsResponseSchema } from "@/lib/validations/form";
 import {
   Calendar,
   PieChart,
@@ -24,119 +24,19 @@ import AddSubscriptionForm from "@/components/dashboard/AddSubscriptionForm";
 import StatWidget from "@/components/dashboard/StatWidget";
 import InsightsSidebar from "@/components/dashboard/InsightsSidebar";
 import Link from "next/link";
+import { db } from "@/lib/db";
+import { subscriptionsTable } from "@/db/schema";
+  async function getData(){
+    const rawData =  await db.select().from(subscriptionsTable);
+    const mappedData = rawData.map((row) => ({
+      ...row,
+      nextBilling: row.nextBilling.toISOString(),
+    }));
 
-async function getData(): Promise<Subscription[]> {
-  return [
-    {
-      id: "a1",
-      name: "Spotify",
-      price: 9.99,
-      billingCycle: "Monthly",
-      nextBilling: "2024-10-20",
-      category: "Entertainment",
-      status: "Active",
-    },
-    {
-      id: "b2",
-      name: "Amazon Prime",
-      price: 139.0,
-      billingCycle: "Annual",
-      nextBilling: "2024-10-12",
-      category: "Software",
-      status: "Active",
-    },
-    {
-      id: "c3",
-      name: "Adobe Creative Cloud",
-      price: 54.99,
-      billingCycle: "Monthly",
-      nextBilling: "2024-10-15",
-      category: "Software",
-      status: "Active",
-    },
-    {
-      id: "d4",
-      name: "iCloud Storage",
-      price: 2.99,
-      billingCycle: "Monthly",
-      nextBilling: "2024-11-01",
-      category: "Software",
-      status: "Active",
-    },
-    {
-      id: "e5",
-      name: "Coursera Plus",
-      price: 399.0,
-      billingCycle: "Annual",
-      nextBilling: "2025-01-19",
-      category: "Education",
-      status: "Active",
-    },
-    {
-      id: "f6",
-      name: "Notion",
-      price: 8.0,
-      billingCycle: "Monthly",
-      nextBilling: "2024-10-25",
-      category: "Utilities",
-      status: "Active",
-    },
-    {
-      id: "a1",
-      name: "Spotify",
-      price: 9.99,
-      billingCycle: "Monthly",
-      nextBilling: "2024-10-20",
-      category: "Entertainment",
-      status: "Active",
-    },
-    {
-      id: "b2",
-      name: "Amazon Prime",
-      price: 139.0,
-      billingCycle: "Annual",
-      nextBilling: "2024-10-12",
-      category: "Software",
-      status: "Active",
-    },
-    {
-      id: "c3",
-      name: "Adobe Creative Cloud",
-      price: 54.99,
-      billingCycle: "Monthly",
-      nextBilling: "2024-10-15",
-      category: "Software",
-      status: "Active",
-    },
-    {
-      id: "d4",
-      name: "iCloud Storage",
-      price: 2.99,
-      billingCycle: "Monthly",
-      nextBilling: "2024-11-01",
-      category: "Software",
-      status: "Active",
-    },
-    {
-      id: "e5",
-      name: "Coursera Plus",
-      price: 399.0,
-      billingCycle: "Annual",
-      nextBilling: "2025-01-19",
-      category: "Education",
-      status: "Active",
-    },
-    {
-      id: "f6",
-      name: "Notion",
-      price: 8.0,
-      billingCycle: "Monthly",
-      nextBilling: "2024-10-25",
-      category: "Utilities",
-      status: "Active",
-    },
-  ];
-}
+    const data = subscriptionsResponseSchema.parse(mappedData);
+
+    return data;
+  }
 
 export default async function Page() {
   const data = await getData();
@@ -158,13 +58,14 @@ export default async function Page() {
             </p>
           </div>
           <Dialog>
-            <DialogTrigger render={<div></div>} nativeButton={false}>
-              <Button
-                variant="outline"
-                className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary dark:hover:bg-primary/85 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70">
-                + Add Subscription
-              </Button>
-            </DialogTrigger>
+            <DialogTrigger
+              render={
+                <Button
+                  variant="outline"
+                  className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary dark:hover:bg-primary/85 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70">
+                  + Add Subscription
+                </Button>
+              }></DialogTrigger>
             <DialogContent className="sm:max-w-[450px]">
               <DialogHeader>
                 <DialogTitle className={"font-bold text-lg"}>
@@ -176,11 +77,12 @@ export default async function Page() {
               </DialogHeader>
               <AddSubscriptionForm />
               <DialogFooter>
-                <DialogClose render={<div></div>} nativeButton={false}>
-                  <Button variant="outline" className="p-4 cursor-pointer">
-                    Cancel
-                  </Button>
-                </DialogClose>
+                <DialogClose
+                  render={
+                    <Button variant="outline" className="p-4 cursor-pointer">
+                      Cancel
+                    </Button>
+                  }></DialogClose>
                 <Button
                   type="submit"
                   form="add-subscription-form"
@@ -192,7 +94,9 @@ export default async function Page() {
           </Dialog>
         </div>
 
-        <Link href="/payments" className="mb-8 bg-primary/[0.03] border border-primary/20 rounded-2xl p-4 flex items-center justify-between group hover:bg-primary/[0.06] transition-colors cursor-pointer">
+        <Link
+          href="/payments"
+          className="mb-8 bg-primary/[0.03] border border-primary/20 rounded-2xl p-4 flex items-center justify-between group hover:bg-primary/[0.06] transition-colors cursor-pointer">
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />

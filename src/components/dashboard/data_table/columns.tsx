@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
 import { Checkbox } from "@/components/ui/checkbox";
+import { dateFormatter } from "@/lib/utils";
 
 export const columns: ColumnDef<Subscription>[] = [
   {
@@ -111,7 +112,7 @@ export const columns: ColumnDef<Subscription>[] = [
       return (
         <div className="flex flex-col">
           <span className="font-medium leading-none">{formattedPrice}</span>
-          <span className="text-xs text-primary">{billingCycle}</span>
+          <span className="text-xs text-primary mt-1">{billingCycle}</span>
         </div>
       );
     },
@@ -121,6 +122,13 @@ export const columns: ColumnDef<Subscription>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Next Billing" />
     ),
+    cell: ({row}) =>{
+      const {nextBilling} = row.original;
+      const billing = dateFormatter().format(nextBilling)
+      return (
+        <div>{billing}</div>
+      )
+    }
   },
   {
     accessorKey: "status",
@@ -131,25 +139,20 @@ export const columns: ColumnDef<Subscription>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const subscription = row.original;
-
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger render={<div></div>} nativeButton={false}>
-            <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            }
+            ></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => navigator.clipboard.writeText(subscription.id)}>
-                Copy ID
-              </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">
                 Edit
               </DropdownMenuItem>

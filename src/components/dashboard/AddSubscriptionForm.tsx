@@ -23,6 +23,7 @@ import {
   categoryEnum,
   subScriptionStatusEnum,
 } from "@/lib/validations/form";
+import { createSubscription } from "@/app/actions";
 
 export default function AddSubscriptionForm() {
     const form = useForm({
@@ -38,12 +39,8 @@ export default function AddSubscriptionForm() {
         onSubmit: subscriptionFormSchema,
       },
       onSubmit: async ({ value }) => {
-        const subscription = {
-          id: crypto.randomUUID(),
-          ...value,
-        };
-
-        localStorage.setItem("subscription", JSON.stringify(subscription));
+        const subscription = subscriptionFormSchema.parse(value);
+        await createSubscription(subscription);
         toast.success("Form submitted successfully");
       },
     });

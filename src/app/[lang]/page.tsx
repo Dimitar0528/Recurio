@@ -3,11 +3,15 @@ import Features from "@/components/landing_page/Features";
 import DataVisualization from "@/components/landing_page/DataVisualization";
 import { Separator } from "@/components/ui/separator";
 import {
+  ArrowRight,
   ChartPie,
   CreditCardIcon,
   MessageCircleWarningIcon,
+  ShieldCheck,
   TrendingUp,
+  Zap,
 } from "lucide-react";
+
 import type { ComponentType } from "react";
 import type { LucideProps } from "lucide-react";
 import Testimonials from "@/components/landing_page/Testimonials";
@@ -91,22 +95,51 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
       <Separator />
       <DataVisualization />
       <Separator />
-      <Testimonials  /> 
+      <Testimonials />
 
-      <section className="py-16 px-6">
-        <div className="max-w-xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">{t("cta.title")}</h2>
-          <p className="text-muted-foreground mb-10 text-lg">
-            {t("cta.subtitle")}
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="w-full sm:w-auto bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg font-bold cursor-pointer hover:shadow-lg hover:bg-primary/90 hover:scale-[1.02] transition-all">
-              {t("cta.primary")}
-            </button>
-            <button className="w-full sm:w-auto bg-secondary text-secondary-foreground px-8 py-4 rounded-lg font-bold border border-border cursor-pointer hover:bg-secondary/60 transition-colors">
-              {t("cta.secondary")}
-            </button>
+      <section className="py-32 px-6 relative overflow-hidden">
+        <div
+          className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
+            backgroundSize: "40px 40px",
+          }}
+        />
+
+        <div className="max-w-5xl mx-auto relative">
+          <div className="bg-card border border-border rounded-[3rem] p-8 md:p-20 relative shadow-2xl shadow-black/5">
+
+            <div className="flex flex-col items-center text-center">
+              <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-8 max-w-3xl leading-[1.1] text-foreground">
+                {t("cta.title")}
+              </h2>
+
+              <p className="text-muted-foreground mb-12 text-lg md:text-xl max-w-xl leading-relaxed">
+                {t("cta.subtitle")}
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
+                <button className="group relative w-full sm:w-auto bg-primary text-primary-foreground px-10 py-5 rounded-2xl font-bold text-lg cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/20 overflow-hidden">
+                  <div className="relative z-10 flex items-center justify-center gap-3">
+                    {t("cta.primary")}
+                    <ArrowRight
+                      size={20}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                </button>
+
+                <button className="w-full sm:w-auto bg-secondary hover:bg-secondary/80 text-secondary-foreground px-10 py-5 rounded-2xl font-bold text-lg border border-border cursor-pointer transition-all flex items-center justify-center gap-2">
+                  <Zap size={18} className="text-muted-foreground" />
+                  {t("cta.secondary")}
+                </button>
+              </div>
+            </div>
           </div>
+
+          <div className="absolute -top-6 -left-6 w-24 h-24 border-t-2 border-l-2 border-primary/10 rounded-tl-3xl -z-10" />
+          <div className="absolute -bottom-6 -right-6 w-24 h-24 border-b-2 border-r-2 border-primary/10 rounded-br-3xl -z-10" />
         </div>
       </section>
     </div>

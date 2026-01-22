@@ -4,11 +4,8 @@ import { useState } from "react";
 import { ArrowRight, Check, Minus, TrendingDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-
-const formatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-});
+import { motion, AnimatePresence, easeOut } from "framer-motion";
+import { dateFormatter } from "@/lib/utils";
 
 type Subscription = {
   id: string;
@@ -24,6 +21,20 @@ type SubscriptionItemProps = Subscription & {
   t: ReturnType<typeof useTranslations>;
 };
 
+// Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.3 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: easeOut } },
+};
+
 function SubscriptionItem({
   name,
   price,
@@ -35,28 +46,35 @@ function SubscriptionItem({
   t,
 }: SubscriptionItemProps) {
   return (
-    <button
+    <motion.button
+      layout
       onClick={() => onToggle(id)}
       className={`w-full flex items-center justify-between p-4 border-b border-border last:border-0 transition-all duration-300 group select-none cursor-pointer
-        ${
-          active
-            ? "bg-transparent hover:bg-accent/50"
-            : "bg-muted/20 opacity-60"
-        }`}>
+        ${active ? "bg-transparent hover:bg-accent/50" : "bg-muted/20 opacity-60"}`}>
       <div className="flex items-center gap-3">
-        <div
-          className={`flex items-center justify-center w-5 h-5 rounded-md border transition-colors
-          ${
-            active
-              ? "bg-primary border-primary"
-              : "bg-transparent border-muted-foreground"
-          }`}>
-          {active ? (
-            <Check className="text-primary-foreground w-3.5 h-3.5" />
-          ) : (
-            <Minus className="text-muted-foreground w-3.5 h-3.5" />
-          )}
-        </div>
+        <motion.div
+          animate={{
+            backgroundColor: active ? "var(--primary)" : "transparent",
+            borderColor: active
+              ? "var(--primary)"
+              : "oklch(var(--muted-foreground))",
+          }}
+          className="flex items-center justify-center w-5 h-5 rounded-md border transition-colors">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active ? "check" : "minus"}
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ duration: 0.15 }}>
+              {active ? (
+                <Check className="text-primary-foreground w-3.5 h-3.5" />
+              ) : (
+                <Minus className="text-muted-foreground w-3.5 h-3.5" />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
         <div className={`w-2 h-2 rounded-full ${color}`} />
         <div className="text-left">
           <p
@@ -72,25 +90,26 @@ function SubscriptionItem({
           </p>
         </div>
       </div>
-      <div
+      <motion.div
+        layout
         className={`text-sm font-mono font-medium transition-colors ${
           active ? "text-foreground" : "text-muted-foreground"
         }`}>
         {active ? "" : "- "}
         {price.toFixed(2)} €
-      </div>
-    </button>
+      </motion.div>
+    </motion.button>
   );
 }
 
 export default function HeroSection() {
-  const t = useTranslations("landing_page.hero_component")
+  const t = useTranslations("landing_page.hero_component");
   const [subs, setSubs] = useState<Subscription[]>([
     {
       id: "1",
       name: "Adobe Creative Cloud",
       price: 44.03,
-      date: formatter.format(new Date()),
+      date: dateFormatter().format(new Date()),
       color: "bg-red-500",
       active: true,
     },
@@ -98,7 +117,7 @@ export default function HeroSection() {
       id: "2",
       name: "ChatGPT Plus",
       price: 23.0,
-      date: formatter.format(new Date().setDate(new Date().getDate() + 28)),
+      date: dateFormatter().format(new Date().setDate(new Date().getDate() + 28)),
       color: "bg-gray-500",
       active: true,
     },
@@ -106,7 +125,7 @@ export default function HeroSection() {
       id: "3",
       name: "Netflix Premium",
       price: 9.99,
-      date: formatter.format(new Date().setDate(new Date().getDate() + 14)),
+      date: dateFormatter().format(new Date().setDate(new Date().getDate() + 14)),
       color: "bg-red-600",
       active: true,
     },
@@ -114,7 +133,7 @@ export default function HeroSection() {
       id: "4",
       name: "Spotify Premium",
       price: 5.62,
-      date: formatter.format(new Date().setDate(new Date().getDate() + 18)),
+      date: dateFormatter().format(new Date().setDate(new Date().getDate() + 18)),
       color: "bg-green-500",
       active: true,
     },
@@ -122,39 +141,63 @@ export default function HeroSection() {
 
   const toggleSub = (id: string) => {
     setSubs((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, active: !s.active } : s))
+      prev.map((s) => (s.id === id ? { ...s, active: !s.active } : s)),
     );
   };
 
-  const monthlyBurn = subs.reduce((acc, curr) => (curr.active ? acc + curr.price : acc), 0);
+  const monthlyBurn = subs.reduce(
+    (acc, curr) => (curr.active ? acc + curr.price : acc),
+    0,
+  );
 
   const yearlyImpact = monthlyBurn * 12;
 
   return (
     <section className="pt-32 pb-20 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-        <div className="lg:text-left text-center">
-          <h1 className="lg:mt-10 text-5xl md:text-7xl font-bold tracking-tighter leading-[1.1] mb-6">
+        {/* Left Side: Text Content */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="lg:text-left text-center">
+          <motion.h1
+            variants={itemVariants}
+            className="lg:mt-10 text-5xl md:text-7xl font-bold tracking-tighter leading-[1.1] mb-6">
             {t("title.part_1")} <br />
             <span className="text-muted-foreground">
               {t("title.part_2")}
             </span>{" "}
             {t("title.part_3")}{" "}
             <span className="text-primary italic">{t("title.part_4")}</span>
-          </h1>
+          </motion.h1>
 
-          <p className="text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed lg:mx-0 mx-auto">
+          <motion.p
+            variants={itemVariants}
+            className="text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed lg:mx-0 mx-auto">
             {t("description")}
-          </p>
+          </motion.p>
 
-          <Link href="/dashboard" className="flex flex-wrap gap-4">
-            <button className="w-fit bg-primary text-primary-foreground px-8 py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:gap-3 transition-all sm:w-xl mx-auto cursor-pointer hover:shadow-lg hover:bg-primary/90 hover:scale-[1.02]">
-              {t("cta")} <ArrowRight />
-            </button>
-          </Link>
-        </div>
+          <motion.div variants={itemVariants}>
+            <Link href="/dashboard" className="flex flex-wrap gap-4">
+              <button className="w-fit bg-primary text-primary-foreground px-8 py-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:gap-3 transition-all sm:w-xl mx-auto cursor-pointer hover:shadow-lg hover:bg-primary/90 hover:scale-[1.02]">
+                {t("cta")} <ArrowRight />
+              </button>
+            </Link>
+          </motion.div>
+        </motion.div>
 
-        <div className="relative group">
+        {/* Right Side: Mock UI */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, x: 20 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{
+            duration: 0.8,
+            delay: 0.5,
+            type: "spring",
+            bounce: 0.3,
+          }}
+          className="relative group">
           <div className="absolute -inset-4 bg-primary/5 rounded-[2rem] blur-3xl transition-opacity duration-500" />
 
           <div className="relative bg-card border border-border rounded-2xl shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.01]">
@@ -178,9 +221,13 @@ export default function HeroSection() {
                   <p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">
                     {t("metrics.monthly_burn")}
                   </p>
-                  <p className="text-2xl font-bold tabular-nums">
+                  <motion.p
+                    key={monthlyBurn}
+                    initial={{ scale: 1.1, color: "var(--primary)" }}
+                    animate={{ scale: 1, color: "inherit" }}
+                    className="text-2xl font-bold tabular-nums">
                     {monthlyBurn.toFixed(2)} €
-                  </p>
+                  </motion.p>
                 </div>
 
                 <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
@@ -193,13 +240,19 @@ export default function HeroSection() {
                       className="text-primary opacity-50"
                     />
                   </div>
-                  <p className="text-2xl font-bold text-primary tabular-nums">
+                  <motion.p
+                    key={yearlyImpact}
+                    initial={{ opacity: 0.5, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-2xl font-bold text-primary tabular-nums">
                     {yearlyImpact.toFixed(2)} €
-                  </p>
+                  </motion.p>
                 </div>
               </div>
 
-              <div className="space-y-0 border border-border rounded-lg overflow-hidden bg-background">
+              <motion.div
+                layout
+                className="space-y-0 border border-border rounded-lg overflow-hidden bg-background">
                 {subs.map((sub) => (
                   <SubscriptionItem
                     key={sub.id}
@@ -208,14 +261,14 @@ export default function HeroSection() {
                     t={t}
                   />
                 ))}
-              </div>
+              </motion.div>
 
               <p className="text-center text-sm text-muted-foreground mt-2 italic underline-offset-4 underline">
                 {t("tip")}
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

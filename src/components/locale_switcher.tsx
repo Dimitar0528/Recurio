@@ -25,19 +25,20 @@ export default function LocaleSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<div></div>} nativeButton={false}>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2 px-2 cursor-pointer"
-          aria-label="Select language">
-          <Languages className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">
-            {currentLocale.toUpperCase()}
-          </span>
-          <ArrowDown className="h-4 w-4 text-muted-foreground" />
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 px-2 cursor-pointer"
+            aria-label="Select language">
+            <Languages className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">
+              {currentLocale.toUpperCase()}
+            </span>
+            <ArrowDown className="h-4 w-4 text-muted-foreground" />
+          </Button>
+        }></DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="min-w-[80px]">
         {routing.locales.map((locale) => (

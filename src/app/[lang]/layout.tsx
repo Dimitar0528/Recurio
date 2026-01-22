@@ -43,10 +43,7 @@ export default async function RootLayout({
       notFound();
     }
   return (
-    <html
-      lang={(await params).lang}
-      className={notoSans.variable}
-      suppressHydrationWarning>
+    <html lang={lang} className={notoSans.variable} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider>
