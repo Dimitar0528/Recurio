@@ -35,7 +35,7 @@ const ScrollingColumn = ({
             key={idx}
             className="bg-card border border-border p-6 rounded-2xl shadow-sm hover:scale-[1.02] transition-transform duration-300">
             <p className="text-sm leading-relaxed mb-4 text-foreground italic">
-              "{item.text}"
+              &quot;{item.text}&quot;
             </p>
             <div className="flex items-center justify-between">
               <span className="font-bold text-sm">{item.author}</span>

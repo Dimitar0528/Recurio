@@ -3,7 +3,7 @@
 import { Subscription } from "@/lib/validations/form";
 import { db } from "@/lib/db";
 import { subscriptionsTable } from "@/db/schema";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 
 export async function createSubscription(input: Subscription) {
   await db.insert(subscriptionsTable).values({
@@ -15,4 +15,5 @@ export async function createSubscription(input: Subscription) {
     status: input.status,
   });
   revalidatePath("/dashboard")
+  updateTag('subscriptions')
 }

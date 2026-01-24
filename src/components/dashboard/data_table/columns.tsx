@@ -1,5 +1,4 @@
 "use client";
-import * as z from "zod";
 import { ColumnDef } from "@tanstack/react-table";
 import type {Subscription} from "@/lib/validations/form";
 import { MoreHorizontal } from "lucide-react";
@@ -16,6 +15,7 @@ import {
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
 import { Checkbox } from "@/components/ui/checkbox";
 import { dateFormatter } from "@/lib/utils";
+import { useLocale } from "next-intl";
 
 export const columns: ColumnDef<Subscription>[] = [
   {
@@ -47,12 +47,12 @@ export const columns: ColumnDef<Subscription>[] = [
     cell: ({ row }) => {
       const { name, category, price, billingCycle, nextBilling, status } =
         row.original;
-
+      const locale = useLocale()
       const formattedPrice = new Intl.NumberFormat("bg-BG", {
         style: "currency",
         currency: "EUR",
       }).format(Number(price));
-
+      const billingDate = dateFormatter(nextBilling, locale);
       return (
         <div className="flex flex-col gap-2">
           <div>
@@ -68,8 +68,8 @@ export const columns: ColumnDef<Subscription>[] = [
           </div>
 
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Next</span>
-            <span>{String(nextBilling)}</span>
+            <span className="text-muted-foreground">Next Billing</span>
+            <span>{billingDate}</span>
           </div>
 
           <div className="flex justify-between text-sm">
@@ -124,10 +124,9 @@ export const columns: ColumnDef<Subscription>[] = [
     ),
     cell: ({row}) =>{
       const {nextBilling} = row.original;
-      const billing = dateFormatter().format(nextBilling)
-      return (
-        <div>{billing}</div>
-      )
+      const locale = useLocale();
+      const billingDate = dateFormatter(nextBilling, locale);
+      return <div>{billingDate}</div>;
     }
   },
   {
@@ -138,8 +137,7 @@ export const columns: ColumnDef<Subscription>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      return (
+    cell: () => (
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
@@ -162,7 +160,6 @@ export const columns: ColumnDef<Subscription>[] = [
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
-      );
-    },
+      ),
   },
 ];

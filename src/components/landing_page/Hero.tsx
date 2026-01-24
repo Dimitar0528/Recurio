@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ArrowRight, Check, Minus, TrendingDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { motion, AnimatePresence, easeOut } from "framer-motion";
 import { dateFormatter } from "@/lib/utils";
@@ -104,12 +104,13 @@ function SubscriptionItem({
 
 export default function HeroSection() {
   const t = useTranslations("landing_page.hero_component");
+  const locale = useLocale()
   const [subs, setSubs] = useState<Subscription[]>([
     {
       id: "1",
       name: "Adobe Creative Cloud",
       price: 44.03,
-      date: dateFormatter().format(new Date()),
+      date: dateFormatter(new Date(), locale),
       color: "bg-red-500",
       active: true,
     },
@@ -117,7 +118,10 @@ export default function HeroSection() {
       id: "2",
       name: "ChatGPT Plus",
       price: 23.0,
-      date: dateFormatter().format(new Date().setDate(new Date().getDate() + 28)),
+      date: dateFormatter(
+        new Date().setDate(new Date().getDate() + 28),
+        locale,
+      ),
       color: "bg-gray-500",
       active: true,
     },
@@ -125,7 +129,10 @@ export default function HeroSection() {
       id: "3",
       name: "Netflix Premium",
       price: 9.99,
-      date: dateFormatter().format(new Date().setDate(new Date().getDate() + 14)),
+      date: dateFormatter(
+        new Date().setDate(new Date().getDate() + 14),
+        locale,
+      ),
       color: "bg-red-600",
       active: true,
     },
@@ -133,7 +140,10 @@ export default function HeroSection() {
       id: "4",
       name: "Spotify Premium",
       price: 5.62,
-      date: dateFormatter().format(new Date().setDate(new Date().getDate() + 18)),
+      date: dateFormatter(
+        new Date().setDate(new Date().getDate() + 18),
+        locale,
+      ),
       color: "bg-green-500",
       active: true,
     },
@@ -249,7 +259,7 @@ export default function HeroSection() {
                   </motion.p>
                 </div>
               </div>
-
+            
               <motion.div
                 layout
                 className="space-y-0 border border-border rounded-lg overflow-hidden bg-background">

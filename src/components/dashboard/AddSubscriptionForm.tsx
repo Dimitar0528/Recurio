@@ -21,7 +21,7 @@ import {
   subscriptionFormSchema,
   billingCycleEnum,
   categoryEnum,
-  subScriptionStatusEnum,
+  statusEnum,
 } from "@/lib/validations/form";
 import { createSubscription } from "@/app/actions";
 
@@ -32,8 +32,8 @@ export default function AddSubscriptionForm() {
         price: "",
         billingCycle: billingCycleEnum.options[0],
         nextBilling: new Date().toISOString().split("T")[0],
-        category: categoryEnum.options[0],
-        status: subScriptionStatusEnum.options[0],
+        category: "",
+        status: statusEnum.options[0],
       },
       validators: {
         onSubmit: subscriptionFormSchema,
@@ -52,14 +52,13 @@ return (
       form.handleSubmit();
     }}>
     <FieldGroup>
-      <form.Field
-        name="name"
-        children={(field) => {
+      <form.Field name="name">
+        {(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid;
           return (
             <Field data-invalid={isInvalid}>
-              <FieldLabel htmlFor={field.name}>Name *</FieldLabel>
+              <FieldLabel htmlFor={field.name}>Name </FieldLabel>
               <Input
                 id={field.name}
                 name={field.name}
@@ -74,16 +73,15 @@ return (
             </Field>
           );
         }}
-      />
+      </form.Field>
       <div className="grid grid-cols-2 gap-4">
-        <form.Field
-          name="price"
-          children={(field) => {
+        <form.Field name="price">
+          {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Price (€) *</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Price (€) </FieldLabel>
                 <Input
                   type="number"
                   id={field.name}
@@ -100,10 +98,9 @@ return (
               </Field>
             );
           }}
-        />
-        <form.Field
-          name="billingCycle"
-          children={(field) => {
+        </form.Field>
+        <form.Field name="billingCycle">
+          {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
@@ -112,7 +109,7 @@ return (
                   <FieldLabel
                     className="mb-1.75"
                     htmlFor="form-tanstack-select-language">
-                    Billing Cycle *
+                    Billing Cycle 
                   </FieldLabel>
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                   <Select
@@ -139,17 +136,16 @@ return (
               </Field>
             );
           }}
-        />
+        </form.Field>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <form.Field
-          name="nextBilling"
-          children={(field) => {
+        <form.Field name="nextBilling">
+          {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Next Bill Date *</FieldLabel>
+                <FieldLabel htmlFor={field.name}>Next Billing </FieldLabel>
                 <Input
                   type="date"
                   id={field.name}
@@ -166,10 +162,9 @@ return (
               </Field>
             );
           }}
-        />
-        <form.Field
-          name="category"
-          children={(field) => {
+        </form.Field>
+        <form.Field name="category">
+          {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
@@ -178,9 +173,8 @@ return (
                   <FieldLabel
                     className="mb-1.5"
                     htmlFor="form-tanstack-select-language">
-                    Category
+                    Category 
                   </FieldLabel>
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                   <Select
                     name={field.name}
                     value={field.state.value}
@@ -201,15 +195,15 @@ return (
                       ))}
                     </SelectContent>
                   </Select>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </FieldContent>
               </Field>
             );
           }}
-        />
+        </form.Field>
       </div>
-      <form.Field
-        name="status"
-        children={(field) => {
+      <form.Field name="status">
+        {(field) => {
           const isInvalid =
             field.state.meta.isTouched && !field.state.meta.isValid;
           return (
@@ -234,7 +228,7 @@ return (
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {subScriptionStatusEnum.options.map((category) => (
+                    {statusEnum.options.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
                       </SelectItem>
@@ -245,7 +239,7 @@ return (
             </Field>
           );
         }}
-      />
+      </form.Field>
     </FieldGroup>
   </form>
 );

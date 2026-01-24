@@ -7,12 +7,11 @@ import {
   ChartPie,
   CreditCardIcon,
   MessageCircleWarningIcon,
-  ShieldCheck,
   TrendingUp,
   Zap,
 } from "lucide-react";
 
-import type { ComponentType } from "react";
+import { Suspense, type ComponentType } from "react";
 import type { LucideProps } from "lucide-react";
 import Testimonials from "@/components/landing_page/Testimonials";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -49,7 +48,9 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
   const t = await getTranslations("landing_page");
   return (
     <div className="min-h-screen font-sans selection:bg-primary selection:text-primary-foreground">
-      <Hero />
+      <Suspense>
+        <Hero />
+      </Suspense>
 
       <section className="px-6 pb-24">
         <div className="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -108,7 +109,6 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
 
         <div className="max-w-5xl mx-auto relative">
           <div className="bg-card border border-border rounded-[3rem] p-8 md:p-20 relative shadow-2xl shadow-black/5">
-
             <div className="flex flex-col items-center text-center">
               <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-8 max-w-3xl leading-[1.1] text-foreground">
                 {t("cta.title")}

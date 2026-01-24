@@ -20,13 +20,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { cacheTag, cacheLife } from "next/cache";
+
 import AddSubscriptionForm from "@/components/dashboard/AddSubscriptionForm";
 import StatWidget from "@/components/dashboard/StatWidget";
 import InsightsSidebar from "@/components/dashboard/InsightsSidebar";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { subscriptionsTable } from "@/db/schema";
+
   async function getData(){
+    "use cache"
+    cacheTag("subscriptions");
+    // This cache will revalidate after a day even if no explicit
+    // revalidate instruction was received
+    cacheLife("days");
     const rawData =  await db.select().from(subscriptionsTable);
     const mappedData = rawData.map((row) => ({
       ...row,
@@ -72,7 +80,7 @@ export default async function Page() {
                   New Subscription
                 </DialogTitle>
                 <DialogDescription>
-                  Add a new subscription. Click save when you&apos;re done.
+                  Add a new subscription. All fields are required.
                 </DialogDescription>
               </DialogHeader>
               <AddSubscriptionForm />
@@ -137,7 +145,7 @@ export default async function Page() {
         <div className="grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
             <div className="px-2">
-              <DataTable columns={columns} data={data} />
+                <DataTable columns={columns} data={data} />
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import {useState, useEffect} from "react";
-import { ArrowDown, ChevronRight, ChevronsLeft, ChevronsRight, Settings2, Sparkles } from "lucide-react";
+import { ArrowDown, ChevronRight, ChevronsLeft, ChevronsRight, Settings2 } from "lucide-react";
 import {
   ColumnDef,
   flexRender,

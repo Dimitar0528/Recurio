@@ -1,8 +1,10 @@
-"use client";
 import { Repeat } from "lucide-react";
-
-export default function Footer() {
-  const YEAR = new Date().getFullYear();
+async function getCurrentYear() {
+  "use cache";
+  return new Date().getFullYear();
+}
+ 
+export default async function Footer() {
   return (
     <footer className="py-20 px-6 border-t border-border">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
@@ -45,7 +47,7 @@ export default function Footer() {
       </div>
       <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-border text-center md:text-left">
         <p className="text-xs text-muted-foreground">
-          © {YEAR} Recurio Inc. All rights reserved.
+          © {await getCurrentYear()} Recurio Inc. All rights reserved.
         </p>
       </div>
     </footer>

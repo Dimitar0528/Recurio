@@ -8,6 +8,7 @@ import Navigation from "@/components/Navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
+import { setRequestLocale } from "next-intl/server";
 
 const notoSans = Noto_Sans({variable:'--font-sans'});
 
@@ -30,36 +31,39 @@ export const metadata: Metadata = {
   generator: "Next.js",
   applicationName: "Recurio",
 };
-
 export async function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+  return [{ lang: "en" }, { lang: "bg" }];
 }
 export default async function RootLayout({
   children,
   params
 }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
-    if (!hasLocale(routing.locales, lang)) {
-      notFound();
-    }
+  if (!hasLocale(routing.locales, lang)) {
+    notFound();
+  }
+  // enable static rendering, by distribuing the locale that is received via params 
+  // to all next-intl API's and storing it inside a cache.
+  setRequestLocale(lang);
   return (
-    <html lang={lang} className={notoSans.variable} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <NextIntlClientProvider>
-          <Toaster position="top-center" richColors closeButton />
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            enableColorScheme>
-            <Navigation />
-            <main>{children}</main>
-            <Footer />
-          </ThemeProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+      <html lang={lang} className={notoSans.variable} suppressHydrationWarning>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <NextIntlClientProvider>
+            <Toaster position="top-center" richColors closeButton />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              enableColorScheme>
+              <Navigation />
+              <main>{children}</main>
+              <Footer />
+            </ThemeProvider>
+          </NextIntlClientProvider>
+        </body>
+      </html>
+    
   );
 }

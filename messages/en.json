@@ -39,7 +39,7 @@
                 "part_3": "Make them",
                 "part_4": "audible."
             },
-            "description": "Recurio brings clarity to your recurring footprint. No aggressive budgeting—just honest data on how your choices compound over time.",
+            "description": "Recurio shows you what recurring costs actually do over time. No aggressive budgeting— just clear numbers that reveal how small monthly decisions quietly compound.",
             "cta": "Start tracking for free",
             "metrics": {
                 "monthly_burn": "Monthly Burn",
@@ -54,19 +54,19 @@
         "features_component": {
             "tagline": "Core Architecture",
             "heading": {
-                "line_1": "Clarity is a feature,",
-                "line_2": "not an accident."
+                "line_1": "Clarity isn’t a feature.",
+                "line_2": "It’s the foundation."
             },
-            "intro": "Recurio was built on the principle that if you can't see the total impact, you can't make an informed choice.",
+            "intro": "Recurio is built around a simple idea: you can’t make good financial decisions if you never see the full picture.",
             "cost_normalization": {
                 "title": "Cost Normalization",
-                "description": "We struggle to compare a 12 €/mo app with a 120 €/year service. Recurio translates every commitment into a single, normalized \"Burn Rate,\" exposing the true weight of your digital footprint.",
+                "description": "We struggle to compare a 12 €/mo app with a 120 €/year service. Recurio translates every subscription into a single, normalized \"Burn Rate,\" exposing the true weight of your digital footprint.",
                 "monthly": "Monthly",
                 "annual": "Annual Impact"
             },
             "time_awareness": {
                 "title": "Time Awareness",
-                "description": "Our detection engine identifies upcoming charges within 7, 14, and 30-day windows. No \"surprise\" renewals.",
+                "description": "Renewals don’t surprise you — because you see them coming. Track upcoming charges across 7, 14, and 30-day windows and stay ahead of every renewal.",
                 "proximity": "Renewal proximity: 7 days"
             },
             "manual_entry": {
@@ -82,7 +82,7 @@
             "tagline": "LIVE PROJECTION ENGINE",
             "heading": "The cost of \"Just one more.\"",
             "description": {
-                "part_1": "A 15 €/month subscription isn't a 15 € decision. It's an 1,800 € decision over a decade. When visualized, \"small\" choices reveal their true",
+                "part_1": "A 15 €/month subscription isn’t just 15 €. It’s 1,800 € over ten years. When you see the numbers stretched across time, \"small\" choices reveal their true",
                 "emphasis": "large",
                 "part_2": "scale."
             },

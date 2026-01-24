@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Moon, Sun, Laptop, Repeat, Menu, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -19,10 +19,6 @@ export default function Navigation() {
   const { setTheme, theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [pathname]);
-
   const themes = [
     { name: "Light", value: "light", Icon: Sun },
     { name: "Dark", value: "dark", Icon: Moon },
