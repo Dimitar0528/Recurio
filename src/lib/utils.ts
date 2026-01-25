@@ -12,3 +12,11 @@ export function dateFormatter(date: Date | number, locale: Locale){
   }).format(date);
   return formattedDate
 }
+
+export function priceFormatter(price: number){
+   const formattedPrice = new Intl.NumberFormat("bg-BG", {
+     style: "currency",
+     currency: "EUR",
+   }).format(price);
+   return formattedPrice
+}

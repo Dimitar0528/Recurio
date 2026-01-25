@@ -1,21 +1,14 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import type {Subscription} from "@/lib/validations/form";
-import { MoreHorizontal } from "lucide-react";
+import { Delete, Edit, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuGroup,
-} from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
 import { Checkbox } from "@/components/ui/checkbox";
-import { dateFormatter } from "@/lib/utils";
+import { dateFormatter, priceFormatter } from "@/lib/utils";
 import { useLocale } from "next-intl";
+import SubscriptionDialog from "../SubscriptionDialog";
+import SubscriptionForm from "../SubscriptionForm";
 
 export const columns: ColumnDef<Subscription>[] = [
   {
@@ -47,11 +40,8 @@ export const columns: ColumnDef<Subscription>[] = [
     cell: ({ row }) => {
       const { name, category, price, billingCycle, nextBilling, status } =
         row.original;
-      const locale = useLocale()
-      const formattedPrice = new Intl.NumberFormat("bg-BG", {
-        style: "currency",
-        currency: "EUR",
-      }).format(Number(price));
+      const locale = useLocale();
+      const formattedPrice = priceFormatter(price)
       const billingDate = dateFormatter(nextBilling, locale);
       return (
         <div className="flex flex-col gap-2">
@@ -102,12 +92,9 @@ export const columns: ColumnDef<Subscription>[] = [
       <DataTableColumnHeader column={column} title="Price" />
     ),
     cell: ({ row }) => {
-      const cost = parseFloat(row.getValue("price"));
+      const price = parseFloat(row.getValue("price"));
       const { billingCycle } = row.original;
-      const formattedPrice = new Intl.NumberFormat("bg-BG", {
-        style: "currency",
-        currency: "EUR",
-      }).format(cost);
+      const formattedPrice = priceFormatter(price);
 
       return (
         <div className="flex flex-col">
@@ -122,12 +109,12 @@ export const columns: ColumnDef<Subscription>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Next Billing" />
     ),
-    cell: ({row}) =>{
-      const {nextBilling} = row.original;
+    cell: ({ row }) => {
+      const { nextBilling } = row.original;
       const locale = useLocale();
       const billingDate = dateFormatter(nextBilling, locale);
       return <div>{billingDate}</div>;
-    }
+    },
   },
   {
     accessorKey: "status",
@@ -137,29 +124,28 @@ export const columns: ColumnDef<Subscription>[] = [
   },
   {
     id: "actions",
-    cell: () => (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+    header: "Actions",
+    cell: ({ row }) => {
+      const subscription = row.original;
+
+      return (
+        <div className="flex gap-2 flex-col sm:flex-row">
+          <SubscriptionDialog
+            trigger={
+              <Button variant="outline" className="cursor-pointer">
+                <Edit className="text-primary" />
               </Button>
             }
-            ></DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
+            title="Edit Subscription"
+            description="Edit the current subscription. All fields are required."
+            submitLabel="Edit">
+            <SubscriptionForm initialValues={subscription} />
+          </SubscriptionDialog>
+            <Button variant="outline" className="cursor-pointer">
+              <Delete className="text-primary" />
+            </Button>
+        </div>
+      );
+    },
   },
 ];

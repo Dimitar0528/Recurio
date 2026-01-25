@@ -52,9 +52,7 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    [],
-  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const table = useReactTable({
@@ -75,48 +73,43 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
-const [hasMounted, setHasMounted] = useState(false);
-useEffect(() => {
-  setHasMounted(true);
-}, []);
-const [isMobile, setIsMobile] = useState(() => {
-  if (typeof window === "undefined") return false;
-  return window.innerWidth < 768;
-});
-useEffect(() => {
-  const handleResize = () => {
-    const isMobile = window.innerWidth < 768;
-    setIsMobile(isMobile);
-    table.setColumnVisibility({
-      select: true,
-      mobile: isMobile,
-      name: !isMobile,
-      price: !isMobile,
-      subscription: !isMobile,
-      billing: !isMobile,
-      nextBilling: !isMobile,
-      status: !isMobile,
-      actions: true,
-    });
-  };
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 768;
+  });
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768;
+      setIsMobile(isMobile);
+      table.setColumnVisibility({
+        select: true,
+        mobile: isMobile,
+        name: !isMobile,
+        price: !isMobile,
+        subscription: !isMobile,
+        billing: !isMobile,
+        nextBilling: !isMobile,
+        status: !isMobile,
+        actions: true,
+      });
+    };
 
-  handleResize();
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, [table]);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [table]);
 
-if (!hasMounted) {
-  return null;
-}
+  if (!hasMounted) {
+    return null;
+  }
   return (
     <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">
-      <div className="p-2 px-4 border-b border-border bg-primary text-white rounded-2xl flex justify-between items-center">
-        <h2 className="font-bold flex items-center gap-2">
-          Subscriptions
-        </h2>
-        <span className="text-[11px] font-mono font-bold text-white/80 uppercase">
-          Last updated: Just now
-        </span>
+      <div className="p-2 px-4 border-b border-border bg-primary text-white rounded-2xl">
+        <h2 className="font-bold text-center gap-2">Your Subscriptions</h2>
       </div>
       <div className="flex items-center justify-start py-4 flex-col md:flex-row">
         <Input

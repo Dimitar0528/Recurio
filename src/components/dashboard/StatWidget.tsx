@@ -2,7 +2,7 @@ import { TrendingDown, LucideIcon } from "lucide-react";
 
 type StarWidgetProps = {
   label: string;
-  value: string;
+  value: string | number;
   trend?: string;
   icon: LucideIcon;
 };

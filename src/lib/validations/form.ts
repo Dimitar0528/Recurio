@@ -11,6 +11,7 @@ export const categoryEnum = z.enum([
 export const statusEnum = z.enum(["Active", "Paused", "Cancelled"]); 
 
 export const subscriptionFormSchema = z.object({
+  id: z.uuidv4().optional(),
   name: z.string().min(3, "Subscription name must be at least 3 characters."),
   price: z
     .string()

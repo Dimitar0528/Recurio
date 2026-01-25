@@ -1,7 +1,7 @@
 import { columns } from "@/components/dashboard/data_table/columns";
 import { DataTable } from "@/components/dashboard/data_table/DataTable";
 import { Button } from "@/components/ui/button";
-import { subscriptionsResponseSchema } from "@/lib/validations/form";
+import { getTableColumns } from "drizzle-orm";
 import {
   Calendar,
   PieChart,
@@ -10,45 +10,47 @@ import {
   ArrowUpRight,
   BellRing,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { cacheTag, cacheLife } from "next/cache";
 
-import AddSubscriptionForm from "@/components/dashboard/AddSubscriptionForm";
+import SubscriptionForm from "@/components/dashboard/SubscriptionForm";
 import StatWidget from "@/components/dashboard/StatWidget";
 import InsightsSidebar from "@/components/dashboard/InsightsSidebar";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { subscriptionsTable } from "@/db/schema";
+import SubscriptionDialog from "@/components/dashboard/SubscriptionDialog";
+import {  priceFormatter } from "@/lib/utils";
 
-  async function getData(){
-    "use cache"
-    cacheTag("subscriptions");
-    // This cache will revalidate after a day even if no explicit
-    // revalidate instruction was received
-    cacheLife("days");
-    const rawData =  await db.select().from(subscriptionsTable);
-    const mappedData = rawData.map((row) => ({
-      ...row,
-      nextBilling: row.nextBilling.toISOString(),
-    }));
+async function getData() {
+  "use cache";
+  cacheTag("subscriptions");
+  // This cache will revalidate after a day even if no explicit
+  // revalidate instruction was received
+  cacheLife("days");
+  const { created_at, updated_at, deleted_at, ...rest } =
+    getTableColumns(subscriptionsTable);
+  const rawData = await db.select({ ...rest }).from(subscriptionsTable);
+  const data = rawData.map((row) => ({
+    ...row,
+    price: Number(row.price),
+  }));
 
-    const data = subscriptionsResponseSchema.parse(mappedData);
-
-    return data;
-  }
-
-export default async function Page() {
+  return data;
+}
+export default async function Page({ params }: PageProps<"/[lang]">) {
   const data = await getData();
+  const filteredData = data.filter(
+    (subscription) => subscription.status === "Active",
+  );
+  const monthlySpend = filteredData.reduce(
+    (acc, { price, billingCycle }) =>
+      acc + (billingCycle === "Annual" ? price / 12 : price),
+    0,
+  );
+  const roundedMonthlySpend = Number(monthlySpend.toFixed(2));
 
+  const yearlySpend = roundedMonthlySpend * 12;
+  const activeSubscriptions = filteredData.length;
   return (
     <div className="min-h-screen bg-background text-foreground pb-12">
       <div className="max-w-7xl mx-auto px-6 pt-24">
@@ -59,47 +61,29 @@ export default async function Page() {
             </h1>
             <p className="text-muted-foreground text-sm text-center md:text-left">
               You have{" "}
-              <span className="text-foreground font-medium">12 active</span>{" "}
+              <span className="text-foreground font-medium">
+                {activeSubscriptions} active
+              </span>{" "}
               subscriptions totaling{" "}
-              <span className="text-foreground font-medium">142.60 €</span> this
-              month.
+              <span className="text-foreground font-medium">
+                {priceFormatter(roundedMonthlySpend)}
+              </span>{" "}
+              this month.
             </p>
           </div>
-          <Dialog>
-            <DialogTrigger
-              render={
-                <Button
-                  variant="outline"
-                  className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary dark:hover:bg-primary/85 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70">
-                  + Add Subscription
-                </Button>
-              }></DialogTrigger>
-            <DialogContent className="sm:max-w-[450px]">
-              <DialogHeader>
-                <DialogTitle className={"font-bold text-lg"}>
-                  New Subscription
-                </DialogTitle>
-                <DialogDescription>
-                  Add a new subscription. All fields are required.
-                </DialogDescription>
-              </DialogHeader>
-              <AddSubscriptionForm />
-              <DialogFooter>
-                <DialogClose
-                  render={
-                    <Button variant="outline" className="p-4 cursor-pointer">
-                      Cancel
-                    </Button>
-                  }></DialogClose>
-                <Button
-                  type="submit"
-                  form="add-subscription-form"
-                  className="p-4 cursor-pointer">
-                  Save changes
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <SubscriptionDialog
+            trigger={
+              <Button
+                variant="outline"
+                className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary dark:hover:bg-primary/85 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70">
+                + Add Subscription
+              </Button>
+            }
+            title="New Subscription"
+            description="Add a new subscription. All fields are required."
+            submitLabel="Create">
+            <SubscriptionForm />
+          </SubscriptionDialog>
         </div>
 
         <Link
@@ -129,27 +113,31 @@ export default async function Page() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <StatWidget
             label="Monthly Burn"
-            value="142.60 €"
+            value={priceFormatter(roundedMonthlySpend)}
             trend="4% vs last mo"
             icon={Wallet}
           />
           <StatWidget
             label="Yearly Impact"
-            value="1,711.20 €"
+            value={priceFormatter(yearlySpend)}
             icon={Calendar}
           />
-          <StatWidget label="Active Subs" value="12" icon={PieChart} />
+          <StatWidget
+            label="Active Subs"
+            value={activeSubscriptions}
+            icon={PieChart}
+          />
           <StatWidget label="Income Ratio" value="4.2%" icon={Percent} />
         </div>
 
         <div className="grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
             <div className="px-2">
-                <DataTable columns={columns} data={data} />
+              <DataTable columns={columns} data={data} />
             </div>
           </div>
 
-          <InsightsSidebar />
+          <InsightsSidebar data={data} />
         </div>
       </div>
     </div>
