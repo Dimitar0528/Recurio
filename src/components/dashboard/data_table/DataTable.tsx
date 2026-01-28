@@ -41,6 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DataTableSkeleton from "./DataTableSkeleton";
 
 type DataTableProps<TData, TValue> ={
   columns: ColumnDef<TData, TValue>[];
@@ -104,7 +105,9 @@ export function DataTable<TData, TValue>({
   }, [table]);
 
   if (!hasMounted) {
-    return null;
+    return (
+      <DataTableSkeleton />
+    );
   }
   return (
     <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">

@@ -1,15 +1,15 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import type {Subscription} from "@/lib/validations/form";
-import { Delete, Edit, MoreHorizontal } from "lucide-react";
+import { Delete, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
 import { Checkbox } from "@/components/ui/checkbox";
-import { dateFormatter, priceFormatter } from "@/lib/utils";
+import { dateFormatter, priceFormatter, SEVEN_DAYS_MS, FOURTEEN_DAYS_MS, setDateHoursToZero } from "@/lib/utils";
 import { useLocale } from "next-intl";
 import SubscriptionDialog from "../SubscriptionDialog";
 import SubscriptionForm from "../SubscriptionForm";
-
+import { Badge } from "@/components/ui/badge";
 export const columns: ColumnDef<Subscription>[] = [
   {
     id: "select",
@@ -41,7 +41,7 @@ export const columns: ColumnDef<Subscription>[] = [
       const { name, category, price, billingCycle, nextBilling, status } =
         row.original;
       const locale = useLocale();
-      const formattedPrice = priceFormatter(price)
+      const formattedPrice = priceFormatter(price);
       const billingDate = dateFormatter(nextBilling, locale);
       return (
         <div className="flex flex-col gap-2">
@@ -52,9 +52,18 @@ export const columns: ColumnDef<Subscription>[] = [
 
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Billing</span>
-            <span className="font-medium">
-              {formattedPrice} / {billingCycle}
-            </span>
+            <div className="flex flex-col">
+              <span className="font-medium leading-none">
+                {formattedPrice} /{" "}
+                <span className="text-xs text-primary">{billingCycle}</span>
+              </span>
+              {billingCycle === "Annual" && (
+                <span className="ml-1 text-xs text-muted-foreground font-medium">
+                  (~{priceFormatter(price / 12)}
+                  <span className="text-primary/80 ml-0.5">/ Monthly</span>)
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-between text-sm">
@@ -98,8 +107,16 @@ export const columns: ColumnDef<Subscription>[] = [
 
       return (
         <div className="flex flex-col">
-          <span className="font-medium leading-none">{formattedPrice}</span>
-          <span className="text-xs text-primary mt-1">{billingCycle}</span>
+          <span className="font-medium leading-none">
+            {formattedPrice} /{" "}
+            <span className="text-xs text-primary">{billingCycle}</span>
+          </span>
+          {billingCycle === "Annual" && (
+            <span className="ml-1 text-xs text-muted-foreground font-medium">
+              (~{priceFormatter(price / 12)}
+              <span className="text-primary/80 ml-0.5">/ Monthly</span>)
+            </span>
+          )}
         </div>
       );
     },
@@ -112,8 +129,23 @@ export const columns: ColumnDef<Subscription>[] = [
     cell: ({ row }) => {
       const { nextBilling } = row.original;
       const locale = useLocale();
+      const dailyTime = setDateHoursToZero(new Date()).getTime();
+      const subscriptionTime = setDateHoursToZero(nextBilling).getTime()
       const billingDate = dateFormatter(nextBilling, locale);
-      return <div>{billingDate}</div>;
+      return (
+        <div className="flex flex-col">
+          {billingDate}
+          {subscriptionTime >= dailyTime &&
+            subscriptionTime - dailyTime <= FOURTEEN_DAYS_MS &&
+            subscriptionTime - dailyTime >= SEVEN_DAYS_MS && (
+              <Badge
+                variant="secondary"
+                className="bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-200">
+                Expires in 7–14 days
+              </Badge>
+            )}
+        </div>
+      );
     },
   },
   {
@@ -142,7 +174,7 @@ export const columns: ColumnDef<Subscription>[] = [
             <SubscriptionForm initialValues={subscription} />
           </SubscriptionDialog>
             <Button variant="outline" className="cursor-pointer">
-              <Delete className="text-primary" />
+              <Delete className="text-destructive" />
             </Button>
         </div>
       );

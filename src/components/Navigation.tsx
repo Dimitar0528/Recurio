@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Moon, Sun, Laptop, Repeat, Menu, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -70,7 +70,7 @@ export default function Navigation() {
 
         <div className="flex items-center gap-2 md:gap-4">
           <div className="hidden md:block">
-            <LocaleSwitcher />
+              <LocaleSwitcher />
           </div>
 
           <DropdownMenu>
@@ -139,7 +139,7 @@ export default function Navigation() {
             </p>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Language</span>
-              <LocaleSwitcher />
+                <LocaleSwitcher />
             </div>
           </div>
 

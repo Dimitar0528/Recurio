@@ -1,25 +1,40 @@
+"use client";
+
+import {  useState } from "react";
 import { priceFormatter } from "@/lib/utils";
 import { Subscription } from "@/lib/validations/form";
 import { Download, PieChart, ShieldCheck } from "lucide-react";
-type insightsSidebarProps = {
-  data: Subscription[]
-}
-export default function InsightsSidebar({ data }: insightsSidebarProps) {
+import { Button } from "../ui/button";
+
+type InsightsSidebarProps = {
+  data: Subscription[];
+};
+
+type ViewMode = "monthly" | "annual";
+
+export default function InsightsSidebar({ data }: InsightsSidebarProps) {
+  const [viewMode, setViewMode] = useState<ViewMode>("monthly");
+
   const aggregatedByCategory = data.reduce<Record<string, number>>(
-    (acc, {price, billingCycle, category}) => {
-      acc[category] = (acc[category] ?? 0) + (
-        billingCycle === 'Annual' ? price / 12 : price
-      )
-      return acc;
-    },
-    {},
-  );
+      (acc, { price, billingCycle, category }) => {
+        let normalizedAmount = price;
+
+        if (viewMode === "monthly") {
+          normalizedAmount = billingCycle === "Annual" ? price / 12 : price;
+        } else {
+          normalizedAmount = billingCycle === "Monthly" ? price * 12 : price;
+        }
+
+        acc[category] = (acc[category] ?? 0) + normalizedAmount;
+        return acc;
+      },
+      {},
+    );
   const totalSpend = Object.values(aggregatedByCategory).reduce(
-    (sum, amount) => sum + amount,
-    0,
-  );
-  const categoryItems = Object.entries(aggregatedByCategory).map(
-    ([category, amount]) => {
+      (sum, amount) => sum + amount,
+      0,
+    );
+  const categoryItems = Object.entries(aggregatedByCategory).map(([category, amount]) => {
       const percentage =
         totalSpend === 0 ? 0 : Math.round((amount / totalSpend) * 100);
 
@@ -41,9 +56,34 @@ export default function InsightsSidebar({ data }: insightsSidebarProps) {
   return (
     <div className="lg:col-span-4 space-y-6">
       <div className="bg-card border border-border rounded-2xl p-6">
-        <h3 className="text-sm font-bold mb-6 flex items-center gap-2">
-          <PieChart size={16} className="text-primary" /> Category Breakdown
-        </h3>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-sm font-bold flex items-center gap-2">
+            <PieChart size={16} className="text-primary" />
+            Category Breakdown
+          </h3>
+
+          <div className="flex bg-secondary rounded-xl text-xs font-bold">
+            <Button
+              onClick={() => setViewMode("monthly")}
+              className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                viewMode === "monthly"
+                  ? "bg-primary/30 shadow text-foreground"
+                  : "text-muted-foreground bg-secondary"
+              }`}>
+              Monthly
+            </Button>
+            <Button
+              onClick={() => setViewMode("annual")}
+              className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                viewMode === "annual"
+                  ? "bg-primary/30 shadow text-foreground"
+                  : "text-muted-foreground bg-secondary"
+              }`}>
+              Annual
+            </Button>
+          </div>
+        </div>
+
         <div className="space-y-5">
           {categoryItems.map((item) => (
             <div key={item.label}>

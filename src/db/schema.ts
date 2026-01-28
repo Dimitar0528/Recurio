@@ -5,7 +5,7 @@ export const dbCategoryEnum = pgEnum("category", categoryEnum.enum);
 export const dbStatusEnum = pgEnum("status", statusEnum.enum);
 
 const timestamps = {
-  updated_at: timestamp({ withTimezone: true }),
+  updated_at: timestamp({ withTimezone: true }).$onUpdate(()=> new Date()),
   created_at: timestamp({ withTimezone: true }).defaultNow().notNull(),
   deleted_at: timestamp({ withTimezone: true }),
 };

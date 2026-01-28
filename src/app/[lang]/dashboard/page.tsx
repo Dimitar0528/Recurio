@@ -1,7 +1,7 @@
 import { columns } from "@/components/dashboard/data_table/columns";
 import { DataTable } from "@/components/dashboard/data_table/DataTable";
 import { Button } from "@/components/ui/button";
-import { getTableColumns } from "drizzle-orm";
+import { asc, getTableColumns } from "drizzle-orm";
 import {
   Calendar,
   PieChart,
@@ -19,7 +19,11 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { subscriptionsTable } from "@/db/schema";
 import SubscriptionDialog from "@/components/dashboard/SubscriptionDialog";
-import {  priceFormatter } from "@/lib/utils";
+import {
+  priceFormatter,
+  setDateHoursToZero,
+  SEVEN_DAYS_MS,
+} from "@/lib/utils";
 
 async function getData() {
   "use cache";
@@ -29,7 +33,7 @@ async function getData() {
   cacheLife("days");
   const { created_at, updated_at, deleted_at, ...rest } =
     getTableColumns(subscriptionsTable);
-  const rawData = await db.select({ ...rest }).from(subscriptionsTable);
+  const rawData = await db.select({ ...rest }).from(subscriptionsTable).orderBy(asc(subscriptionsTable.nextBilling));
   const data = rawData.map((row) => ({
     ...row,
     price: Number(row.price),
@@ -37,6 +41,13 @@ async function getData() {
 
   return data;
 }
+export async function getDailyDate(){
+  "use cache"
+  cacheTag("getDailyDate")
+  cacheLife("days")
+  return new Date()
+}
+
 export default async function Page({ params }: PageProps<"/[lang]">) {
   const data = await getData();
   const filteredData = data.filter(
@@ -48,9 +59,28 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
     0,
   );
   const roundedMonthlySpend = Number(monthlySpend.toFixed(2));
-
   const yearlySpend = roundedMonthlySpend * 12;
   const activeSubscriptions = filteredData.length;
+  
+  const dailyDate = setDateHoursToZero(await getDailyDate());
+  const dailyTime = dailyDate.getTime();
+  const upcomingSubscriptions = filteredData.filter((upcomingSubscription) => {
+    const subscriptionTime = setDateHoursToZero(
+      upcomingSubscription.nextBilling,
+    ).getTime();
+    return (
+      subscriptionTime >= dailyTime &&
+      subscriptionTime - dailyTime <= SEVEN_DAYS_MS
+    );
+  });
+  const upcomingSubscriptionNames = upcomingSubscriptions.map(upcomingSubscription => upcomingSubscription.name);
+  const totalUpcomingAmount = upcomingSubscriptions.reduce((sum, upcomingSubscription) => sum + upcomingSubscription.price, 0);
+  const namesText =
+    upcomingSubscriptionNames.length === 1
+      ? upcomingSubscriptionNames[0]
+      : upcomingSubscriptionNames.length === 2
+        ? `${upcomingSubscriptionNames[0]} and ${upcomingSubscriptionNames[1]}`
+        : `${upcomingSubscriptionNames[0]} and ${upcomingSubscriptionNames.length - 1} more`;
   return (
     <div className="min-h-screen bg-background text-foreground pb-12">
       <div className="max-w-7xl mx-auto px-6 pt-24">
@@ -85,30 +115,34 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             <SubscriptionForm />
           </SubscriptionDialog>
         </div>
-
-        <Link
-          href="/payments"
-          className="mb-8 bg-primary/[0.03] border border-primary/20 rounded-2xl p-4 flex items-center justify-between group hover:bg-primary/[0.06] transition-colors cursor-pointer">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />
-              <div className="relative w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                <BellRing size={20} />
+        {upcomingSubscriptions.length > 0 && (
+          <Link
+            href="/payments"
+            className="mb-8 bg-primary/[0.03] border border-primary/20 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between group hover:bg-primary/[0.06] transition-colors cursor-pointer">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />
+                <div className="relative w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                  <BellRing size={20} />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-bold">Upcoming charges detected</p>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-foreground font-bold">{namesText}</span>{" "}
+                  will charge{" "}
+                  <span className="text-foreground font-bold">
+                    {priceFormatter(totalUpcomingAmount)}
+                  </span>{" "}
+                  in the next 7 days.
+                </p>
               </div>
             </div>
-            <div>
-              <p className="text-sm font-bold">Upcoming charges detected</p>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-foreground font-bold">Amazon Prime</span>{" "}
-                and <span className="text-foreground font-bold">Adobe CC</span>{" "}
-                will charge 193.99 € in the next 72 hours.
-              </p>
+            <div className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform mt-4 md:mt-0">
+              Review Schedule <ArrowUpRight size={14} />
             </div>
-          </div>
-          <div className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-            Review Schedule <ArrowUpRight size={14} />
-          </div>
-        </Link>
+          </Link>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <StatWidget

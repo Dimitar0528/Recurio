@@ -66,7 +66,7 @@
             },
             "time_awareness": {
                 "title": "Time Awareness",
-                "description": "Renewals don’t surprise you — because you see them coming. Track upcoming charges across 7, 14, and 30-day windows and stay ahead of every renewal.",
+                "description": "Renewals don’t surprise you — because you see them coming. Track upcoming charges across 7 and 14-day windows and stay ahead of every renewal.",
                 "proximity": "Renewal proximity: 7 days"
             },
             "manual_entry": {
