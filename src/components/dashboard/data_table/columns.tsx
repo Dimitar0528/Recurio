@@ -1,7 +1,9 @@
 "use client";
+import * as z from "zod";
+
 import { ColumnDef } from "@tanstack/react-table";
-import type {Subscription} from "@/lib/validations/form";
-import { Delete, Edit } from "lucide-react";
+import { type Subscription} from "@/lib/validations/form";
+import { AlertTriangle, Delete, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,6 +12,17 @@ import { useLocale } from "next-intl";
 import SubscriptionDialog from "../SubscriptionDialog";
 import SubscriptionForm from "../SubscriptionForm";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useForm } from "@tanstack/react-form";
+import { Field, FieldError, FieldGroup } from "@/components/ui/field";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 export const columns: ColumnDef<Subscription>[] = [
   {
     id: "select",
@@ -38,11 +51,18 @@ export const columns: ColumnDef<Subscription>[] = [
     id: "mobile",
     header: () => null,
     cell: ({ row }) => {
-      const { name, category, price, billingCycle, nextBilling, status } =
+      const { name, category, price, billingCycle, nextBilling, status, autoRenew } =
         row.original;
       const locale = useLocale();
       const formattedPrice = priceFormatter(price);
       const billingDate = dateFormatter(nextBilling, locale);
+      const statusClasses = {
+        Active:
+          "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
+        Paused:
+          "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300",
+        Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
+      };
       return (
         <div className="flex flex-col gap-2">
           <div>
@@ -68,12 +88,17 @@ export const columns: ColumnDef<Subscription>[] = [
 
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Next Billing</span>
-            <span>{billingDate}</span>
+            <span>{billingDate}</span>{" "}
+            <span className="text-primary">
+              ({autoRenew ? "Auto" : "Manual"})
+            </span>
           </div>
 
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Status</span>
-            <span>{status}</span>
+            <Badge variant="outline" className={`${statusClasses[status]}`}>
+              {status}
+            </Badge>
           </div>
         </div>
       );
@@ -127,23 +152,40 @@ export const columns: ColumnDef<Subscription>[] = [
       <DataTableColumnHeader column={column} title="Next Billing" />
     ),
     cell: ({ row }) => {
-      const { nextBilling } = row.original;
+      const { nextBilling, status, autoRenew } = row.original;
       const locale = useLocale();
-      const dailyTime = setDateHoursToZero(new Date()).getTime();
-      const subscriptionTime = setDateHoursToZero(nextBilling).getTime()
       const billingDate = dateFormatter(nextBilling, locale);
+
+      const dailyTime = setDateHoursToZero(new Date()).getTime();
+      const subscriptionTime = setDateHoursToZero(nextBilling).getTime();
+      const isActiveAndExpiringSoonSub = status === "Active" &&
+        subscriptionTime >= dailyTime &&
+        subscriptionTime - dailyTime <= FOURTEEN_DAYS_MS &&
+        subscriptionTime - dailyTime >= SEVEN_DAYS_MS;
       return (
         <div className="flex flex-col">
-          {billingDate}
-          {subscriptionTime >= dailyTime &&
-            subscriptionTime - dailyTime <= FOURTEEN_DAYS_MS &&
-            subscriptionTime - dailyTime >= SEVEN_DAYS_MS && (
-              <Badge
-                variant="secondary"
-                className="bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-200">
-                Expires in 7–14 days
-              </Badge>
-            )}
+          <div>
+            {billingDate}{" "}
+            <Tooltip>
+              <TooltipTrigger className="text-primary">
+                ({autoRenew ? "Auto" : "Manual"})
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  {autoRenew
+                    ? "Renews automatically"
+                    : "Requires manual renewal"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          {isActiveAndExpiringSoonSub && (
+            <Badge
+              variant="secondary"
+              className="bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-200">
+              Expires in 7–14 days
+            </Badge>
+          )}
         </div>
       );
     },
@@ -153,13 +195,49 @@ export const columns: ColumnDef<Subscription>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
+    cell: ({row})=>{
+      const {status} = row.original;
+      const statusClasses = {
+        Active: "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
+        Paused: "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300",
+        Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300"
+      };
+      return (
+        <Badge
+          variant="outline"
+          className={`${statusClasses[status]}`}>
+          {status}
+        </Badge>
+      );
+    }
   },
   {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
       const subscription = row.original;
+      const requiredPhrase = `I want to delete ${subscription.name}`;
 
+      const deleteSubscriptionSchema = z.object({
+        requiredPhrase: z
+          .string()
+          .refine(
+            (val) => val === requiredPhrase,
+            `You must type exactly: "${requiredPhrase}"`,
+          ),
+      });
+
+      const form = useForm({
+        defaultValues:{
+          requiredPhrase: ""
+        },
+        validators:{
+          onSubmit: deleteSubscriptionSchema
+        },
+        onSubmit: async ({value}) =>{
+          console.log(value)
+        }
+      })
       return (
         <div className="flex gap-2 flex-col sm:flex-row">
           <SubscriptionDialog
@@ -173,9 +251,128 @@ export const columns: ColumnDef<Subscription>[] = [
             submitLabel="Edit">
             <SubscriptionForm initialValues={subscription} />
           </SubscriptionDialog>
-            <Button variant="outline" className="cursor-pointer">
-              <Delete className="text-destructive" />
-            </Button>
+
+          <Dialog>
+            <DialogTrigger
+              render={
+                <Button variant="outline" className="cursor-pointer">
+                  <Delete className="text-destructive" />
+                </Button>
+              }
+            />
+            <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden border-border shadow-2xl">
+              <div className="bg-destructive/5 px-6 py-4 border-b border-destructive/10 flex items-center gap-3">
+                <div className="p-2 bg-destructive/10 rounded-full text-destructive">
+                  <AlertTriangle size={20} />
+                </div>
+                <DialogTitle className="text-destructive">
+                  Are you absolutely sure?
+                </DialogTitle>
+              </div>
+              <div className="p-4 space-y-6">
+                <form
+                  id="delete-subscription-form"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    form.handleSubmit();
+                  }}>
+                  <div className="text-sm leading-relaxed text-foreground/80 space-y-4">
+                    <p> Once
+                      deleted, the subscription and all related data will be
+                      <strong className="text-foreground">
+                        {" "}
+                        permanently removed
+                      </strong>
+                      .
+                    </p>
+                    <div className="p-2 rounded-lg bg-muted/50 border border-border text-xs leading-normal">
+                      <span className="font-bold text-foreground block mb-1 uppercase tracking-wider">
+                        Statistical Impact
+                      </span>
+                      Deletion will affect aggregated subscription statistics
+                      such as totals, averages, historical insights etc.
+                      <span className="text-muted-foreground italic">
+                        {" "}
+                        These numbers will be recalculated and may no longer
+                        reflect past reality.
+                      </span>
+                    </div>
+
+                    <p className="text-xs bg-accent/50 p-2 rounded-lg border border-border">
+                      <span className="font-bold">Recommendation:</span>{" "}
+                      Deletion should only be performed for critical
+                      reasons. In most cases, changing the status of the
+                      subscription to
+                      <strong> "Paused"</strong> or <strong>"Cancelled"</strong>{" "}
+                      is the safer alternative.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3 select-none">
+                    <Label
+                      htmlFor="requiredPhrase"
+                      className="text-[11px] uppercase font-bold tracking-widest text-muted-foreground mt-4">
+                      Verification Required
+                    </Label>
+                    <div className="p-3 bg-secondary/50 border border-border rounded-md text-sm mb-2">
+                      <span className="text-muted-foreground">Type: </span>
+                      <span className="font-mono font-bold text-destructive">
+                        I want to delete {subscription.name}
+                      </span>
+                    </div>
+                    <FieldGroup>
+                      <form.Field name="requiredPhrase">
+                        {(field) => {
+                          const isInvalid =
+                            field.state.meta.isTouched &&
+                            !field.state.meta.isValid;
+                          return (
+                            <Field data-invalid={isInvalid}>
+                              <Input
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                onBlur={field.handleBlur}
+                                onChange={(e) =>
+                                  field.handleChange(e.target.value)
+                                }
+                                aria-invalid={isInvalid}
+                                placeholder="Type the phrase above..."
+                                autoComplete="off"
+                              />
+                              {isInvalid && (
+                                <FieldError errors={field.state.meta.errors} />
+                              )}
+                            </Field>
+                          );
+                        }}
+                      </form.Field>
+                    </FieldGroup>
+                  </div>
+                </form>
+              </div>
+
+              <DialogFooter className="bg-muted/30 p-4 mb-1 mx-2 border-t border-border gap-2">
+                <DialogClose
+                  render={
+                    <Button
+                      variant="outline"
+                      className="cursor-pointer border-border hover:bg-accent font-semibold">
+                      Cancel
+                    </Button>
+                  }
+                />
+                <Button
+                  type="submit"
+                  form="delete-subscription-form"
+                  disabled={!form.state.canSubmit}
+                  variant="destructive"
+                  className="cursor-pointer font-bold shadow-lg shadow-destructive/20">
+                  Permanently Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       );
     },

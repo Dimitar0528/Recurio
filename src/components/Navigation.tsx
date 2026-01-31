@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { Moon, Sun, Laptop, Repeat, Menu, X } from "lucide-react";
+import { Moon, Sun, Laptop, Repeat, Menu, X, ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import LocaleSwitcher from "./locale_switcher";
 import { Route } from "next";
+import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
 
 export default function Navigation() {
   const { setTheme, theme } = useTheme();
@@ -70,7 +71,7 @@ export default function Navigation() {
 
         <div className="flex items-center gap-2 md:gap-4">
           <div className="hidden md:block">
-              <LocaleSwitcher />
+            <LocaleSwitcher />
           </div>
 
           <DropdownMenu>
@@ -97,9 +98,34 @@ export default function Navigation() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <button className="hidden md:block cursor-pointer bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:opacity-85 transition-opacity">
-            Get Started
-          </button>
+          <SignedOut>
+            <div className="hidden md:block">
+              <SignInButton>
+                <button
+                  className="
+      group
+      relative
+      inline-flex items-center justify-center
+      h-8 px-3
+      bg-primary text-primary-foreground
+      text-sm font-bold
+      rounded-lg
+      shadow-lg shadow-primary/20
+      hover:bg-primary/90 
+      hover:scale-[1.02] 
+      active:scale-[0.98] 
+      transition-all 
+      cursor-pointer
+    ">
+                  Get Started
+                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </button>
+              </SignInButton>
+            </div>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
 
           <Button
             variant="ghost"
@@ -139,13 +165,33 @@ export default function Navigation() {
             </p>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Language</span>
-                <LocaleSwitcher />
+              <LocaleSwitcher />
             </div>
           </div>
 
-          <button className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold shadow-lg shadow-primary/20">
-            Get Started
-          </button>
+          <SignedOut>
+              <SignInButton>
+                <button
+                  className="
+      group
+      relative
+      inline-flex items-center justify-center
+      h-8 px-3
+      bg-primary text-primary-foreground
+      text-sm font-bold
+      rounded-lg
+      shadow-lg shadow-primary/20
+      hover:bg-primary/90 
+      hover:scale-[1.02] 
+      active:scale-[0.98] 
+      transition-all 
+      cursor-pointer
+    ">
+                  Get Started
+                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </button>
+              </SignInButton>
+          </SignedOut>
         </div>
       </div>
     </nav>

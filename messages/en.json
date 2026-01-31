@@ -42,8 +42,8 @@
             "description": "Recurio shows you what recurring costs actually do over time. No aggressive budgeting— just clear numbers that reveal how small monthly decisions quietly compound.",
             "cta": "Start tracking for free",
             "metrics": {
-                "monthly_burn": "Monthly Burn",
-                "yearly_impact": "Yearly Impact"
+                "monthly_burn": "Monthly Spending",
+                "yearly_impact": "Yearly Spending"
             },
             "subscription_item": {
                 "renews": "Renews",

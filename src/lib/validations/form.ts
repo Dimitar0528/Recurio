@@ -1,18 +1,10 @@
 import * as z from "zod";
-export const billingCycleEnum = z.enum(["Monthly", "Annual"]);
-export const categoryEnum = z.enum([
-  "Entertainment",
-  "Utilities",
-  "Fitness",
-  "Software",
-  "Education",
-  "Other",
-],{error: "Choose a valid option"});
-export const statusEnum = z.enum(["Active", "Paused", "Cancelled"]); 
+import { billingCycleEnum, categoryEnum, statusEnum } from "@/lib/validations/enum";
 
 export const subscriptionFormSchema = z.object({
   id: z.uuidv4().optional(),
   name: z.string().min(3, "Subscription name must be at least 3 characters."),
+  category: categoryEnum,
   price: z
     .string()
     .min(1, "Price is required.")
@@ -28,8 +20,8 @@ export const subscriptionFormSchema = z.object({
     .refine((date) => date >= new Date(new Date().toDateString()), {
       message: "Date cannot be in the past",
     }),
-    category: categoryEnum,
-    status: statusEnum
+  autoRenew: z.boolean(),
+  status: statusEnum,
 });
 
 export const subscriptionsResponseSchema = z.array(subscriptionFormSchema);

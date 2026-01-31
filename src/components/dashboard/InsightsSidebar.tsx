@@ -5,21 +5,20 @@ import { priceFormatter } from "@/lib/utils";
 import { Subscription } from "@/lib/validations/form";
 import { Download, PieChart, ShieldCheck } from "lucide-react";
 import { Button } from "../ui/button";
-
+import type { BillingCycle } from "@/lib/validations/enum";
 type InsightsSidebarProps = {
   data: Subscription[];
-};
-
-type ViewMode = "monthly" | "annual";
+}
 
 export default function InsightsSidebar({ data }: InsightsSidebarProps) {
-  const [viewMode, setViewMode] = useState<ViewMode>("monthly");
+  const [viewMode, setViewMode] = useState<BillingCycle>("Monthly");
 
-  const aggregatedByCategory = data.reduce<Record<string, number>>(
+  const aggregatedByCategory = data.filter(
+    (subscription) => subscription.status === "Active").reduce<Record<string, number>>(
       (acc, { price, billingCycle, category }) => {
         let normalizedAmount = price;
 
-        if (viewMode === "monthly") {
+        if (viewMode === "Monthly") {
           normalizedAmount = billingCycle === "Annual" ? price / 12 : price;
         } else {
           normalizedAmount = billingCycle === "Monthly" ? price * 12 : price;
@@ -64,18 +63,18 @@ export default function InsightsSidebar({ data }: InsightsSidebarProps) {
 
           <div className="flex bg-secondary rounded-xl text-xs font-bold">
             <Button
-              onClick={() => setViewMode("monthly")}
+              onClick={() => setViewMode("Monthly")}
               className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                viewMode === "monthly"
+                viewMode === "Monthly"
                   ? "bg-primary/30 shadow text-foreground"
                   : "text-muted-foreground bg-secondary"
               }`}>
               Monthly
             </Button>
             <Button
-              onClick={() => setViewMode("annual")}
+              onClick={() => setViewMode("Annual")}
               className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                viewMode === "annual"
+                viewMode === "Annual"
                   ? "bg-primary/30 shadow text-foreground"
                   : "text-muted-foreground bg-secondary"
               }`}>
@@ -85,32 +84,36 @@ export default function InsightsSidebar({ data }: InsightsSidebarProps) {
         </div>
 
         <div className="space-y-5">
-          {categoryItems.map((item) => (
-            <div key={item.label}>
-              <div className="flex justify-between text-xs mb-2 items-baseline">
-                <span className="text-gray-600 dark:text-gray-300 font-bold">
-                  {item.label}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-foreground">
-                    {item.money}
+          {categoryItems.length > 0 ? (
+            categoryItems.map((item) => (
+              <div key={item.label}>
+                <div className="flex justify-between text-xs mb-2 items-baseline">
+                  <span className="text-gray-600 dark:text-gray-300 font-bold">
+                    {item.label}
                   </span>
-                  <span className="text-muted-foreground text-[12px]">
-                    ({item.value}%)
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-foreground">
+                      {item.money}
+                    </span>
+                    <span className="text-muted-foreground text-[12px]">
+                      ({item.value}%)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${
+                      categoryColors[item.label] ?? "bg-muted"
+                    } transition-all duration-500`}
+                    style={{ width: `${item.value}%` }}
+                  />
                 </div>
               </div>
-
-              <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-                <div
-                  className={`h-full ${
-                    categoryColors[item.label] ?? "bg-muted"
-                  } transition-all duration-500`}
-                  style={{ width: `${item.value}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className="text-center text-sm"> No results available.</div>
+          )}
         </div>
       </div>
 

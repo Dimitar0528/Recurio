@@ -118,7 +118,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         {upcomingSubscriptions.length > 0 && (
           <Link
             href="/payments"
-            className="mb-8 bg-primary/[0.03] border border-primary/20 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between group hover:bg-primary/[0.06] transition-colors cursor-pointer">
+            className="mb-8 bg-primary/[0.03] border border-primary/20 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between group hover:bg-primary/[0.1] transition-colors cursor-pointer">
             <div className="flex items-center gap-4">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />
@@ -146,18 +146,18 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <StatWidget
-            label="Monthly Burn"
+            label="Monthly Spending"
             value={priceFormatter(roundedMonthlySpend)}
             trend="4% vs last mo"
             icon={Wallet}
           />
           <StatWidget
-            label="Yearly Impact"
+            label="Yearly Spending"
             value={priceFormatter(yearlySpend)}
             icon={Calendar}
           />
           <StatWidget
-            label="Active Subs"
+            label="Active Subscriptions"
             value={activeSubscriptions}
             icon={PieChart}
           />

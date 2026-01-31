@@ -9,6 +9,8 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import { ClerkProvider } from "@clerk/nextjs";
+import { Suspense } from "react";
 
 const notoSans = Noto_Sans({variable:'--font-sans'});
 
@@ -46,24 +48,30 @@ export default async function RootLayout({
   // to all next-intl API's and storing it inside a cache.
   setRequestLocale(lang);
   return (
-      <html lang={lang} className={notoSans.variable} suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <NextIntlClientProvider>
-            <Toaster position="top-center" richColors closeButton />
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-              enableColorScheme>
-              <Navigation />
-              <main>{children}</main>
-              <Footer />
-            </ThemeProvider>
-          </NextIntlClientProvider>
-        </body>
-      </html>
-    
+    <NextIntlClientProvider>
+      <Suspense>
+        <ClerkProvider>
+          <html
+            lang={lang}
+            className={notoSans.variable}
+            suppressHydrationWarning>
+            <body
+              className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+              <Toaster position="top-center" richColors closeButton />
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+                enableColorScheme>
+                <Navigation />
+                <main>{children}</main>
+                <Footer />
+              </ThemeProvider>
+            </body>
+          </html>
+        </ClerkProvider>
+      </Suspense>
+    </NextIntlClientProvider>
   );
 }

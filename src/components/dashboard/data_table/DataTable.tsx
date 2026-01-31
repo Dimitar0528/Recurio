@@ -206,7 +206,7 @@ export function DataTable<TData, TValue>({
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center">
-                  No results found.
+                  No results available.
                 </TableCell>
               </TableRow>
             )}

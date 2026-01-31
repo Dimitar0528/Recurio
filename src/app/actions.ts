@@ -19,16 +19,17 @@ export async function createSubscription(input: Subscription) {
   updateTag('subscriptions')
 }
 
-export async function updateSubscription(id: string, input: Subscription) {
+export async function updateSubscription(id: string, subscription: Subscription) {
   await db
     .update(subscriptionsTable)
     .set({
-      name: input.name,
-      price: input.price.toFixed(2),
-      billingCycle: input.billingCycle,
-      nextBilling: input.nextBilling,
-      category: input.category,
-      status: input.status,
+      name: subscription.name,
+      category: subscription.category,
+      price: subscription.price.toFixed(2),
+      billingCycle: subscription.billingCycle,
+      nextBilling: subscription.nextBilling,
+      autoRenew: subscription.autoRenew,
+      status: subscription.status,
     })
     .where(eq(subscriptionsTable.id, id));
 
