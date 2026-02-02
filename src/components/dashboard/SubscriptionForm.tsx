@@ -57,12 +57,12 @@ export default function SubscriptionForm({
       const subscription = subscriptionFormSchema.parse(value);
       if(initialValues && initialModifiedValues === value) return toast.info("No changes were made!")
        if (initialValues && initialValues.id) {
-         await updateSubscription(initialValues.id, subscription);
          toast.success("Subscription updated successfully!");
+         await updateSubscription(initialValues.id, subscription);
        } else {
-         await createSubscription(subscription);
          toast.success("Subscription created successfully!");
-       }
+         await createSubscription(subscription);
+        }
     },
   });
   return (

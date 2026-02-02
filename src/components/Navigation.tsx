@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { Moon, Sun, Laptop, Repeat, Menu, X, ArrowRight } from "lucide-react";
+import { Moon, Sun, Laptop, Repeat, Menu, X, ArrowRight, Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,9 +14,12 @@ import {
 import { Button } from "@/components/ui/button";
 import LocaleSwitcher from "./locale_switcher";
 import { Route } from "next";
-import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
-
+import { SignedOut, SignInButton, SignedIn, UserButton, ClerkLoading } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
+import { useLocale } from "next-intl";
 export default function Navigation() {
+  const { isSignedIn } = useAuth();
+  const locale = useLocale()
   const { setTheme, theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -27,8 +30,14 @@ export default function Navigation() {
   ] as const;
 
   const navLinks = [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Payments", href: "/payments" },
+    {
+      name: isSignedIn ? "Dashboard" : "Insights",
+      href: isSignedIn ? "/dashboard" : `${locale}#features`,
+    },
+    {
+      name: isSignedIn ? "Payments" : "Reviews",
+      href: isSignedIn ? "/payments" : `/${locale}#testimonials`,
+    },
     { name: "Pricing", href: "/pricing" },
   ];
 
@@ -97,6 +106,18 @@ export default function Navigation() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <ClerkLoading>
+            <div
+              className="flex justify-center items-center min-h-[60vh] "
+              aria-live="polite"
+              aria-busy="true">
+              <div
+                className="inline-flex items-center justify-center h-8 px-6 rounded-lg bg-slate-200 dark:bg-slate-700 animate-pulse">
+                <div className="h-4 w-20 rounded bg-slate-300 dark:bg-slate-600" />
+              </div>
+            </div>
+          </ClerkLoading>
 
           <SignedOut>
             <div className="hidden md:block">
@@ -169,10 +190,11 @@ export default function Navigation() {
             </div>
           </div>
 
+
           <SignedOut>
-              <SignInButton>
-                <button
-                  className="
+            <SignInButton>
+              <button
+                className="
       group
       relative
       inline-flex items-center justify-center
@@ -187,10 +209,10 @@ export default function Navigation() {
       transition-all 
       cursor-pointer
     ">
-                  Get Started
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </button>
-              </SignInButton>
+                Get Started
+                <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </button>
+            </SignInButton>
           </SignedOut>
         </div>
       </div>

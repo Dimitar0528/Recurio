@@ -1,7 +1,6 @@
 import { columns } from "@/components/dashboard/data_table/columns";
 import { DataTable } from "@/components/dashboard/data_table/DataTable";
 import { Button } from "@/components/ui/button";
-import { asc, getTableColumns } from "drizzle-orm";
 import {
   Calendar,
   PieChart,
@@ -16,31 +15,14 @@ import SubscriptionForm from "@/components/dashboard/SubscriptionForm";
 import StatWidget from "@/components/dashboard/StatWidget";
 import InsightsSidebar from "@/components/dashboard/InsightsSidebar";
 import Link from "next/link";
-import { db } from "@/lib/db";
-import { subscriptionsTable } from "@/db/schema";
 import SubscriptionDialog from "@/components/dashboard/SubscriptionDialog";
 import {
   priceFormatter,
   setDateHoursToZero,
   SEVEN_DAYS_MS,
 } from "@/lib/utils";
+import { getUserSubscriptions } from "@/dal/queries";
 
-async function getData() {
-  "use cache";
-  cacheTag("subscriptions");
-  // This cache will revalidate after a day even if no explicit
-  // revalidate instruction was received
-  cacheLife("days");
-  const { created_at, updated_at, deleted_at, ...rest } =
-    getTableColumns(subscriptionsTable);
-  const rawData = await db.select({ ...rest }).from(subscriptionsTable).orderBy(asc(subscriptionsTable.nextBilling));
-  const data = rawData.map((row) => ({
-    ...row,
-    price: Number(row.price),
-  }));
-
-  return data;
-}
 export async function getDailyDate(){
   "use cache"
   cacheTag("getDailyDate")
@@ -49,8 +31,9 @@ export async function getDailyDate(){
 }
 
 export default async function Page({ params }: PageProps<"/[lang]">) {
-  const data = await getData();
-  const filteredData = data.filter(
+  const userSubscriptions = await getUserSubscriptions();
+  
+  const filteredData = userSubscriptions.filter(
     (subscription) => subscription.status === "Active",
   );
   const monthlySpend = filteredData.reduce(
@@ -167,11 +150,11 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         <div className="grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
             <div className="px-2">
-              <DataTable columns={columns} data={data} />
+              <DataTable columns={columns} data={userSubscriptions} />
             </div>
           </div>
 
-          <InsightsSidebar data={data} />
+          <InsightsSidebar data={userSubscriptions} />
         </div>
       </div>
     </div>

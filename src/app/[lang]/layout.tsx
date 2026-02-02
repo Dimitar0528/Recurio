@@ -11,6 +11,8 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Suspense } from "react";
+import { bgBG, enGB } from "@clerk/localizations";
+import { shadcn } from "@clerk/themes";
 
 const notoSans = Noto_Sans({variable:'--font-sans'});
 
@@ -49,14 +51,18 @@ export default async function RootLayout({
   setRequestLocale(lang);
   return (
     <NextIntlClientProvider>
-      <Suspense>
-        <ClerkProvider>
-          <html
-            lang={lang}
-            className={notoSans.variable}
-            suppressHydrationWarning>
-            <body
-              className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <html lang={lang} className={notoSans.variable} suppressHydrationWarning>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <Suspense>
+            <ClerkProvider
+              localization={lang === "bg" ? bgBG : enGB}
+              appearance={{
+                 theme: [shadcn], 
+                  layout: {
+                    socialButtonsVariant: "blockButton",
+                  },
+              }}>
               <Toaster position="top-center" richColors closeButton />
               <ThemeProvider
                 attribute="class"
@@ -65,13 +71,14 @@ export default async function RootLayout({
                 disableTransitionOnChange
                 enableColorScheme>
                 <Navigation />
+
                 <main>{children}</main>
                 <Footer />
               </ThemeProvider>
-            </body>
-          </html>
-        </ClerkProvider>
-      </Suspense>
+            </ClerkProvider>
+          </Suspense>
+        </body>
+      </html>
     </NextIntlClientProvider>
   );
 }

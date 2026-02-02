@@ -22,6 +22,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "sonner";
+import { deleteSubscription, undoDeleteSubscription } from "@/app/actions";
 
 export const columns: ColumnDef<Subscription>[] = [
   {
@@ -216,6 +218,7 @@ export const columns: ColumnDef<Subscription>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const subscription = row.original;
+      const id = subscription.id!
       const requiredPhrase = `I want to delete ${subscription.name}`;
 
       const deleteSubscriptionSchema = z.object({
@@ -234,8 +237,21 @@ export const columns: ColumnDef<Subscription>[] = [
         validators:{
           onSubmit: deleteSubscriptionSchema
         },
-        onSubmit: async ({value}) =>{
-          console.log(value)
+        onSubmit: async ({}) =>{
+          toast.promise(deleteSubscription(id), {
+          loading: 'Deleting subscription...',
+          success: () => {
+            return {
+              message: "Subscription deleted successfully!",
+              action: {
+                label: "Undo",
+                onClick: async () => await undoDeleteSubscription(id),
+              },
+              duration: 8000,
+            };
+          },
+          error: 'Error',
+        });
         }
       })
       return (
@@ -277,11 +293,13 @@ export const columns: ColumnDef<Subscription>[] = [
                     form.handleSubmit();
                   }}>
                   <div className="text-sm leading-relaxed text-foreground/80 space-y-4">
-                    <p> Once
-                      deleted, the subscription and all related data will be
+                    <p>
+                      {" "}
+                      Once deleted, the subscription and all related data will
+                      be
                       <strong className="text-foreground">
                         {" "}
-                        permanently removed
+                        removed
                       </strong>
                       .
                     </p>
@@ -300,11 +318,11 @@ export const columns: ColumnDef<Subscription>[] = [
 
                     <p className="text-xs bg-accent/50 p-2 rounded-lg border border-border">
                       <span className="font-bold">Recommendation:</span>{" "}
-                      Deletion should only be performed for critical
-                      reasons. In most cases, changing the status of the
-                      subscription to
+                      Deletion should only be performed for
+                      <strong> extremely critical reasons</strong>. In most
+                      cases, changing the status of the subscription to
                       <strong> "Paused"</strong> or <strong>"Cancelled"</strong>{" "}
-                      is the safer alternative.
+                      is the more appropriate and safer alternative.
                     </p>
                   </div>
 
@@ -317,7 +335,7 @@ export const columns: ColumnDef<Subscription>[] = [
                     <div className="p-3 bg-secondary/50 border border-border rounded-md text-sm mb-2">
                       <span className="text-muted-foreground">Type: </span>
                       <span className="font-mono font-bold text-destructive">
-                        I want to delete {subscription.name}
+                        {requiredPhrase}
                       </span>
                     </div>
                     <FieldGroup>
@@ -368,7 +386,7 @@ export const columns: ColumnDef<Subscription>[] = [
                   disabled={!form.state.canSubmit}
                   variant="destructive"
                   className="cursor-pointer font-bold shadow-lg shadow-destructive/20">
-                  Permanently Delete
+                   Delete Subscription
                 </Button>
               </DialogFooter>
             </DialogContent>

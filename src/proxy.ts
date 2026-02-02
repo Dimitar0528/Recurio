@@ -1,8 +1,8 @@
-import { Locale } from "next-intl";
 import createMiddleware from "next-intl/middleware";
-import { NextFetchEvent, NextRequest } from "next/server";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { routing } from "./i18n/routing";
+import { auth } from "@clerk/nextjs/server";
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -14,6 +14,21 @@ const isProtectedRoute = createRouteMatcher([
 const clerk = clerkMiddleware(async (auth, req) => {
     if (isProtectedRoute(req)) {
       await auth.protect();
+    }
+    const { isAuthenticated } = await auth();
+    if (isAuthenticated) {
+      const pathname = req.nextUrl.pathname;
+
+      const locale = routing.locales.find(
+        (locale) => pathname === `/${locale}`,
+      );
+
+      if (locale) {
+        const redirectUrl = req.nextUrl.clone();
+        redirectUrl.pathname = `/${locale}/dashboard`;
+
+        return NextResponse.redirect(redirectUrl);
+      }
     }
 }, {clockSkewInMs: 8000});
 

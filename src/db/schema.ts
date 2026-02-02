@@ -1,4 +1,4 @@
-import {boolean, index, numeric, pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import {boolean, char, index, numeric, pgEnum, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { billingCycleEnum, categoryEnum, statusEnum } from "@/lib/validations/enum";
 export const dbBillingCycleEnum = pgEnum("billing_cycle", billingCycleEnum.enum);
 export const dbCategoryEnum = pgEnum("category", categoryEnum.enum);
@@ -21,7 +21,7 @@ export const subscriptionsTable = pgTable(
     nextBilling: timestamp({ withTimezone: true }).notNull().defaultNow(),
     autoRenew: boolean().notNull().default(true),
     status: dbStatusEnum().notNull(),
-    userId: uuid().notNull().defaultRandom(),
+    userId: char({ length: 32 }).notNull(),
     ...timestamps,
   },
   (table) => [index("name_idx").on(table.name)],

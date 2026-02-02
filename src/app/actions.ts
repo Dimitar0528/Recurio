@@ -1,38 +1,28 @@
-"use server"
+"use server";
 
 import { Subscription } from "@/lib/validations/form";
-import { db } from "@/lib/db";
-import { subscriptionsTable } from "@/db/schema";
-import { revalidatePath, updateTag } from "next/cache";
-import { eq } from "drizzle-orm";
+import {
+  deleteUserSubscription,
+  insertUserSubscription,
+  undoDeleteUserSubscription,
+  updateUserSubscription,
+} from "@/dal/mutations";
 
-export async function createSubscription(input: Subscription) {
-  await db.insert(subscriptionsTable).values({
-    name: input.name,
-    price: input.price.toFixed(2), 
-    billingCycle: input.billingCycle,
-    nextBilling: input.nextBilling,
-    category: input.category,
-    status: input.status,
-  });
-  revalidatePath("/dashboard")
-  updateTag('subscriptions')
+export async function createSubscription(subscription: Subscription) {
+  await insertUserSubscription(subscription);
 }
 
-export async function updateSubscription(id: string, subscription: Subscription) {
-  await db
-    .update(subscriptionsTable)
-    .set({
-      name: subscription.name,
-      category: subscription.category,
-      price: subscription.price.toFixed(2),
-      billingCycle: subscription.billingCycle,
-      nextBilling: subscription.nextBilling,
-      autoRenew: subscription.autoRenew,
-      status: subscription.status,
-    })
-    .where(eq(subscriptionsTable.id, id));
+export async function updateSubscription(
+  id: string,
+  subscription: Subscription,
+) {
+  await updateUserSubscription(id, subscription);
+}
 
-  revalidatePath("/dashboard");
-  updateTag("subscriptions");
+export async function deleteSubscription(id: string) {
+  await deleteUserSubscription(id);
+}
+
+export async function undoDeleteSubscription(id: string) {
+  await undoDeleteUserSubscription(id);
 }

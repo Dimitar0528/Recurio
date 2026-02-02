@@ -152,7 +152,7 @@ export default function Testimonials() {
     },
   ];
   return (
-    <section className="py-12 px-6 overflow-hidden bg-primary/10">
+    <section id="testimonials" className="py-12 px-6 overflow-hidden bg-primary/10">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         <div className="space-y-8 text-center">
           <h2 className="text-5xl md:text-6xl font-bold tracking-tighter">
