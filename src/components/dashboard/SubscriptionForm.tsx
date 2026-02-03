@@ -54,14 +54,17 @@ export default function SubscriptionForm({
       onSubmit: subscriptionFormSchema,
     },
     onSubmit: async ({ value }) => {
-      const subscription = subscriptionFormSchema.parse(value);
+      const result = subscriptionFormSchema.safeParse(value);
+      if (!result.success) {
+        return toast.error(result.error.message);
+      }
       if(initialValues && initialModifiedValues === value) return toast.info("No changes were made!")
        if (initialValues && initialValues.id) {
          toast.success("Subscription updated successfully!");
-         await updateSubscription(initialValues.id, subscription);
+         await updateSubscription(initialValues.id, result.data);
        } else {
          toast.success("Subscription created successfully!");
-         await createSubscription(subscription);
+         await createSubscription(result.data);
         }
     },
   });

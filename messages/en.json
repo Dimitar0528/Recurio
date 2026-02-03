@@ -1,4 +1,17 @@
 {
+    "Metadata": {
+        "root_layout": {
+            "description": "The only modern subscription management tool you need."
+        },
+        "landing_page": {
+            "title": "Home Page - {brandName}",
+            "description": "A subscription management app that helps you track your expenses, avoid unnecessary fees, and have complete control over your monthly budget."
+        },
+        "dashboard_page": {
+            "title": "Dashboard",
+            "description": "A centralized dashboard for viewing your subscriptions, monthly and annual expenses, as well as summary data for better financial control."
+        }
+    },
     "landing_page": {
         "metrics": {
             "efficiency": {

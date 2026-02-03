@@ -1,12 +1,13 @@
+import "server-only";
+
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db/db";
 import { subscriptionsTable } from "@/db/schema";
 import { asc, getTableColumns, eq, and, isNull } from "drizzle-orm";
-import { auth } from "@clerk/nextjs/server";
+import { verifyUser } from "../users/verifyUser";
 
 export async function getUserSubscriptions() {
-  const { isAuthenticated, redirectToSignIn, userId } = await auth();
-  if (!isAuthenticated) return redirectToSignIn();
+  const userId = await verifyUser();
   return await getSubscriptionsData(userId);
 }
 

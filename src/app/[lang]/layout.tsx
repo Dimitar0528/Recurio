@@ -8,13 +8,13 @@ import Navigation from "@/components/Navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { bgBG, enGB } from "@clerk/localizations";
 import { shadcn } from "@clerk/themes";
 
-const notoSans = Noto_Sans({variable:'--font-sans'});
+const notoSans = Noto_Sans({ variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,21 +26,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s - Recurio",
-    default: "Recurio",
-  },
-  description: "The only modern subscription management tool you need.",
-  generator: "Next.js",
-  applicationName: "Recurio",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Metadata.root_layout");
+
+  return {
+    title: {
+      template: "%s - Recurio",
+      default: "Recurio",
+    },
+    description: t("description"),
+    generator: "Next.js",
+    applicationName: "Recurio",
+  };
+}
+
 export async function generateStaticParams() {
-  return [{ lang: "en" }, { lang: "bg" }];
+  return [{ lang: "bg" }, { lang: "en" }];
 }
 export default async function RootLayout({
   children,
-  params
+  params,
 }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(routing.locales, lang)) {
@@ -58,10 +63,10 @@ export default async function RootLayout({
             <ClerkProvider
               localization={lang === "bg" ? bgBG : enGB}
               appearance={{
-                 theme: [shadcn], 
-                  layout: {
-                    socialButtonsVariant: "blockButton",
-                  },
+                theme: [shadcn],
+                layout: {
+                  socialButtonsVariant: "blockButton",
+                },
               }}>
               <Toaster position="top-center" richColors closeButton />
               <ThemeProvider

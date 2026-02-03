@@ -29,12 +29,8 @@ export default function SubscriptionDialog({
       <DialogTrigger render={trigger} />
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
-          <DialogTitle className="font-bold text-lg">
-            {title}
-          </DialogTitle>
-          <DialogDescription>
-            {description}
-          </DialogDescription>
+          <DialogTitle className="font-bold text-lg">{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         {children}
@@ -50,7 +46,7 @@ export default function SubscriptionDialog({
           <Button
             type="submit"
             form="subscription-form"
-            className="p-4 cursor-pointer">
+            className="p-4 cursor-pointer bg-primary dark:bg-primary/50 dark:hover:bg-primary/70 text-primary-foreground hover:bg-primary/85 hover:text-white">
             {submitLabel}
           </Button>
         </DialogFooter>

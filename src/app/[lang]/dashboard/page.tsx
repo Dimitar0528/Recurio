@@ -16,23 +16,37 @@ import StatWidget from "@/components/dashboard/StatWidget";
 import InsightsSidebar from "@/components/dashboard/InsightsSidebar";
 import Link from "next/link";
 import SubscriptionDialog from "@/components/dashboard/SubscriptionDialog";
-import {
-  priceFormatter,
-  setDateHoursToZero,
-  SEVEN_DAYS_MS,
-} from "@/lib/utils";
-import { getUserSubscriptions } from "@/dal/queries";
+import { priceFormatter, setDateHoursToZero, SEVEN_DAYS_MS } from "@/lib/utils";
+import { getUserSubscriptions } from "@/dal/subscriptions/queries";
+import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { Locale } from "next-intl";
 
-export async function getDailyDate(){
-  "use cache"
-  cacheTag("getDailyDate")
-  cacheLife("days")
-  return new Date()
+export async function generateMetadata({
+  params,
+}: LayoutProps<"/[lang]">): Promise<Metadata> {
+  const locale = (await params).lang as Locale;
+  const t = await getTranslations({
+    locale,
+    namespace: "Metadata.dashboard_page",
+  });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
+
+export async function getDailyDate() {
+  "use cache";
+  cacheTag("getDailyDate");
+  cacheLife("days");
+  return new Date();
 }
 
 export default async function Page({ params }: PageProps<"/[lang]">) {
   const userSubscriptions = await getUserSubscriptions();
-  
+
   const filteredData = userSubscriptions.filter(
     (subscription) => subscription.status === "Active",
   );
@@ -44,7 +58,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   const roundedMonthlySpend = Number(monthlySpend.toFixed(2));
   const yearlySpend = roundedMonthlySpend * 12;
   const activeSubscriptions = filteredData.length;
-  
+
   const dailyDate = setDateHoursToZero(await getDailyDate());
   const dailyTime = dailyDate.getTime();
   const upcomingSubscriptions = filteredData.filter((upcomingSubscription) => {
@@ -56,8 +70,13 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
       subscriptionTime - dailyTime <= SEVEN_DAYS_MS
     );
   });
-  const upcomingSubscriptionNames = upcomingSubscriptions.map(upcomingSubscription => upcomingSubscription.name);
-  const totalUpcomingAmount = upcomingSubscriptions.reduce((sum, upcomingSubscription) => sum + upcomingSubscription.price, 0);
+  const upcomingSubscriptionNames = upcomingSubscriptions.map(
+    (upcomingSubscription) => upcomingSubscription.name,
+  );
+  const totalUpcomingAmount = upcomingSubscriptions.reduce(
+    (sum, upcomingSubscription) => sum + upcomingSubscription.price,
+    0,
+  );
   const namesText =
     upcomingSubscriptionNames.length === 1
       ? upcomingSubscriptionNames[0]
@@ -88,13 +107,13 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             trigger={
               <Button
                 variant="outline"
-                className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary dark:hover:bg-primary/85 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70">
+                className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary/50 dark:hover:bg-primary/70 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70">
                 + Add Subscription
               </Button>
             }
             title="New Subscription"
             description="Add a new subscription. All fields are required."
-            submitLabel="Create">
+            submitLabel="Create Subscription">
             <SubscriptionForm />
           </SubscriptionDialog>
         </div>

@@ -111,7 +111,7 @@ export function DataTable<TData, TValue>({
   }
   return (
     <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">
-      <div className="p-2 px-4 border-b border-border bg-primary text-white rounded-2xl">
+      <div className="p-2 px-4 border-b border-border bg-primary dark:bg-primary/50 text-primary-foreground rounded-2xl">
         <h2 className="font-bold text-center gap-2">Your Subscriptions</h2>
       </div>
       <div className="flex items-center justify-start py-4 flex-col md:flex-row">

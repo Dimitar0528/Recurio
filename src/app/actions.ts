@@ -6,7 +6,7 @@ import {
   insertUserSubscription,
   undoDeleteUserSubscription,
   updateUserSubscription,
-} from "@/dal/mutations";
+} from "@/dal/subscriptions/mutations";
 
 export async function createSubscription(subscription: Subscription) {
   await insertUserSubscription(subscription);

@@ -15,7 +15,29 @@ import { Suspense, type ComponentType } from "react";
 import type { LucideProps } from "lucide-react";
 import Testimonials from "@/components/landing_page/Testimonials";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Locale } from "next-intl";
+import { hasLocale, Locale } from "next-intl";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { routing } from "@/i18n/routing";
+
+export async function generateMetadata({
+  params,
+}: LayoutProps<"/[lang]">): Promise<Metadata> {
+  const locale = (await params).lang as Locale;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+  const t = await getTranslations({
+    locale,
+    namespace: "Metadata.landing_page",
+  });
+
+  return {
+    title: t("title", { brandName: "Recurio" }),
+    description: t("description"),
+  };
+}
+
 type MetricCardProps = {
   label: string;
   value: string | number;

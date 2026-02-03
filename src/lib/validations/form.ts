@@ -3,7 +3,10 @@ import { billingCycleEnum, categoryEnum, statusEnum } from "@/lib/validations/en
 
 export const subscriptionFormSchema = z.object({
   id: z.uuidv4().optional(),
-  name: z.string().min(3, "Subscription name must be at least 3 characters."),
+  name: z
+    .string()
+    .min(3, "Subscription name must be at least 3 characters.")
+    .max(50, "Subscription name can't be more than 50 characters."),
   category: categoryEnum,
   price: z
     .string()

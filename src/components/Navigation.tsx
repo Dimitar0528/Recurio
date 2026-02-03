@@ -1,7 +1,20 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { Moon, Sun, Laptop, Repeat, Menu, X, ArrowRight, Loader2 } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Laptop,
+  Repeat,
+  Menu,
+  X,
+  ArrowRight,
+  LayoutDashboard,
+  Sparkles,
+  CreditCard,
+  MessageSquareQuote,
+  Tag,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,15 +27,23 @@ import {
 import { Button } from "@/components/ui/button";
 import LocaleSwitcher from "./locale_switcher";
 import { Route } from "next";
-import { SignedOut, SignInButton, SignedIn, UserButton, ClerkLoading } from "@clerk/nextjs";
+import {
+  SignedOut,
+  SignInButton,
+  SignedIn,
+  UserButton,
+  ClerkLoading,
+} from "@clerk/nextjs";
 import { useAuth } from "@clerk/nextjs";
 import { useLocale } from "next-intl";
+
 export default function Navigation() {
   const { isSignedIn } = useAuth();
-  const locale = useLocale()
+  const locale = useLocale();
   const { setTheme, theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+
   const themes = [
     { name: "Light", value: "light", Icon: Sun },
     { name: "Dark", value: "dark", Icon: Moon },
@@ -32,13 +53,19 @@ export default function Navigation() {
   const navLinks = [
     {
       name: isSignedIn ? "Dashboard" : "Insights",
-      href: isSignedIn ? "/dashboard" : `${locale}#features`,
+      href: isSignedIn ? "/dashboard" : `/${locale}#features`,
+      Icon: isSignedIn ? LayoutDashboard : Sparkles,
     },
     {
       name: isSignedIn ? "Payments" : "Reviews",
       href: isSignedIn ? "/payments" : `/${locale}#testimonials`,
+      Icon: isSignedIn ? CreditCard : MessageSquareQuote,
     },
-    { name: "Pricing", href: "/pricing" },
+    {
+      name: "Pricing",
+      href: "/pricing",
+      Icon: Tag,
+    },
   ];
 
   const switchTheme = (value: string) => {
@@ -56,7 +83,9 @@ export default function Navigation() {
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Repeat size={20} className="text-primary-foreground" />
           </div>
-          <Link href={"/" as Route} className="text-lg font-bold">
+          <Link
+            href={isSignedIn ? `/${locale}/dashboard` : ("/" as Route)}
+            className="text-lg font-bold">
             <span className="text-xl font-bold tracking-tight text-primary hover:underline hover:underline-offset-4">
               Recurio
             </span>
@@ -64,18 +93,23 @@ export default function Navigation() {
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href as Route}
-              className={`hover:text-foreground transition-colors ${
-                pathname.split("/")[2] === link.name.toLowerCase()
-                  ? "underline underline-offset-6 decoration-primary decoration-2 text-foreground"
-                  : ""
-              }`}>
-              {link.name}
-            </Link>
-          ))}
+          {navLinks.map(({ name, href, Icon }) => {
+            const isActive = pathname.split("/")[2] === name.toLowerCase();
+
+            return (
+              <Link
+                key={name}
+                href={href as Route}
+                className={`flex items-center gap-2 hover:text-foreground transition-colors ${
+                  isActive
+                    ? "underline underline-offset-6 decoration-primary decoration-2 text-foreground"
+                    : ""
+                }`}>
+                <Icon size={16} />
+                <span>{name}</span>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
@@ -112,38 +146,22 @@ export default function Navigation() {
               className="flex justify-center items-center min-h-[60vh] "
               aria-live="polite"
               aria-busy="true">
-              <div
-                className="inline-flex items-center justify-center h-8 px-6 rounded-lg bg-slate-200 dark:bg-slate-700 animate-pulse">
+              <div className="inline-flex items-center justify-center h-8 px-6 rounded-lg bg-slate-200 dark:bg-slate-700 animate-pulse">
                 <div className="h-4 w-20 rounded bg-slate-300 dark:bg-slate-600" />
               </div>
             </div>
           </ClerkLoading>
-
           <SignedOut>
             <div className="hidden md:block">
               <SignInButton>
-                <button
-                  className="
-      group
-      relative
-      inline-flex items-center justify-center
-      h-8 px-3
-      bg-primary text-primary-foreground
-      text-sm font-bold
-      rounded-lg
-      shadow-lg shadow-primary/20
-      hover:bg-primary/90 
-      hover:scale-[1.02] 
-      active:scale-[0.98] 
-      transition-all 
-      cursor-pointer
-    ">
+                <button className="group relative inline-flex items-center justify-center h-8 px-3 bg-primary text-primary-foreground text-sm font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
                   Get Started
                   <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
               </SignInButton>
             </div>
           </SignedOut>
+
           <SignedIn>
             <UserButton />
           </SignedIn>
@@ -169,13 +187,14 @@ export default function Navigation() {
             <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
               Navigation
             </p>
-            {navLinks.map((link) => (
+            {navLinks.map(({ name, href, Icon }) => (
               <Link
-                key={link.name}
-                href={link.href as Route}
-                className="text-lg font-semibold text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}>
-                {link.name}
+                key={name}
+                href={href as Route}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-3 text-lg font-semibold text-foreground hover:text-primary transition-colors">
+                <Icon size={20} />
+                <span>{name}</span>
               </Link>
             ))}
           </div>
@@ -190,25 +209,9 @@ export default function Navigation() {
             </div>
           </div>
 
-
           <SignedOut>
             <SignInButton>
-              <button
-                className="
-      group
-      relative
-      inline-flex items-center justify-center
-      h-8 px-3
-      bg-primary text-primary-foreground
-      text-sm font-bold
-      rounded-lg
-      shadow-lg shadow-primary/20
-      hover:bg-primary/90 
-      hover:scale-[1.02] 
-      active:scale-[0.98] 
-      transition-all 
-      cursor-pointer
-    ">
+              <button className="group relative inline-flex items-center justify-center h-8 px-3 bg-primary text-primary-foreground text-sm font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
                 Get Started
                 <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </button>

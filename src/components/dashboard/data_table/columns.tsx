@@ -264,7 +264,7 @@ export const columns: ColumnDef<Subscription>[] = [
             }
             title="Edit Subscription"
             description="Edit the current subscription. All fields are required."
-            submitLabel="Edit">
+            submitLabel="Edit Subscription">
             <SubscriptionForm initialValues={subscription} />
           </SubscriptionDialog>
 
