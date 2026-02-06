@@ -28,7 +28,6 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata.root_layout");
-
   return {
     title: {
       template: "%s - Recurio",

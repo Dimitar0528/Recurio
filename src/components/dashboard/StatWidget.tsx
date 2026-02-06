@@ -23,7 +23,7 @@ export default function StatWidget ({ label, value, trend, icon: Icon }: StarWid
                 {value}
               </p>
               {trend && (
-                <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 whitespace-nowrap">
+                <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-0.5 whitespace-nowrap">
                   <TrendingDown size={10} /> {trend}
                 </span>
               )}

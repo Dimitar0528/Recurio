@@ -13,8 +13,7 @@ type InsightsSidebarProps = {
 export default function InsightsSidebar({ data }: InsightsSidebarProps) {
   const [viewMode, setViewMode] = useState<BillingCycle>("Monthly");
 
-  const aggregatedByCategory = data.filter(
-    (subscription) => subscription.status === "Active").reduce<Record<string, number>>(
+  const aggregatedByCategory = data.reduce<Record<string, number>>(
       (acc, { price, billingCycle, category }) => {
         let normalizedAmount = price;
 
@@ -67,7 +66,7 @@ export default function InsightsSidebar({ data }: InsightsSidebarProps) {
               className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                 viewMode === "Monthly"
                   ? "bg-primary/30 shadow text-foreground"
-                  : "text-muted-foreground bg-secondary"
+                  : "text-gray-600 dark:text-gray-400 bg-secondary"
               }`}>
               Monthly
             </Button>
@@ -76,7 +75,7 @@ export default function InsightsSidebar({ data }: InsightsSidebarProps) {
               className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                 viewMode === "Annual"
                   ? "bg-primary/30 shadow text-foreground"
-                  : "text-muted-foreground bg-secondary"
+                  : "text-gray-600 dark:text-gray-400 bg-secondary"
               }`}>
               Annual
             </Button>

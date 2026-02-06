@@ -82,7 +82,7 @@ export const columns: ColumnDef<Subscription>[] = [
               {billingCycle === "Annual" && (
                 <span className="ml-1 text-xs text-muted-foreground font-medium">
                   (~{priceFormatter(price / 12)}
-                  <span className="text-primary/80 ml-0.5">/ Monthly</span>)
+                  <span className="text-primary/90 ml-0.5">/ Monthly</span>)
                 </span>
               )}
             </div>
@@ -117,7 +117,7 @@ export const columns: ColumnDef<Subscription>[] = [
       return (
         <div className="flex flex-col">
           <span className="font-medium leading-none">{name}</span>
-          <span className="text-xs text-primary mt-1">{category}</span>
+          <span className="text-xs text-primary dark:text-primary mt-1">{category}</span>
         </div>
       );
     },
@@ -141,7 +141,7 @@ export const columns: ColumnDef<Subscription>[] = [
           {billingCycle === "Annual" && (
             <span className="ml-1 text-xs text-muted-foreground font-medium">
               (~{priceFormatter(price / 12)}
-              <span className="text-primary/80 ml-0.5">/ Monthly</span>)
+              <span className="text-primary/90 ml-0.5">/ Monthly</span>)
             </span>
           )}
         </div>
@@ -156,7 +156,12 @@ export const columns: ColumnDef<Subscription>[] = [
     cell: ({ row }) => {
       const { nextBilling, status, autoRenew } = row.original;
       const locale = useLocale();
-      const billingDate = dateFormatter(nextBilling, locale);
+      let billingDate
+      if(nextBilling.getUTCFullYear() > new Date().getUTCFullYear()){
+        billingDate = dateFormatter(nextBilling, locale, 'numeric');
+      } else{
+        billingDate = dateFormatter(nextBilling, locale);
+      }
 
       const dailyTime = setDateHoursToZero(new Date()).getTime();
       const subscriptionTime = setDateHoursToZero(nextBilling).getTime();
@@ -258,7 +263,11 @@ export const columns: ColumnDef<Subscription>[] = [
         <div className="flex gap-2 flex-col sm:flex-row">
           <SubscriptionDialog
             trigger={
-              <Button variant="outline" className="cursor-pointer">
+              <Button
+                id="edit-btn"
+                aria-label="Edit button"
+                variant="outline"
+                className="cursor-pointer">
                 <Edit className="text-primary" />
               </Button>
             }
@@ -271,7 +280,11 @@ export const columns: ColumnDef<Subscription>[] = [
           <Dialog>
             <DialogTrigger
               render={
-                <Button variant="outline" className="cursor-pointer">
+                <Button
+                  id="delete-btn"
+                  aria-label="Delele button"
+                  variant="outline"
+                  className="cursor-pointer">
                   <Delete className="text-destructive" />
                 </Button>
               }
@@ -297,11 +310,7 @@ export const columns: ColumnDef<Subscription>[] = [
                       {" "}
                       Once deleted, the subscription and all related data will
                       be
-                      <strong className="text-foreground">
-                        {" "}
-                        removed
-                      </strong>
-                      .
+                      <strong className="text-foreground"> removed</strong>.
                     </p>
                     <div className="p-2 rounded-lg bg-muted/50 border border-border text-xs leading-normal">
                       <span className="font-bold text-foreground block mb-1 uppercase tracking-wider">
@@ -386,7 +395,7 @@ export const columns: ColumnDef<Subscription>[] = [
                   disabled={!form.state.canSubmit}
                   variant="destructive"
                   className="cursor-pointer font-bold shadow-lg shadow-destructive/20">
-                   Delete Subscription
+                  Delete Subscription
                 </Button>
               </DialogFooter>
             </DialogContent>

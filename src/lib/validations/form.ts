@@ -16,6 +16,10 @@ export const subscriptionFormSchema = z.object({
       message: "Price must be a positive number.",
     }),
   billingCycle: billingCycleEnum,
+  startDate: z
+    .string()
+    .min(1, "Starting date is required.")
+    .transform((value) => new Date(value)),
   nextBilling: z
     .string()
     .min(1, "Next billing date is required.")

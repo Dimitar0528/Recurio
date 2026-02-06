@@ -47,21 +47,19 @@ export async function getDailyDate() {
 export default async function Page({ params }: PageProps<"/[lang]">) {
   const userSubscriptions = await getUserSubscriptions();
 
-  const filteredData = userSubscriptions.filter(
+  const activeSubscriptions = userSubscriptions.filter(
     (subscription) => subscription.status === "Active",
-  );
-  const monthlySpend = filteredData.reduce(
+  ).length;
+  const monthlySpend = userSubscriptions.reduce(
     (acc, { price, billingCycle }) =>
       acc + (billingCycle === "Annual" ? price / 12 : price),
     0,
   );
   const roundedMonthlySpend = Number(monthlySpend.toFixed(2));
   const yearlySpend = roundedMonthlySpend * 12;
-  const activeSubscriptions = filteredData.length;
 
-  const dailyDate = setDateHoursToZero(await getDailyDate());
-  const dailyTime = dailyDate.getTime();
-  const upcomingSubscriptions = filteredData.filter((upcomingSubscription) => {
+  const dailyTime = setDateHoursToZero(await getDailyDate()).getTime();
+  const upcomingSubscriptions = userSubscriptions.filter((upcomingSubscription) => {
     const subscriptionTime = setDateHoursToZero(
       upcomingSubscription.nextBilling,
     ).getTime();
@@ -148,13 +146,13 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <StatWidget
-            label="Monthly Spending"
+            label="Current Monthly Spending"
             value={priceFormatter(roundedMonthlySpend)}
             trend="4% vs last mo"
             icon={Wallet}
           />
           <StatWidget
-            label="Yearly Spending"
+            label="Projected Yearly Spending"
             value={priceFormatter(yearlySpend)}
             icon={Calendar}
           />
