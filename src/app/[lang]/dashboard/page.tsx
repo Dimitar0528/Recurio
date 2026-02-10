@@ -8,19 +8,28 @@ import {
   Wallet,
   ArrowUpRight,
   BellRing,
+  ShieldCheck,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 import { cacheTag, cacheLife } from "next/cache";
 
 import SubscriptionForm from "@/components/dashboard/SubscriptionForm";
-import StatWidget from "@/components/dashboard/StatWidget";
 import InsightsSidebar from "@/components/dashboard/InsightsSidebar";
 import Link from "next/link";
 import SubscriptionDialog from "@/components/dashboard/SubscriptionDialog";
-import { priceFormatter, setDateHoursToZero, SEVEN_DAYS_MS } from "@/lib/utils";
+import {
+  getCurrentDateRange,
+  priceFormatter,
+  setDateHoursToZero,
+  SEVEN_DAYS_MS
+} from "@/lib/utils";
 import { getUserSubscriptions } from "@/dal/subscriptions/queries";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Locale } from "next-intl";
+import { Subscription } from "@/lib/validations/form";
+import { SpendingCard } from "@/components/dashboard/SpendingCard";
 
 export async function generateMetadata({
   params,
@@ -44,35 +53,108 @@ export async function getDailyDate() {
   return new Date();
 }
 
+function calculateAverageSpending(subscriptions: Subscription[]) {
+  const activeSubscriptions = subscriptions.filter((subscription) => subscription.status === "Active");
+
+  const averageMonthly = activeSubscriptions.reduce(
+    (acc, sub) =>
+      acc + (sub.billingCycle === "Annual" ? sub.price / 12 : sub.price),
+    0,
+  );
+
+  const projectedYearly = averageMonthly * 12;
+
+  return {
+    averageMonthly,
+    projectedYearly,
+  };
+}
+
+function calculateSubscriptionActualChargesInRange(
+  sub: Subscription,
+  rangeStart: Date,
+  rangeEnd: Date,
+) {
+  const today = setDateHoursToZero(new Date());
+  let total = 0;
+  const billingDate = new Date(sub.startDate);
+  while (billingDate < rangeEnd) {
+    const isInRange = billingDate >= rangeStart && billingDate < rangeEnd;
+    const isFutureCharge = billingDate >= today;
+
+    if (isInRange && (sub.status === "Active" || !isFutureCharge)) {
+        total += sub.price;
+        if (sub.billingCycle === "Annual") {
+          break;
+      }
+    }
+
+    if (sub.billingCycle === "Monthly") {
+     billingDate.setUTCMonth(billingDate.getUTCMonth() + 1);
+    } else {
+      billingDate.setUTCFullYear(billingDate.getUTCFullYear() + 1);
+    }
+  }
+
+  return total;
+}
+
+function calculateActualMonthlySpending(
+  subscriptions: Subscription[],
+  today = new Date(),
+) {
+  const { start, end } = getCurrentDateRange(today, "month");
+
+  return subscriptions.reduce(
+    (total, subscription) => total + calculateSubscriptionActualChargesInRange(subscription, start, end),
+    0,
+  );
+}
+
+ function calculateActualYearlySpending(
+  subscriptions: Subscription[],
+  today = new Date(),
+) {
+  const { start, end } = getCurrentDateRange(today, "year");
+
+  return subscriptions.reduce(
+    (total, subscription) =>
+      total +
+      calculateSubscriptionActualChargesInRange(subscription, start, end),
+    0,
+  );
+}
+
 export default async function Page({ params }: PageProps<"/[lang]">) {
   const userSubscriptions = await getUserSubscriptions();
 
+  const { averageMonthly, projectedYearly } =
+    calculateAverageSpending(userSubscriptions);
+
+  const actualMonthlySpend = calculateActualMonthlySpending(userSubscriptions);
+  const actualYearlySpend = calculateActualYearlySpending(userSubscriptions);
+
   const activeSubscriptions = userSubscriptions.filter(
-    (subscription) => subscription.status === "Active",
+    (s) => s.status === "Active",
   ).length;
-  const monthlySpend = userSubscriptions.reduce(
-    (acc, { price, billingCycle }) =>
-      acc + (billingCycle === "Annual" ? price / 12 : price),
-    0,
-  );
-  const roundedMonthlySpend = Number(monthlySpend.toFixed(2));
-  const yearlySpend = roundedMonthlySpend * 12;
 
   const dailyTime = setDateHoursToZero(await getDailyDate()).getTime();
-  const upcomingSubscriptions = userSubscriptions.filter((upcomingSubscription) => {
-    const subscriptionTime = setDateHoursToZero(
-      upcomingSubscription.nextBilling,
-    ).getTime();
-    return (
-      subscriptionTime >= dailyTime &&
-      subscriptionTime - dailyTime <= SEVEN_DAYS_MS
-    );
-  });
-  const upcomingSubscriptionNames = upcomingSubscriptions.map(
-    (upcomingSubscription) => upcomingSubscription.name,
+  const upcomingSubscriptions = userSubscriptions.filter(
+    (upcomingSubscription) => {
+      const subscriptionTime = setDateHoursToZero(
+        upcomingSubscription.nextBilling,
+      ).getTime();
+      return (
+        subscriptionTime >= dailyTime &&
+        subscriptionTime - dailyTime <= SEVEN_DAYS_MS &&
+        upcomingSubscription.status === "Active"
+      );
+    },
   );
+
+  const upcomingSubscriptionNames = upcomingSubscriptions.map((s) => s.name);
   const totalUpcomingAmount = upcomingSubscriptions.reduce(
-    (sum, upcomingSubscription) => sum + upcomingSubscription.price,
+    (sum, s) => sum + s.price,
     0,
   );
   const namesText =
@@ -81,6 +163,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
       : upcomingSubscriptionNames.length === 2
         ? `${upcomingSubscriptionNames[0]} and ${upcomingSubscriptionNames[1]}`
         : `${upcomingSubscriptionNames[0]} and ${upcomingSubscriptionNames.length - 1} more`;
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-12">
       <div className="max-w-7xl mx-auto px-6 pt-24">
@@ -91,14 +174,10 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             </h1>
             <p className="text-muted-foreground text-sm text-center md:text-left">
               You have{" "}
-              <span className="text-foreground font-medium">
+              <span className="text-foreground font-bold">
                 {activeSubscriptions} active
               </span>{" "}
-              subscriptions totaling{" "}
-              <span className="text-foreground font-medium">
-                {priceFormatter(roundedMonthlySpend)}
-              </span>{" "}
-              this month.
+              subscriptions this month.
             </p>
           </div>
           <SubscriptionDialog
@@ -144,24 +223,28 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           </Link>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <StatWidget
-            label="Current Monthly Spending"
-            value={priceFormatter(roundedMonthlySpend)}
-            trend="4% vs last mo"
-            icon={Wallet}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <SpendingCard
+            variant="light"
+            title="Monthly Spending"
+            description="Actual charges this month vs. expected average"
+            icon={<Wallet size={20} />}
+            primaryLabel="Actual"
+            primaryValue={priceFormatter(actualMonthlySpend)}
+            secondaryLabel="Average"
+            secondaryValue={priceFormatter(averageMonthly)}
           />
-          <StatWidget
-            label="Projected Yearly Spending"
-            value={priceFormatter(yearlySpend)}
-            icon={Calendar}
+
+          <SpendingCard
+            variant="dark"
+            title="Yearly Spending"
+            description="Expected charges this calendar year vs. projected total"
+            icon={<Calendar size={20} />}
+            primaryLabel="Actual"
+            primaryValue={priceFormatter(actualYearlySpend)}
+            secondaryLabel="Projected"
+            secondaryValue={priceFormatter(projectedYearly)}
           />
-          <StatWidget
-            label="Active Subscriptions"
-            value={activeSubscriptions}
-            icon={PieChart}
-          />
-          <StatWidget label="Income Ratio" value="4.2%" icon={Percent} />
         </div>
 
         <div className="grid lg:grid-cols-12 gap-8">

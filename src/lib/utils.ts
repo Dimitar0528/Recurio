@@ -49,6 +49,20 @@ export function advanceDateWithClamp(
   );
 }
 
+export function getCurrentDateRange(
+  date = new Date(),
+  period: "month" | "year",
+) {
+  if (period === "month") {
+    const start = new Date(date.getUTCFullYear(), date.getUTCMonth(), 1);
+    const end = new Date(date.getUTCFullYear(), date.getUTCMonth() + 1, 1);
+    return { start, end };
+  }
+
+  const start = new Date(date.getUTCFullYear(), 0, 1);
+  const end = new Date(date.getUTCFullYear() + 1, 0, 1);
+  return { start, end };
+}
 
 export function priceFormatter(price: number){
    const formattedPrice = new Intl.NumberFormat("bg-BG", {

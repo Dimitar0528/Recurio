@@ -13,7 +13,7 @@ type InsightsSidebarProps = {
 export default function InsightsSidebar({ data }: InsightsSidebarProps) {
   const [viewMode, setViewMode] = useState<BillingCycle>("Monthly");
 
-  const aggregatedByCategory = data.reduce<Record<string, number>>(
+  const aggregatedByCategory = data.filter(subscription => subscription.status === "Active").reduce<Record<string, number>>(
       (acc, { price, billingCycle, category }) => {
         let normalizedAmount = price;
 
