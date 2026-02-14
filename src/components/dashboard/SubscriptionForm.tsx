@@ -44,6 +44,7 @@ type SubscriptionFormProps = {
 export default function SubscriptionForm({
   initialValues
 }: SubscriptionFormProps) {
+  const locale = useLocale();
   const initialModifiedValues = initialValues
     ? {
         ...initialValues,
@@ -70,11 +71,10 @@ export default function SubscriptionForm({
     },
     onSubmit: async ({ value }) => {
       const result = subscriptionFormSchema.safeParse(value);
-      if (!result.success) {
-        return toast.error(result.error.message);
-      }
-      if (initialValues && initialModifiedValues === value)
-        return toast.info("No changes were made!");
+      if (!result.success) return toast.error(result.error.message);
+      
+      if (initialValues && initialModifiedValues === value) return toast.info("No changes were made!");
+
       if (initialValues && initialValues.id) {
         toast.success("Subscription updated successfully!");
         await updateSubscription(initialValues.id, result.data);
@@ -84,7 +84,6 @@ export default function SubscriptionForm({
       }
     },
   });
-  const locale = useLocale()
   return (
     <form
       id="subscription-form"

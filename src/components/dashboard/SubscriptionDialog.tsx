@@ -46,7 +46,7 @@ export default function SubscriptionDialog({
           <Button
             type="submit"
             form="subscription-form"
-            className="p-4 cursor-pointer bg-primary dark:bg-primary/50 dark:hover:bg-primary/70 text-primary-foreground hover:bg-primary/85 hover:text-white">
+            className="p-4 cursor-pointer bg-primary dark:bg-primary/50 dark:hover:bg-primary/70 text-primary-foreground hover:bg-primary/85 hover:text-white hover:scale-[1.02] active:scale-[0.98] transition-all uppercase">
             {submitLabel}
           </Button>
         </DialogFooter>

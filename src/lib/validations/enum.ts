@@ -13,7 +13,7 @@ export const categoryEnum = z.enum(
         "News & Media",
         "Other",
     ],
-    { error: "Choose a valid option" },
+    { error: "Choose a valid category" },
 );
 export const statusEnum = z.enum(["Active", "Paused", "Cancelled"]); 
 export type BillingCycle = z.infer<typeof billingCycleEnum>

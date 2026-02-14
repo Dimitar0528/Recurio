@@ -266,8 +266,7 @@ export const columns: ColumnDef<Subscription>[] = [
               <Button
                 id="edit-btn"
                 aria-label="Edit button"
-                variant="outline"
-                className="cursor-pointer">
+                className="bg-background outline-solid outline-primary/20 cursor-pointer hover:scale-[1.05] active:scale-[0.98] transition-all">
                 <Edit className="text-primary" />
               </Button>
             }
@@ -283,8 +282,7 @@ export const columns: ColumnDef<Subscription>[] = [
                 <Button
                   id="delete-btn"
                   aria-label="Delele button"
-                  variant="outline"
-                  className="cursor-pointer">
+                  className="bg-background outline-solid outline-primary/20 cursor-pointer hover:scale-[1.05] active:scale-[0.98] transition-all">
                   <Delete className="text-destructive" />
                 </Button>
               }
@@ -394,7 +392,7 @@ export const columns: ColumnDef<Subscription>[] = [
                   form="delete-subscription-form"
                   disabled={!form.state.canSubmit}
                   variant="destructive"
-                  className="cursor-pointer font-bold shadow-lg shadow-destructive/20">
+                  className="cursor-pointer font-bold shadow-lg shadow-destructive/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase">
                   Delete Subscription
                 </Button>
               </DialogFooter>

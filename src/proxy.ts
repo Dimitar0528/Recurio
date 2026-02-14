@@ -2,7 +2,6 @@ import createMiddleware from "next-intl/middleware";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { routing } from "./i18n/routing";
-import { auth } from "@clerk/nextjs/server";
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -38,7 +37,8 @@ export default async function middleware(request: NextRequest, event: NextFetchE
   if (i18nResponse.headers.has("location")) {
     return i18nResponse;
   }
-  // Then run Clerk middlerare
+  // Then run Clerk middleware on next redirected request
+  // which now contains the proper locale
   return clerk(request, event);
 }
 

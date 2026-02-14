@@ -3,14 +3,11 @@ import { DataTable } from "@/components/dashboard/data_table/DataTable";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
-  PieChart,
-  Percent,
   Wallet,
   ArrowUpRight,
   BellRing,
   ShieldCheck,
-  TrendingDown,
-  TrendingUp,
+  Download,
 } from "lucide-react";
 import { cacheTag, cacheLife } from "next/cache";
 
@@ -61,7 +58,6 @@ function calculateAverageSpending(subscriptions: Subscription[]) {
       acc + (sub.billingCycle === "Annual" ? sub.price / 12 : sub.price),
     0,
   );
-
   const projectedYearly = averageMonthly * 12;
 
   return {
@@ -133,7 +129,6 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
 
   const actualMonthlySpend = calculateActualMonthlySpending(userSubscriptions);
   const actualYearlySpend = calculateActualYearlySpending(userSubscriptions);
-
   const activeSubscriptions = userSubscriptions.filter(
     (s) => s.status === "Active",
   ).length;
@@ -166,15 +161,15 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-12">
-      <div className="max-w-7xl mx-auto px-6 pt-24">
-        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-10 gap-6">
+      <div className="max-w-7xl mx-auto px-6 pt-22">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 gap-2">
           <div>
-            <h1 className="text-3xl text-center md:text-left font-bold tracking-tight mb-2">
+            <h1 className="text-3xl text-center md:text-left font-bold uppercase tracking-[0.125em] mb-1">
               Workspace
             </h1>
-            <p className="text-muted-foreground text-sm text-center md:text-left">
+            <p className="text-muted-foreground text-md text-center md:text-left">
               You have{" "}
-              <span className="text-foreground font-bold">
+              <span className="bg-primary dark:bg-primary/50 font-bold text-primary-foreground px-1 rounded-md">
                 {activeSubscriptions} active
               </span>{" "}
               subscriptions this month.
@@ -184,7 +179,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             trigger={
               <Button
                 variant="outline"
-                className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary/50 dark:hover:bg-primary/70 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70">
+                className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary/50 dark:hover:bg-primary/70 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70 aria-expanded:bg-primary aria-expanded:text-primary-foreground hover:scale-[1.02] active:scale-[0.98] transition-all">
                 + Add Subscription
               </Button>
             }
@@ -197,11 +192,11 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         {upcomingSubscriptions.length > 0 && (
           <Link
             href="/payments"
-            className="mb-8 bg-primary/[0.03] border border-primary/20 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between group hover:bg-primary/[0.1] transition-colors cursor-pointer">
+            className="mb-8 bg-primary/[0.05] border border-primary/20 rounded-2xl p-2 flex flex-col md:flex-row items-center justify-between group hover:bg-primary/[0.15] transition-colors cursor-pointer">
             <div className="flex items-center gap-4">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />
-                <div className="relative w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                <div className="relative w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                   <BellRing size={20} />
                 </div>
               </div>
@@ -217,44 +212,60 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                 </p>
               </div>
             </div>
-            <div className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform mt-4 md:mt-0">
+            <div className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform mt-2 md:mt-0">
               Review Schedule <ArrowUpRight size={14} />
             </div>
           </Link>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <SpendingCard
             variant="light"
             title="Monthly Spending"
-            description="Actual charges this month vs. expected average"
+            description="All charges scheduled for this month vs. your monthly run rate"
             icon={<Wallet size={20} />}
-            primaryLabel="Actual"
+            primaryLabel="Total This Month"
             primaryValue={priceFormatter(actualMonthlySpend)}
-            secondaryLabel="Average"
+            secondaryLabel="Monthly Run Rate"
             secondaryValue={priceFormatter(averageMonthly)}
           />
 
           <SpendingCard
             variant="dark"
             title="Yearly Spending"
-            description="Expected charges this calendar year vs. projected total"
+            description="All charges scheduled for this year vs. your annual run rate"
             icon={<Calendar size={20} />}
-            primaryLabel="Actual"
+            primaryLabel={`Total for ${new Date().getFullYear()}`}
             primaryValue={priceFormatter(actualYearlySpend)}
-            secondaryLabel="Projected"
+            secondaryLabel="Annual Run Rate"
             secondaryValue={priceFormatter(projectedYearly)}
           />
         </div>
-
-        <div className="grid lg:grid-cols-12 gap-8">
+        <div className="grid lg:grid-cols-12 gap-6 items-start">
           <div className="lg:col-span-8">
-            <div className="px-2">
-              <DataTable columns={columns} data={userSubscriptions} />
-            </div>
+            <DataTable columns={columns} data={userSubscriptions} />
           </div>
+          <InsightsSidebar
+            data={userSubscriptions}
+            monthlySpend={averageMonthly}
+          />
+        </div>
 
-          <InsightsSidebar data={userSubscriptions} />
+        <div className="lg:w-3xl mx-auto bg-foreground/95 text-background rounded-2xl p-3 mt-6 relative overflow-hidden group shadow-2xl text-center">
+          <div className="absolute top-0 right-0 p-3 opacity-20">
+            <ShieldCheck size={40} />
+          </div>
+          <h3 className="text-sm font-bold mb-2 relative z-10 flex items-center justify-center gap-2">
+            <Download size={16} />
+            Export Audit
+          </h3>
+          <p className="text-xs text-background/60 mb-4 relative z-10 leading-relaxed">
+            Need this for accounting? Export your full recurring history into a
+            verified PDF report.
+          </p>
+          <button className="w-full lg:w-lg mx-auto bg-background text-foreground py-3 rounded-xl text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all relative z-10 flex items-center justify-center gap-2 shadow-xl shadow-black/20 cursor-pointer">
+            Download Financial Audit
+          </button>
         </div>
       </div>
     </div>
