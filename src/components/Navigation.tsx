@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import {useState } from "react";
 import {
   Moon,
   Sun,
@@ -32,13 +32,12 @@ import {
   SignInButton,
   SignedIn,
   UserButton,
-  ClerkLoading,
+  useUser,
 } from "@clerk/nextjs";
-import { useAuth } from "@clerk/nextjs";
 import { useLocale } from "next-intl";
 
 export default function Navigation() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
   const locale = useLocale();
   const { setTheme, theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -140,8 +139,7 @@ export default function Navigation() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <ClerkLoading>
+          {!isLoaded && (
             <div
               className="flex justify-center items-center min-h-[60vh] "
               aria-live="polite"
@@ -150,7 +148,7 @@ export default function Navigation() {
                 <div className="h-4 w-20 rounded bg-slate-300 dark:bg-slate-600" />
               </div>
             </div>
-          </ClerkLoading>
+          )}
           <SignedOut>
             <div className="hidden md:block">
               <SignInButton>

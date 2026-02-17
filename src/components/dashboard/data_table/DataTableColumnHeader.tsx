@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "next-intl";
 
 interface DataTableColumnHeaderProps<
   TData,
@@ -24,6 +25,7 @@ export function DataTableColumnHeader<TData, TValue>({
   title,
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
+  const t = useTranslations("dashboard_page.data_table_component.table.sorting");
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>;
   }
@@ -52,20 +54,20 @@ export function DataTableColumnHeader<TData, TValue>({
             className="group cursor-pointer"
             onClick={() => column.toggleSorting(false)}>
             <ArrowUp className="group-hover:text-white" />
-            Asc
+            {t("asc")}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="group cursor-pointer"
             onClick={() => column.toggleSorting(true)}>
             <ArrowDown className="group-hover:text-white" />
-            Desc
+            {t("desc")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="group cursor-pointer"
             onClick={() => column.toggleVisibility(false)}>
             <EyeOff className="group-hover:text-white" />
-            Hide
+            {t("hide")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -1,4 +1,33 @@
 {
+    "Reusable": {
+        "categories": {
+            "Entertainment": "Развлечение",
+            "Software": "Софтуер",
+            "Utilities": "Битови",
+            "Productivity": "Продуктивност",
+            "Cloud & Infrastructure": "Облачни услуги",
+            "Finance": "Финанси",
+            "Health & Fitness": "Здраве и фитнес",
+            "Education": "Образование",
+            "News & Media": "Новини и медии",
+            "Other": "Други"
+        },
+        "billingCycle": {
+            "Monthly": "Месечно",
+            "Annual": "Годишно"
+        },
+        "status": {
+            "Active": "Активен",
+            "Paused": "Паузиран",
+            "Cancelled": "Отменен"
+        },
+        "dialog": {
+            "title": "{action} Абонамент",
+            "description": "Всички полета са задължителни!",
+            "submit": "{action} Абонамент",
+            "cancel": "Отмени"
+        }
+    },
     "Metadata":{
         "root_layout":{
             "description": "Единственият инструмент за управление на абонаменти, от който се нуждаете."
@@ -135,6 +164,156 @@
                 "hannah": "Препоръчвам Recurio на всеки, който сериозно иска да контролира финансите си.",
                 "noah": "Приложението е леко, бързо и дизайнът му е естетически приятен.",
                 "maya": "Всъщност ми е приятно да го отварям ежедневно, за да видя тенденциите в разходите си."
+            }
+        }
+    },
+    "dashboard_page": {
+        "header": {
+            "title": "Работно пространство",
+            "active_subs": "{count, plural, =0 {Нямате активни абонаменти} one {Имате <highlight># активен</highlight> абонамент} other {Имате <highlight># активни</highlight> абонамента}} този месец."
+        },
+        "upcoming_alert": {
+            "title": "Засечени предстоящи плащания",
+            "description": "{names} ще ви таксуват {amount} в следващите 7 дни.",
+            "cta": "Преглед на графика",
+            "names_format": {
+                "one": "{name}",
+                "two": "{name1} и {name2}",
+                "multiple": "{name} и още {count}"
+            }
+        },
+        "cards": {
+            "monthly": {
+                "title": "Месечни разходи",
+                "description": "Всички планирани такси за месеца спрямо вашия месечен темп",
+                "primary_label": "Общо за месеца",
+                "secondary_label": "Месечен темп"
+            },
+            "yearly": {
+                "title": "Годишни разходи",
+                "description": "Всички планирани такси за годината спрямо вашия годишен темп",
+                "primary_label": "Общо за {year}",
+                "secondary_label": "Годишен темп"
+            }
+        },
+        "audit": {
+            "title": "Експорт на одит",
+            "description": "Нуждаете се от това за счетоводство? Експортирайте пълната си хронология в проверен PDF отчет.",
+            "button": "Изтегли финансов одит"
+        },
+        "insights_sidebar_component": {
+            "income_ratio": {
+                "title": "Съотношение към дохода",
+                "edit": "Редактирай",
+                "remove": "Премахни",
+                "intro": "Въведете вашата приблизителна месечна нетна заплата, за да видите какъв процент от дохода ви отива за абонаменти.",
+                "disclaimer": "Това е по избор и се използва САМО за вашите анализи.",
+                "add_salary": "+ Добави месечна заплата",
+                "form": {
+                    "label": "Приблизителна нетна заплата (€)",
+                    "placeholder": "620.20 €",
+                    "save": "Запази",
+                    "saving": "Запазване...",
+                    "cancel": "Отказ"
+                },
+                "stats": {
+                    "burn": "Месечен разход",
+                    "salary": "Нетна заплата",
+                    "feedback_high": "Абонаментите консумират значителна част от нетния ви доход.",
+                    "feedback_healthy": "Разходите ви са в здравословни граници."
+                }
+            },
+            "breakdown": {
+                "title": "Разпределение по категории",
+                "monthly": "Месечно",
+                "annual": "Годишно",
+                "no_results": "Няма налични резултати."
+            }
+        },
+        "subscription_form_component": {
+            "fields": {
+                "name": "Име",
+                "name_placeholder": "Netflix, Gym, и т.н.",
+                "category": "Категория",
+                "price": "Цена (€)",
+                "price_placeholder": "9.99 €",
+                "billing_cycle": "Платежен цикъл",
+                "start_date": "Начална дата",
+                "next_billing": "Следващо плащане",
+                "date_placeholder": "Изберете дата",
+                "auto_renew": "Ауто подновяване",
+                "auto_renew_description": "Деактивирай",
+                "status": "Статус"
+            },
+            "messages": {
+                "no_changes": "Не са направени промени!",
+                "success_update": "Абонаментът е актуализиран успешно!",
+                "success_create": "Абонаментът е създаден успешно!"
+            }
+        },
+        "data_table_component": {
+            "title": "Вашите абонаменти",
+            "filter_placeholder": "Филтрирай по име...",
+            "view_button": "Изглед",
+            "toggle_columns": "Превключване на колони",
+            "no_results": "Няма намерени резултати.",
+            "rows_selected": "{count} от {total} избрани реда.",
+            "rows_per_page": "Редове на страница",
+            "pagination_info": "Страница {current} от {total}",
+            "sr": {
+                "first_page": "Към първа страница",
+                "previous_page": "Към предишна страница",
+                "next_page": "Към следваща страница",
+                "last_page": "Към последна страница"
+            },
+            "table": {
+                "columns": {
+                    "name": "Име",
+                    "price": "Цена",
+                    "category": "Категория",
+                    "billing": "Цикъл",
+                    "nextBilling": "Плащане",
+                    "status": "Статус",
+                    "actions": "Действия",
+                    "subscription": "Абонамент",
+                    "mobile": "Мобилен изглед"
+                },
+                "sorting": {
+                    "asc": "Възходящо",
+                    "desc": "Низходящо",
+                    "hide": "Скрий"
+                },
+                "badges": {
+                    "auto": "Авто",
+                    "manual": "Ръчно",
+                    "renews_auto": "Подновява се автоматично",
+                    "requires_manual": "Изисква ръчно подновяване",
+                    "expiring_soon": "Изтича след 7–14 дни",
+                    "monthly_estimate": "(~{price} / Месечно)"
+                }
+            },
+            "delete_dialog": {
+                "trigger_label": "Бутон за изтриване",
+                "edit_trigger_label": "Бутон за редактиране",
+                "title": "Напълно ли сте сигурни?",
+                "warning": "След изтриване, абонаментът и всички свързани данни ще бъдат <important>премахнати</important>.",
+                "impact_title": "Статистическо въздействие",
+                "impact_text": "Изтриването ще повлияе на обобщената статистика като общи суми, средни стойности и анализи. <italic>Тези числа ще бъдат преизчислени и може вече да не отразяват миналата реалност.</italic>",
+                "recommendation_title": "Препоръка:",
+                "recommendation_text": "Изтриването трябва да се извършва само по <critical>изключително важни причини</critical>. В повечето случаи промяната на статуса на <paused>\"Паузиран\"</paused> или <cancelled>\"Прекратен\"</cancelled> е по-безопасната алтернатива.",
+                "verification_label": "Изисква се потвърждение",
+                "type_phrase": "Напишете:",
+                "placeholder": "Напишете фразата по-горе...",
+                "cancel": "Отказ",
+                "confirm": "Изтрий абонамента",
+                "phrase_template": "Искам да изтрия {name}",
+                "validation_error": "Трябва да напишете точно: \"{phrase}\""
+            },
+            "messages": {
+                "deleting": "Изтриване на абонамента...",
+                "deleted": "Абонаментът е изтрит успешно!",
+                "undo": "Отмени",
+                "error": "Възникна грешка!"
             }
         }
     }

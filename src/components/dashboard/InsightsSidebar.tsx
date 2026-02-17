@@ -1,11 +1,11 @@
 "use client";
 
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn, priceFormatter } from "@/lib/utils";
 import { Subscription } from "@/lib/validations/form";
-import { Percent, PieChart } from "lucide-react";
+import { PieChart } from "lucide-react";
 import { Button } from "../ui/button";
-import type { BillingCycle } from "@/lib/validations/enum";
+import type { BillingCycle, Category } from "@/lib/validations/enum";
 import { Input } from "../ui/input";
 import { useUser } from "@clerk/nextjs";
 
@@ -14,16 +14,19 @@ import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Skeleton } from "../ui/skeleton";
+import { useTranslations } from "next-intl";
 
 type InsightsSidebarProps = {
   data: Subscription[];
   monthlySpend: number;
-}
+};
 
 export default function InsightsSidebar({
   data,
   monthlySpend,
 }: InsightsSidebarProps) {
+  const tReusable = useTranslations("Reusable");
+  const t = useTranslations("dashboard_page.insights_sidebar_component");
   const { user, isLoaded } = useUser();
   const [salary, setSalary] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -35,8 +38,9 @@ export default function InsightsSidebar({
       setSalary(clerkSalary);
     }
   }, [isLoaded, user]);
+
   const ratio = salary && salary > 0 ? (monthlySpend / salary) * 100 : 0;
-  
+
   const form = useForm({
     defaultValues: {
       netSalary: salary?.toFixed(2) ?? "",
@@ -61,7 +65,8 @@ export default function InsightsSidebar({
         console.error("Failed to update salary:", err);
       }
     },
-  });
+  })
+
   const handleRemove = async () => {
     if (!user) return;
     try {
@@ -95,22 +100,26 @@ export default function InsightsSidebar({
       },
       {},
     );
+
   const totalSpend = Object.values(aggregatedByCategory).reduce(
     (sum, amount) => sum + amount,
     0,
   );
+
   const categoryItems = Object.entries(aggregatedByCategory).map(
     ([category, amount]) => {
       const percentage =
         totalSpend === 0 ? 0 : Math.round((amount / totalSpend) * 100);
-
+        const typedCategory = category as Category
       return {
-        label: category,
+        key: typedCategory,
+        label: tReusable(`categories.${typedCategory}`),
         value: percentage,
         money: priceFormatter(amount),
       };
     },
   );
+
   const categoryColors: Record<string, string> = {
     Software: "bg-primary",
     Education: "bg-blue-500",
@@ -119,7 +128,7 @@ export default function InsightsSidebar({
     Fitness: "bg-green-500",
     Other: "bg-orange-500",
   };
-  
+
   return (
     <div className="lg:col-span-4 space-y-6">
       <div className="bg-card border border-border rounded-2xl p-3">
@@ -142,31 +151,30 @@ export default function InsightsSidebar({
           <>
             <div className="flex justify-between mb-1">
               <h3 className="text-sm font-bold flex items-center gap-1">
-                <Percent size={16} className="text-primary" />
-                Income Ratio
+                {t("income_ratio.title")}
               </h3>
               {!isEditing && salary && (
-                <div className="-mt-1">
+                <div className="flex items-center">
                   <button
                     onClick={() => setIsEditing(true)}
                     className="text-[10px] uppercase font-bold text-muted-foreground hover:text-primary hover:underline transition-colors cursor-pointer mr-4 outline-solid outline-primary/20 rounded-md px-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    Edit
+                    {t("income_ratio.edit")}
                   </button>
                   <button
                     onClick={handleRemove}
-                    className="text-[10px] uppercase font-bold text-destructive hover:underline cursor-pointer  rounded-md px-1 outline-solid outline-primary/20 rounded-md px-1 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    Remove
+                    className="text-[10px] uppercase font-bold text-destructive hover:underline cursor-pointer rounded-md px-1 outline-solid outline-primary/20 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                    {t("income_ratio.remove")}
                   </button>
                 </div>
               )}
             </div>
+
             {!salary && !isEditing && (
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Enter your rough monthly net salary to see what percentage of
-                  your income is claimed by subscriptions.
+                  {t("income_ratio.intro")}{" "}
                   <span className="block italic font-bold">
-                    This is optional and used ONLY for your insights.
+                    {t("income_ratio.disclaimer")}
                   </span>
                 </p>
                 <Button
@@ -174,10 +182,11 @@ export default function InsightsSidebar({
                   size="sm"
                   onClick={() => setIsEditing(true)}
                   className="w-full text-xs font-bold border-dashed border-primary/30 hover:border-primary/60 text-primary cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all">
-                  + Add Monthly Salary
+                  {t("income_ratio.add_salary")}
                 </Button>
               </div>
             )}
+
             {isEditing && (
               <form
                 id="net-salary-form"
@@ -195,7 +204,7 @@ export default function InsightsSidebar({
                         <FieldLabel
                           className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground"
                           htmlFor={field.name}>
-                          Rough Net Salary (€){" "}
+                          {t("income_ratio.form.label")}
                         </FieldLabel>
                         <Input
                           type="number"
@@ -205,7 +214,7 @@ export default function InsightsSidebar({
                           onBlur={field.handleBlur}
                           onChange={(e) => field.handleChange(e.target.value)}
                           aria-invalid={isInvalid}
-                          placeholder="9.99 €"
+                          placeholder={t("income_ratio.form.placeholder")}
                           autoComplete="off"
                           className="h-6"
                         />
@@ -223,7 +232,9 @@ export default function InsightsSidebar({
                     size="sm"
                     className="flex-1 text-xs font-bold h-6.5 cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
                     disabled={!form.state.canSubmit || form.state.isSubmitting}>
-                    {form.state.isSubmitting ? "Saving..." : "Save Salary"}
+                    {form.state.isSubmitting
+                      ? t("income_ratio.form.saving")
+                      : t("income_ratio.form.save")}
                   </Button>
                   <Button
                     size="sm"
@@ -231,17 +242,18 @@ export default function InsightsSidebar({
                     className="h-6.5 text-xs cursor-pointer"
                     onClick={() => setIsEditing(false)}
                     disabled={form.state.isSubmitting}>
-                    Cancel
+                    {t("income_ratio.form.cancel")}
                   </Button>
                 </div>
               </form>
             )}
+
             {!isEditing && salary && (
               <div className="space-y-2">
                 <div className="flex justify-between items-end">
                   <div>
                     <p className="text-[10px] uppercase font-bold text-gray-600 dark:text-gray-400 tracking-widest">
-                      Monthly Burn
+                      {t("income_ratio.stats.burn")}
                     </p>
                     <p className="text-md font-mono font-bold">
                       {ratio.toFixed(1)}%
@@ -249,7 +261,7 @@ export default function InsightsSidebar({
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] uppercase font-bold text-gray-600 dark:text-gray-400 tracking-widest">
-                      Net Salary
+                      {t("income_ratio.stats.salary")}
                     </p>
                     <p className="text-md font-mono uppercase font-bold">
                       {priceFormatter(salary)}
@@ -275,45 +287,46 @@ export default function InsightsSidebar({
                       : "bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200",
                   )}>
                   {ratio > 10
-                    ? "Subscriptions are consuming a significant portion of your net income."
-                    : "Your subscription footprint is within a healthy range."}
+                    ? t("income_ratio.stats.feedback_high")
+                    : t("income_ratio.stats.feedback_healthy")}
                 </p>
               </div>
             )}
           </>
         )}
       </div>
+
       <div className="bg-card border border-border rounded-2xl p-3">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-bold flex items-center gap-2">
             <PieChart size={16} className="text-primary" />
-            Category Breakdown
+            {t("breakdown.title")}
           </h3>
           <div className="flex bg-secondary rounded-md text-xs font-bold outline-solid outline-primary/20">
             <Button
               onClick={() => setViewMode("Monthly")}
-              className={`px-3 py-1 rounded-lg transition-all cursor-pointer hover:bg-primary hover:text-background dark:hover:text-foreground active:scale-[0.98] ${
+              className={` rounded-lg transition-all cursor-pointer hover:bg-primary hover:text-background dark:hover:text-foreground active:scale-[0.98] ${
                 viewMode === "Monthly"
                   ? "bg-primary/30 shadow text-foreground"
                   : "text-gray-600 dark:text-gray-400 bg-secondary"
               }`}>
-              Monthly
+              {t("breakdown.monthly")}
             </Button>
             <Button
               onClick={() => setViewMode("Annual")}
-              className={`px-3 py-1 rounded-lg transition-all cursor-pointer hover:bg-primary hover:text-background dark:hover:text-foreground active:scale-[0.98] ${
+              className={` rounded-lg transition-all cursor-pointer hover:bg-primary hover:text-background dark:hover:text-foreground active:scale-[0.98] ${
                 viewMode === "Annual"
                   ? "bg-primary/30 shadow text-foreground"
                   : "text-gray-600 dark:text-gray-400 bg-secondary"
               }`}>
-              Annual
+              {t("breakdown.annual")}
             </Button>
           </div>
         </div>
         <div className="space-y-5">
           {categoryItems.length > 0 ? (
             categoryItems.map((item) => (
-              <div key={item.label}>
+              <div key={item.key}>
                 <div className="flex justify-between text-xs mb-2 items-baseline">
                   <span className="text-gray-600 dark:text-gray-300 font-bold">
                     {item.label}
@@ -330,7 +343,7 @@ export default function InsightsSidebar({
                 <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
                   <div
                     className={`h-full ${
-                      categoryColors[item.label] ?? "bg-muted"
+                      categoryColors[item.key] ?? "bg-muted"
                     } transition-all duration-500`}
                     style={{ width: `${item.value}%` }}
                   />
@@ -338,7 +351,9 @@ export default function InsightsSidebar({
               </div>
             ))
           ) : (
-            <div className="text-center text-sm"> No results available.</div>
+            <div className="text-center text-sm">
+              {t("breakdown.no_results")}
+            </div>
           )}
         </div>
       </div>

@@ -22,12 +22,7 @@ async function getSubscriptionsData(userID: string) {
   const rawData = await db
     .select({ ...rest })
     .from(subscriptionsTable)
-    .where(
-      and(
-        eq(subscriptionsTable.userId, userID),
-        isNull(subscriptionsTable.deleted_at),
-      ),
-    )
+    .where(and(eq(userId, userID), isNull(subscriptionsTable.deleted_at)))
     .orderBy(asc(subscriptionsTable.nextBilling));
 
   const data = rawData.map((row) => ({

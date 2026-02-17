@@ -13,6 +13,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { bgBG, enGB } from "@clerk/localizations";
 import { shadcn } from "@clerk/themes";
+import { ViewTransition } from 'react'
 
 const notoSans = Noto_Sans({ variable: "--font-sans" });
 
@@ -54,35 +55,40 @@ export default async function RootLayout({
   // to all next-intl API's and storing it inside a cache.
   setRequestLocale(lang);
   return (
-    <NextIntlClientProvider>
-      <html lang={lang} className={notoSans.variable} suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <Suspense>
-            <ClerkProvider
-              localization={lang === "bg" ? bgBG : enGB}
-              appearance={{
-                theme: [shadcn],
-                layout: {
-                  socialButtonsVariant: "blockButton",
-                },
-              }}>
-              <Toaster position="top-center" richColors closeButton />
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-                enableColorScheme>
-                <Navigation />
+    <ViewTransition>
+      <NextIntlClientProvider>
+        <html
+          lang={lang}
+          className={notoSans.variable}
+          suppressHydrationWarning>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            <Suspense>
+              <ClerkProvider
+                localization={lang === "bg" ? bgBG : enGB}
+                appearance={{
+                  theme: [shadcn],
+                  layout: {
+                    socialButtonsVariant: "blockButton",
+                  },
+                }}>
+                <Toaster position="top-center" richColors closeButton />
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+                  enableColorScheme>
+                  <Navigation />
 
-                <main>{children}</main>
-                <Footer />
-              </ThemeProvider>
-            </ClerkProvider>
-          </Suspense>
-        </body>
-      </html>
-    </NextIntlClientProvider>
+                  <main>{children}</main>
+                  <Footer />
+                </ThemeProvider>
+              </ClerkProvider>
+            </Suspense>
+          </body>
+        </html>
+      </NextIntlClientProvider>
+    </ViewTransition>
   );
 }

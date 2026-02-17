@@ -1,4 +1,33 @@
 {
+    "Reusable":{
+        "categories": {
+            "Entertainment": "Entertainment",
+            "Software": "Software",
+            "Utilities": "Utilities",
+            "Productivity": "Productivity",
+            "Cloud & Infrastructure": "Cloud & Infrastructure",
+            "Finance": "Finance",
+            "Health & Fitness": "Health & Fitness",
+            "Education": "Education",
+            "News & Media": "News & Media",
+            "Other": "Other"
+        },
+        "billingCycle": {
+            "Monthly": "Monthly",
+            "Annual": "Annual"
+        },
+        "status": {
+            "Active": "Active",
+            "Paused": "Paused",
+            "Cancelled": "Cancelled"
+        },
+        "dialog": {
+            "title": "{action} Subscription",
+            "description": "All fields are required!",
+            "submit": "{action} Subscription",
+            "cancel": "Cancel"
+        }
+    },
     "Metadata": {
         "root_layout": {
             "description": "The only modern subscription management tool you need."
@@ -136,6 +165,156 @@
                 "noah": "The app is lightweight, fast, and the design is aesthetically pleasing.",
                 "maya": "I actually enjoy opening it daily to see my spending trends."
                 
+            }
+        }
+    },
+    "dashboard_page": {
+        "header": {
+            "title": "Workspace",
+            "active_subs": "{count, plural, =0 {No active subscriptions} one {You have <highlight># active</highlight> subscription} other {You have <highlight># active</highlight> subscriptions}} this month."
+        },
+        "upcoming_alert": {
+            "title": "Upcoming charges detected",
+            "description": "{names} will charge {amount} in the next 7 days.",
+            "cta": "Review Schedule",
+            "names_format": {
+                "one": "{name}",
+                "two": "{name1} and {name2}",
+                "multiple": "{name} and {count} more"
+            }
+        },
+        "cards": {
+            "monthly": {
+                "title": "Monthly Spending",
+                "description": "All charges scheduled for this month vs. your monthly run rate",
+                "primary_label": "Total This Month",
+                "secondary_label": "Monthly Run Rate"
+            },
+            "yearly": {
+                "title": "Yearly Spending",
+                "description": "All charges scheduled for this year vs. your annual run rate",
+                "primary_label": "Total for {year}",
+                "secondary_label": "Annual Run Rate"
+            }
+        },
+        "audit": {
+            "title": "Export Audit",
+            "description": "Need this for accounting? Export your full recurring history into a verified PDF report.",
+            "button": "Download Financial Audit"
+        },
+        "insights_sidebar_component": {
+            "income_ratio": {
+                "title": "Income Ratio",
+                "edit": "Edit",
+                "remove": "Remove",
+                "intro": "Enter your rough monthly net salary to see what percentage of your income is claimed by subscriptions.",
+                "disclaimer": "This is optional and used ONLY for your insights.",
+                "add_salary": "+ Add Monthly Salary",
+                "form": {
+                    "label": "Rough Net Salary (€)",
+                    "placeholder": "620.20 €",
+                    "save": "Save Salary",
+                    "saving": "Saving...",
+                    "cancel": "Cancel"
+                },
+                "stats": {
+                    "burn": "Monthly Burn",
+                    "salary": "Net Salary",
+                    "feedback_high": "Subscriptions are consuming a significant portion of your net income.",
+                    "feedback_healthy": "Your footprint is within a healthy range."
+                }
+            },
+            "breakdown": {
+                "title": "Category Breakdown",
+                "monthly": "Monthly",
+                "annual": "Annual",
+                "no_results": "No results available."
+            }
+        },
+        "subscription_form_component": {
+            "fields": {
+                "name": "Name",
+                "name_placeholder": "Netflix, Gym, etc.",
+                "category": "Category",
+                "price": "Price (€)",
+                "price_placeholder": "9.99 €",
+                "billing_cycle": "Billing Cycle",
+                "start_date": "Start Date",
+                "next_billing": "Next Billing",
+                "date_placeholder": "Pick a date",
+                "auto_renew": "Auto Renew",
+                "auto_renew_description": "Disable auto renewing.",
+                "status": "Status"
+            },
+            "messages": {
+                "no_changes": "No changes were made!",
+                "success_update": "Subscription updated successfully!",
+                "success_create": "Subscription created successfully!"
+            }
+        },
+        "data_table_component": {
+            "title": "Your Subscriptions",
+            "filter_placeholder": "Filter name...",
+            "view_button": "View",
+            "toggle_columns": "Toggle columns",
+            "no_results": "No results available.",
+            "rows_selected": "{count} of {total} rows selected.",
+            "rows_per_page": "Rows per page",
+            "pagination_info": "Page {current} of {total}",
+            "sr": {
+                "first_page": "Go to first page",
+                "previous_page": "Go to previous page",
+                "next_page": "Go to next page",
+                "last_page": "Go to last page"
+            },
+            "table": {
+                "columns": {
+                    "name": "Name",
+                    "price": "Price",
+                    "category": "Category",
+                    "billing": "Billing",
+                    "nextBilling": "Next Billing",
+                    "status": "Status",
+                    "actions": "Actions",
+                    "subscription": "Subscription",
+                    "mobile": "Mobile"
+                },
+                "sorting": {
+                    "asc": "Asc",
+                    "desc": "Desc",
+                    "hide": "Hide"
+                },
+                "badges": {
+                    "auto": "Auto",
+                    "manual": "Manual",
+                    "renews_auto": "Renews automatically",
+                    "requires_manual": "Requires manual renewal",
+                    "expiring_soon": "Expires in 7–14 days",
+                    "monthly_estimate": "(~{price} / Monthly)"
+                }
+            },
+            "delete_dialog": {
+                "trigger_label": "Delete button",
+                "edit_trigger_label": "Edit button",
+                "title": "Are you absolutely sure?",
+                "warning": "Once deleted, the subscription and all related data will be <important>removed</important>.",
+                "impact_title": "Statistical Impact",
+                "impact_text": "Deletion will affect aggregated subscription statistics such as totals, averages, historical insights etc. <italic>These numbers will be recalculated and may no longer reflect past reality.</italic>",
+                "recommendation_title": "Recommendation:",
+                "recommendation_text": "Deletion should only be performed for <critical>extremely critical reasons</critical>. In most cases, changing the status to <paused>\"Paused\"</paused> or <cancelled>\"Cancelled\"</cancelled> is safer.",
+                "verification_label": "Verification Required",
+                "type_phrase": "Type:",
+                "placeholder": "Type the phrase above...",
+                "cancel": "Cancel",
+                "confirm": "Delete Subscription",
+                "phrase_template": "I want to delete {name}",
+                "validation_error": "You must type exactly: \"{phrase}\""
+            },
+            "messages": {
+                "deleting": "Deleting subscription...",
+                "deleted": "Subscription deleted successfully!",
+                "undo": "Undo",
+                "error": "An error has occured!"
             }
         }
     }   

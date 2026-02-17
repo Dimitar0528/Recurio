@@ -14,6 +14,7 @@ type SubscriptionDialogProps = {
   title: string;
   description: string;
   submitLabel: string;
+  cancelLabel: string;
   children: React.ReactNode;
 };
 
@@ -22,6 +23,7 @@ export default function SubscriptionDialog({
   title,
   description,
   submitLabel,
+  cancelLabel,
   children,
 }: SubscriptionDialogProps) {
   return (
@@ -39,7 +41,7 @@ export default function SubscriptionDialog({
           <DialogClose
             render={
               <Button variant="outline" className="p-4 cursor-pointer">
-                Cancel
+                {cancelLabel}
               </Button>
             }
           />

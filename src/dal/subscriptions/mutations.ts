@@ -1,6 +1,4 @@
 import "server-only";
-
-import { auth } from "@clerk/nextjs/server";
 import { Subscription } from "@/lib/validations/form";
 import { db } from "@/db/db";
 import { subscriptionsTable } from "@/db/schema";

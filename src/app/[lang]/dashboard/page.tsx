@@ -1,4 +1,3 @@
-import { columns } from "@/components/dashboard/data_table/columns";
 import { DataTable } from "@/components/dashboard/data_table/DataTable";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +22,7 @@ import {
 } from "@/lib/utils";
 import { getUserSubscriptions } from "@/dal/subscriptions/queries";
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import { Subscription } from "@/lib/validations/form";
 import { SpendingCard } from "@/components/dashboard/SpendingCard";
@@ -122,11 +121,14 @@ function calculateActualMonthlySpending(
 }
 
 export default async function Page({ params }: PageProps<"/[lang]">) {
+  const locale = (await params).lang as Locale;
+  setRequestLocale(locale);
+  const tReusable = await getTranslations({locale, namespace: "Reusable"})
+  const t = await getTranslations({ locale, namespace: "dashboard_page" });
   const userSubscriptions = await getUserSubscriptions();
 
   const { averageMonthly, projectedYearly } =
     calculateAverageSpending(userSubscriptions);
-
   const actualMonthlySpend = calculateActualMonthlySpending(userSubscriptions);
   const actualYearlySpend = calculateActualYearlySpending(userSubscriptions);
   const activeSubscriptions = userSubscriptions.filter(
@@ -134,30 +136,36 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   ).length;
 
   const dailyTime = setDateHoursToZero(await getDailyDate()).getTime();
-  const upcomingSubscriptions = userSubscriptions.filter(
-    (upcomingSubscription) => {
-      const subscriptionTime = setDateHoursToZero(
-        upcomingSubscription.nextBilling,
-      ).getTime();
-      return (
-        subscriptionTime >= dailyTime &&
-        subscriptionTime - dailyTime <= SEVEN_DAYS_MS &&
-        upcomingSubscription.status === "Active"
-      );
-    },
-  );
+  const upcomingSubscriptions = userSubscriptions.filter((sub) => {
+    const subscriptionTime = setDateHoursToZero(sub.nextBilling).getTime();
+    return (
+      subscriptionTime >= dailyTime &&
+      subscriptionTime - dailyTime <= SEVEN_DAYS_MS &&
+      sub.status === "Active"
+    );
+  });
 
   const upcomingSubscriptionNames = upcomingSubscriptions.map((s) => s.name);
   const totalUpcomingAmount = upcomingSubscriptions.reduce(
     (sum, s) => sum + s.price,
     0,
   );
+
+  // Internationalized Names Text Logic
   const namesText =
     upcomingSubscriptionNames.length === 1
-      ? upcomingSubscriptionNames[0]
+      ? t("upcoming_alert.names_format.one", {
+          name: upcomingSubscriptionNames[0],
+        })
       : upcomingSubscriptionNames.length === 2
-        ? `${upcomingSubscriptionNames[0]} and ${upcomingSubscriptionNames[1]}`
-        : `${upcomingSubscriptionNames[0]} and ${upcomingSubscriptionNames.length - 1} more`;
+        ? t("upcoming_alert.names_format.two", {
+            name1: upcomingSubscriptionNames[0],
+            name2: upcomingSubscriptionNames[1],
+          })
+        : t("upcoming_alert.names_format.multiple", {
+            name: upcomingSubscriptionNames[0],
+            count: upcomingSubscriptionNames.length - 1,
+          });
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-12">
@@ -165,14 +173,17 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 gap-2">
           <div>
             <h1 className="text-3xl text-center md:text-left font-bold uppercase tracking-[0.125em] mb-1">
-              Workspace
+              {t("header.title")}
             </h1>
             <p className="text-muted-foreground text-md text-center md:text-left">
-              You have{" "}
-              <span className="bg-primary dark:bg-primary/50 font-bold text-primary-foreground px-1 rounded-md">
-                {activeSubscriptions} active
-              </span>{" "}
-              subscriptions this month.
+              {t.rich("header.active_subs", {
+                count: activeSubscriptions,
+                highlight: (chunks) => (
+                  <span className="bg-primary dark:bg-primary/50 font-bold text-primary-foreground px-1 rounded-md">
+                    {chunks}
+                  </span>
+                ),
+              })}
             </p>
           </div>
           <SubscriptionDialog
@@ -180,15 +191,23 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
               <Button
                 variant="outline"
                 className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary/50 dark:hover:bg-primary/70 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70 aria-expanded:bg-primary aria-expanded:text-primary-foreground hover:scale-[1.02] active:scale-[0.98] transition-all">
-                + Add Subscription
+                {tReusable("dialog.title", {
+                  action: locale === "bg" ? "+ Добави" : "+ Add",
+                })}
               </Button>
             }
-            title="New Subscription"
-            description="Add a new subscription. All fields are required."
-            submitLabel="Create Subscription">
+            title={tReusable("dialog.title", {
+              action: locale === "bg" ? "Добави" : "Create",
+            })}
+            description={tReusable("dialog.description")}
+            submitLabel={tReusable("dialog.submit", {
+              action: locale === "bg" ? "Добави" : "Create",
+            })}
+            cancelLabel={tReusable("dialog.cancel")}>
             <SubscriptionForm />
           </SubscriptionDialog>
         </div>
+
         {upcomingSubscriptions.length > 0 && (
           <Link
             href="/payments"
@@ -201,19 +220,17 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                 </div>
               </div>
               <div>
-                <p className="text-sm font-bold">Upcoming charges detected</p>
+                <p className="text-sm font-bold">{t("upcoming_alert.title")}</p>
                 <p className="text-xs text-muted-foreground">
-                  <span className="text-foreground font-bold">{namesText}</span>{" "}
-                  will charge{" "}
-                  <span className="text-foreground font-bold">
-                    {priceFormatter(totalUpcomingAmount)}
-                  </span>{" "}
-                  in the next 7 days.
+                  {t("upcoming_alert.description", {
+                    names: namesText,
+                    amount: priceFormatter(totalUpcomingAmount),
+                  })}
                 </p>
               </div>
             </div>
             <div className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform mt-2 md:mt-0">
-              Review Schedule <ArrowUpRight size={14} />
+              {t("upcoming_alert.cta")} <ArrowUpRight size={14} />
             </div>
           </Link>
         )}
@@ -221,29 +238,32 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <SpendingCard
             variant="light"
-            title="Monthly Spending"
-            description="All charges scheduled for this month vs. your monthly run rate"
+            title={t("cards.monthly.title")}
+            description={t("cards.monthly.description")}
             icon={<Wallet size={20} />}
-            primaryLabel="Total This Month"
+            primaryLabel={t("cards.monthly.primary_label")}
             primaryValue={priceFormatter(actualMonthlySpend)}
-            secondaryLabel="Monthly Run Rate"
+            secondaryLabel={t("cards.monthly.secondary_label")}
             secondaryValue={priceFormatter(averageMonthly)}
           />
 
           <SpendingCard
             variant="dark"
-            title="Yearly Spending"
-            description="All charges scheduled for this year vs. your annual run rate"
+            title={t("cards.yearly.title")}
+            description={t("cards.yearly.description")}
             icon={<Calendar size={20} />}
-            primaryLabel={`Total for ${new Date().getFullYear()}`}
+            primaryLabel={t("cards.yearly.primary_label", {
+              year: new Date().getFullYear(),
+            })}
             primaryValue={priceFormatter(actualYearlySpend)}
-            secondaryLabel="Annual Run Rate"
+            secondaryLabel={t("cards.yearly.secondary_label")}
             secondaryValue={priceFormatter(projectedYearly)}
           />
         </div>
+
         <div className="grid lg:grid-cols-12 gap-6 items-start">
           <div className="lg:col-span-8">
-            <DataTable columns={columns} data={userSubscriptions} />
+            <DataTable data={userSubscriptions} />
           </div>
           <InsightsSidebar
             data={userSubscriptions}
@@ -257,14 +277,13 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           </div>
           <h3 className="text-sm font-bold mb-2 relative z-10 flex items-center justify-center gap-2">
             <Download size={16} />
-            Export Audit
+            {t("audit.title")}
           </h3>
           <p className="text-xs text-background/60 mb-4 relative z-10 leading-relaxed">
-            Need this for accounting? Export your full recurring history into a
-            verified PDF report.
+            {t("audit.description")}
           </p>
           <button className="w-full lg:w-lg mx-auto bg-background text-foreground py-3 rounded-xl text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all relative z-10 flex items-center justify-center gap-2 shadow-xl shadow-black/20 cursor-pointer">
-            Download Financial Audit
+            {t("audit.button")}
           </button>
         </div>
       </div>

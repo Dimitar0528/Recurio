@@ -15,7 +15,7 @@ import { Suspense, type ComponentType } from "react";
 import type { LucideProps } from "lucide-react";
 import Testimonials from "@/components/landing_page/Testimonials";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { hasLocale, Locale } from "next-intl";
+import { Locale } from "next-intl";
 import type { Metadata } from "next";
 
 export async function generateMetadata({

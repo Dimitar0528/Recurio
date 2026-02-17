@@ -18,11 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { subscriptionFormSchema, Subscription } from "@/lib/validations/form";
 import {
-  subscriptionFormSchema,
-  Subscription,
-} from "@/lib/validations/form";
-import { billingCycleEnum, categoryEnum, statusEnum } from "@/lib/validations/enum";
+  billingCycleEnum,
+  Category,
+  categoryEnum,
+  statusEnum,
+} from "@/lib/validations/enum";
 
 import { Switch } from "../ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -31,20 +33,25 @@ import { Calendar } from "../ui/calendar";
 import { ChevronDownIcon } from "lucide-react";
 
 import { format } from "date-fns";
-import { bg,enUS } from "react-day-picker/locale";
-
+import { bg, enUS } from "react-day-picker/locale";
 
 import { advanceDateWithClamp } from "@/lib/utils";
 import { createSubscription, updateSubscription } from "@/app/actions";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type SubscriptionFormProps = {
   initialValues?: Subscription;
 };
+
 export default function SubscriptionForm({
-  initialValues
+  initialValues,
 }: SubscriptionFormProps) {
   const locale = useLocale();
+  const tReusable = useTranslations("Reusable");
+  const t = useTranslations("dashboard_page.subscription_form_component");
+
+  const dateLocale = locale === "bg" ? bg : enUS;
+
   const initialModifiedValues = initialValues
     ? {
         ...initialValues,
@@ -53,6 +60,7 @@ export default function SubscriptionForm({
         price: initialValues.price.toFixed(2),
       }
     : undefined;
+
   const form = useForm({
     defaultValues: initialModifiedValues ?? {
       name: "",
@@ -60,7 +68,7 @@ export default function SubscriptionForm({
       price: "",
       billingCycle: billingCycleEnum.options[0],
       startDate: new Date().toISOString().split("T")[0],
-      nextBilling: advanceDateWithClamp(new Date(), {advanceMonthNumber: 1})
+      nextBilling: advanceDateWithClamp(new Date(), { advanceMonthNumber: 1 })
         .toISOString()
         .split("T")[0],
       autoRenew: true,
@@ -72,18 +80,21 @@ export default function SubscriptionForm({
     onSubmit: async ({ value }) => {
       const result = subscriptionFormSchema.safeParse(value);
       if (!result.success) return toast.error(result.error.message);
-      
-      if (initialValues && initialModifiedValues === value) return toast.info("No changes were made!");
+
+      if (initialValues && initialModifiedValues === value) {
+        return toast.info(t("messages.no_changes"));
+      }
 
       if (initialValues && initialValues.id) {
-        toast.success("Subscription updated successfully!");
+        toast.success(t("messages.success_update"));
         await updateSubscription(initialValues.id, result.data);
       } else {
-        toast.success("Subscription created successfully!");
+        toast.success(t("messages.success_create"));
         await createSubscription(result.data);
       }
     },
   });
+
   return (
     <form
       id="subscription-form"
@@ -94,38 +105,34 @@ export default function SubscriptionForm({
       <FieldGroup>
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="name">
-            {(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Name </FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    placeholder="Netflix, Gym, etc."
-                    autoComplete="off"
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              );
-            }}
+            {(field) => (
+              <Field
+                data-invalid={
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                }>
+                <FieldLabel htmlFor={field.name}>{t("fields.name")}</FieldLabel>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder={t("fields.name_placeholder")}
+                  autoComplete="off"
+                />
+                <FieldError errors={field.state.meta.errors} />
+              </Field>
+            )}
           </form.Field>
+
           <form.Field name="category">
             {(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
+              const typedCategory = field.state.value as Category
               return (
-                <Field orientation="responsive" data-invalid={isInvalid}>
+                <Field orientation="responsive">
                   <FieldContent>
-                    <FieldLabel
-                      className="mb-1.5"
-                      htmlFor="form-tanstack-select-language">
-                      Category
+                    <FieldLabel className="mb-1.5" htmlFor="select-category">
+                      {t("fields.category")}
                     </FieldLabel>
                     <Select
                       name={field.name}
@@ -133,210 +140,174 @@ export default function SubscriptionForm({
                       onValueChange={(value) => {
                         if (value) field.handleChange(value);
                       }}>
-                      <SelectTrigger
-                        id="form-tanstack-select-language"
-                        aria-invalid={isInvalid}
-                        className="w-full">
-                        <SelectValue />
+                      <SelectTrigger id="select-category" className="w-full">
+                        <SelectValue>
+                          {field.state.value && tReusable(
+                            `categories.${typedCategory}`,
+                          )}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         {categoryEnum.options.map((category) => (
                           <SelectItem key={category} value={category}>
-                            {category}
+                            {tReusable(`categories.${category}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
+                    <FieldError errors={field.state.meta.errors} />
                   </FieldContent>
                 </Field>
-              );
-            }}
+              );}}
           </form.Field>
         </div>
+
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="price">
-            {(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Price (€) </FieldLabel>
-                  <Input
-                    type="number"
-                    id={field.name}
+            {(field) => (
+              <Field>
+                <FieldLabel htmlFor={field.name}>
+                  {t("fields.price")}
+                </FieldLabel>
+                <Input
+                  type="number"
+                  id={field.name}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder={t("fields.price_placeholder")}
+                  className="w-full"
+                />
+                <FieldError errors={field.state.meta.errors} />
+              </Field>
+            )}
+          </form.Field>
+
+          <form.Field name="billingCycle">
+            {(field) => (
+              <Field>
+                <FieldContent>
+                  <FieldLabel className="mb-1.75" htmlFor="select-cycle">
+                    {t("fields.billing_cycle")}
+                  </FieldLabel>
+                  <Select
                     name={field.name}
                     value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    placeholder="9.99 €"
-                    autoComplete="off"
-                    className="w-full"
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              );
-            }}
-          </form.Field>
-          <form.Field name="billingCycle">
-            {(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldContent>
-                    <FieldLabel
-                      className="mb-1.75"
-                      htmlFor="form-tanstack-select-language">
-                      Billing Cycle
-                    </FieldLabel>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                    <Select
-                      name={field.name}
-                      value={field.state.value}
-                      onValueChange={(value) => {
-                        if (!value) return;
-                        field.handleChange(value);
-                        const advanceDateOptions =
-                          value === "Annual"
-                            ? { advanceYearNumber: 1 }
-                            : { advanceMonthNumber: 1 };
-
-                        const nextBillingDate = format(
-                          advanceDateWithClamp(new Date(), advanceDateOptions),
-                          "yyyy-MM-dd",
-                        );
-                        field.form.setFieldValue(
-                          "nextBilling",
-                          nextBillingDate,
-                        );
-                      }}>
-                      <SelectTrigger
-                        id="form-tanstack-select-language"
-                        aria-invalid={isInvalid}
-                        className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {billingCycleEnum.options.map((cycle) => (
-                          <SelectItem key={cycle} value={cycle}>
-                            {cycle}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FieldContent>
-                </Field>
-              );
-            }}
+                    onValueChange={(value) => {
+                      if (!value) return;
+                      field.handleChange(value);
+                      const options =
+                        value === "Annual"
+                          ? { advanceYearNumber: 1 }
+                          : { advanceMonthNumber: 1 };
+                      const nextDate = format(
+                        advanceDateWithClamp(new Date(), options),
+                        "yyyy-MM-dd",
+                      );
+                      field.form.setFieldValue("nextBilling", nextDate);
+                    }}>
+                    <SelectTrigger id="select-cycle" className="w-full">
+                      <SelectValue>
+                        {tReusable(`billingCycle.${field.state.value}`)}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {billingCycleEnum.options.map((cycle) => (
+                        <SelectItem key={cycle} value={cycle}>
+                          {tReusable(`billingCycle.${cycle}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldError errors={field.state.meta.errors} />
+                </FieldContent>
+              </Field>
+            )}
           </form.Field>
         </div>
+
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="startDate">
             {(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
               const dateValue = field.state.value
                 ? new Date(field.state.value)
                 : undefined;
-
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Start Date</FieldLabel>
+                <Field>
+                  <FieldLabel htmlFor={field.name}>
+                    {t("fields.start_date")}
+                  </FieldLabel>
                   <Popover>
                     <PopoverTrigger
                       render={
                         <Button
                           variant="outline"
-                          id={field.name}
                           className="w-32 justify-between font-normal">
-                          {dateValue ? (
-                            format(dateValue, "PP", {
-                              locale: locale === "bg" ? bg : enUS,
-                            })
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
+                          {dateValue
+                            ? format(dateValue, "PP", { locale: dateLocale })
+                            : t("fields.date_placeholder")}
                           <ChevronDownIcon data-icon="inline-end" />
                         </Button>
                       }
                     />
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
-                        locale={locale === "bg" ? bg : enUS}
+                        locale={dateLocale}
                         mode="single"
                         captionLayout="dropdown"
                         fixedWeeks
                         selected={dateValue}
                         onSelect={(selectedDate) => {
                           if (!selectedDate) return;
-                          const startDate = format(selectedDate, "yyyy-MM-dd");
-                          field.handleChange(startDate);
-
-                          const advanceDateOptions =
+                          const formatted = format(selectedDate, "yyyy-MM-dd");
+                          field.handleChange(formatted);
+                          const options =
                             field.form.getFieldValue("billingCycle") ===
                             "Annual"
                               ? { advanceYearNumber: 1 }
                               : { advanceMonthNumber: 1 };
-
-                          const nextBillingDate = format(
-                            advanceDateWithClamp(
-                              selectedDate,
-                              advanceDateOptions,
-                            ),
-                            "yyyy-MM-dd",
-                          );
                           field.form.setFieldValue(
                             "nextBilling",
-                            nextBillingDate,
+                            format(
+                              advanceDateWithClamp(selectedDate, options),
+                              "yyyy-MM-dd",
+                            ),
                           );
                         }}
-                        defaultMonth={dateValue || undefined}
                       />
                     </PopoverContent>
                   </Popover>
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  <FieldError errors={field.state.meta.errors} />
                 </Field>
               );
             }}
           </form.Field>
+
           <form.Field name="nextBilling">
             {(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
               const dateValue = field.state.value
                 ? new Date(field.state.value)
                 : undefined;
-
               return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Next Billing</FieldLabel>
+                <Field>
+                  <FieldLabel htmlFor={field.name}>
+                    {t("fields.next_billing")}
+                  </FieldLabel>
                   <Popover>
                     <PopoverTrigger
                       render={
                         <Button
                           variant="outline"
-                          id={field.name}
                           className="w-32 justify-between font-normal">
-                          {dateValue ? (
-                            format(dateValue, "PP", {
-                              locale: locale === "bg" ? bg : enUS,
-                            })
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
+                          {dateValue
+                            ? format(dateValue, "PP", { locale: dateLocale })
+                            : t("fields.date_placeholder")}
                           <ChevronDownIcon data-icon="inline-end" />
                         </Button>
                       }
                     />
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
-                        locale={locale === "bg" ? bg : enUS}
+                        locale={dateLocale}
                         mode="single"
                         captionLayout="dropdown"
                         endMonth={
@@ -357,83 +328,66 @@ export default function SubscriptionForm({
                       />
                     </PopoverContent>
                   </Popover>
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  <FieldError errors={field.state.meta.errors} />
                 </Field>
               );
             }}
           </form.Field>
         </div>
+
         <div className="grid grid-cols-2 gap-4 items-end">
-          <form.Field
-            name="autoRenew"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field orientation="horizontal" data-invalid={isInvalid}>
-                  <FieldContent className="flex flex-row items-center gap-4">
-                    <div className="flex flex-col">
-                      <FieldLabel htmlFor="form-tanstack-switch-twoFactor">
-                        Auto Renew
-                      </FieldLabel>
-                      <FieldDescription>
-                        Disable auto renewing.
-                      </FieldDescription>
-                    </div>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                    <Switch
-                      id="form-tanstack-switch-twoFactor"
-                      name={field.name}
-                      checked={field.state.value}
-                      onCheckedChange={field.handleChange}
-                      aria-invalid={isInvalid}
-                    />
-                  </FieldContent>
-                </Field>
-              );
-            }}
-          />
-          <form.Field name="status">
-            {(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field orientation="responsive" data-invalid={isInvalid}>
-                  <FieldContent>
-                    <FieldLabel
-                      className="mb-1.5"
-                      htmlFor="form-tanstack-select-language">
-                      Status
+          <form.Field name="autoRenew">
+            {(field) => (
+              <Field orientation="horizontal">
+                <FieldContent className="flex flex-row items-center gap-4">
+                  <div className="flex flex-col">
+                    <FieldLabel htmlFor="switch-auto-renew">
+                      {t("fields.auto_renew")}
                     </FieldLabel>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                    <Select
-                      name={field.name}
-                      value={field.state.value}
-                      onValueChange={(value) => {
-                        if (value) field.handleChange(value);
-                      }}>
-                      <SelectTrigger
-                        id="form-tanstack-select-language"
-                        aria-invalid={isInvalid}
-                        className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {statusEnum.options.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FieldContent>
-                </Field>
-              );
-            }}
+                    <FieldDescription>
+                      {t("fields.auto_renew_description")}
+                    </FieldDescription>
+                  </div>
+                  <Switch
+                    id="switch-auto-renew"
+                    checked={field.state.value}
+                    onCheckedChange={field.handleChange}
+                  />
+                </FieldContent>
+              </Field>
+            )}
+          </form.Field>
+
+          <form.Field name="status">
+            {(field) => (
+              <Field orientation="responsive">
+                <FieldContent>
+                  <FieldLabel className="mb-1.5" htmlFor="select-status">
+                    {t("fields.status")}
+                  </FieldLabel>
+                  <Select
+                    name={field.name}
+                    value={field.state.value}
+                    onValueChange={(value) => {
+                      if (value) field.handleChange(value);
+                    }}>
+                    <SelectTrigger id="select-status" className="w-full">
+                      <SelectValue>
+                        {tReusable(`status.${field.state.value}`)}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusEnum.options.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {tReusable(`status.${status}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldError errors={field.state.meta.errors} />
+                </FieldContent>
+              </Field>
+            )}
           </form.Field>
         </div>
       </FieldGroup>
