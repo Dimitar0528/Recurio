@@ -1,6 +1,6 @@
 "use client";
 
-import {useState } from "react";
+import { useState } from "react";
 import {
   Moon,
   Sun,
@@ -34,11 +34,12 @@ import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function Navigation() {
   const { isSignedIn, isLoaded } = useUser();
   const locale = useLocale();
+  const tReusable = useTranslations("Reusable.navigation_component");
   const { setTheme, theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -52,16 +53,23 @@ export default function Navigation() {
   const navLinks = [
     {
       name: isSignedIn ? "Dashboard" : "Insights",
-      href: isSignedIn ? "/dashboard" : `/${locale}#features`,
+      label: isSignedIn
+        ? tReusable("dashboard_link")
+        : tReusable("insights_link"),
+      href: isSignedIn ? "/dashboard" : `/${locale}#insights`,
       Icon: isSignedIn ? LayoutDashboard : Sparkles,
     },
     {
       name: isSignedIn ? "Payments" : "Reviews",
-      href: isSignedIn ? "/payments" : `/${locale}#testimonials`,
+      label: isSignedIn
+        ? tReusable("payments_link")
+        : tReusable("reviews_link"),
+      href: isSignedIn ? "/payments" : `/${locale}#reviews`,
       Icon: isSignedIn ? CreditCard : MessageSquareQuote,
     },
     {
       name: "Pricing",
+      label: tReusable("pricing_link"),
       href: "/pricing",
       Icon: Tag,
     },
@@ -78,6 +86,14 @@ export default function Navigation() {
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        
+        <a suppressHydrationWarning
+          href="#main-content"
+          className="absolute left-2 -top-1 -translate-y-full focus:translate-y-4 z-[100] px-4 py-2 bg-foreground text-background text-xs font-mono font-black uppercase tracking-widest rounded-lg shadow-2xl shadow-primary/40 transition-transform duration-300 ease-out outline-none ring-2 ring-primary ring-offset-2
+        ">
+          Skip to main content
+        </a>
+  
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Repeat size={20} className="text-primary-foreground" />
@@ -85,16 +101,15 @@ export default function Navigation() {
           <Link
             href={isSignedIn ? `/${locale}/dashboard` : ("/" as Route)}
             className="text-lg font-bold">
-            <span className="text-xl font-bold tracking-tight text-primary hover:underline hover:underline-offset-4">
+            <span className="text-xl font-bold text-primary hover:underline hover:underline-offset-4 uppercase tracking-tight">
               Recurio
             </span>
           </Link>
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          {navLinks.map(({ name, href, Icon }) => {
+          {navLinks.map(({ name, label, href, Icon }) => {
             const isActive = pathname.split("/")[2] === name.toLowerCase();
-
             return (
               <Link
                 key={name}
@@ -104,8 +119,8 @@ export default function Navigation() {
                     ? "underline underline-offset-6 decoration-primary decoration-2 text-foreground"
                     : ""
                 }`}>
-                <Icon size={16} />
-                <span>{name}</span>
+                <Icon size={16} className="text-primary" />
+                <span>{label}</span>
               </Link>
             );
           })}
@@ -153,7 +168,7 @@ export default function Navigation() {
             <div className="hidden md:block">
               <SignInButton>
                 <button className="group relative inline-flex items-center justify-center h-8 px-3 bg-primary text-primary-foreground text-sm font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
-                  Get Started
+                  {tReusable("sign_in_link")}
                   <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
               </SignInButton>
@@ -161,7 +176,14 @@ export default function Navigation() {
           </SignedOut>
 
           <SignedIn>
-            <UserButton />
+            <UserButton
+              appearance={{
+                elements: {
+                  userButtonTrigger:
+                    "focus-visible:border-ring focus-visible:ring-ring/60 focus-visible:ring-[3.5px] ",
+                },
+              }}
+            />
           </SignedIn>
 
           <Button

@@ -27,7 +27,7 @@ export default function Features() {
   };
 
   return (
-    <section id="features" className="py-18 px-6 border-t border-border">
+    <section id="insights" className="py-18 px-6 border-t border-border">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial="hidden"

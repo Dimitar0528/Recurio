@@ -26,6 +26,14 @@
             "description": "Всички полета са задължителни!",
             "submit": "{action} Абонамент",
             "cancel": "Отмени"
+        },
+        "navigation_component": {
+            "dashboard_link": "Табло",
+            "insights_link": "Преглед",
+            "payments_link": "Плащания",
+            "reviews_link": "Ревюта",
+            "pricing_link": "Цена",
+            "sign_in_link": "Започни сега"
         }
     },
     "Metadata":{
@@ -174,7 +182,7 @@
         },
         "upcoming_alert": {
             "title": "Засечени предстоящи плащания",
-            "description": "{names} ще ви таксуват {amount} в следващите 7 дни.",
+            "description": "<bold>{names}</bold> ще ви таксуват <bold>{amount}</bold> в следващите 7 дни.",
             "cta": "Преглед на графика",
             "names_format": {
                 "one": "{name}",
@@ -254,6 +262,7 @@
         "data_table_component": {
             "title": "Вашите абонаменти",
             "filter_placeholder": "Филтрирай по име...",
+            "status_button_clear_text": "Изчисти",
             "view_button": "Изглед",
             "toggle_columns": "Превключване на колони",
             "no_results": "Няма намерени резултати.",
@@ -300,7 +309,7 @@
                 "impact_title": "Статистическо въздействие",
                 "impact_text": "Изтриването ще повлияе на обобщената статистика като общи суми, средни стойности и анализи. <italic>Тези числа ще бъдат преизчислени и може вече да не отразяват миналата реалност.</italic>",
                 "recommendation_title": "Препоръка:",
-                "recommendation_text": "Изтриването трябва да се извършва само по <critical>изключително важни причини</critical>. В повечето случаи промяната на статуса на <paused>\"Паузиран\"</paused> или <cancelled>\"Прекратен\"</cancelled> е по-безопасната алтернатива.",
+                "recommendation_text": "Изтриването трябва да се извършва само по <critical>изключително важни причини</critical>. В повечето случаи промяната на статуса на <paused>\"Паузиран\"</paused> или <cancelled>\"Отменен\"</cancelled> е по-безопасната алтернатива.",
                 "verification_label": "Изисква се потвърждение",
                 "type_phrase": "Напишете:",
                 "placeholder": "Напишете фразата по-горе...",

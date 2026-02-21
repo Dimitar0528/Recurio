@@ -17,6 +17,7 @@ import Testimonials from "@/components/landing_page/Testimonials";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export async function generateMetadata({
   params,
@@ -64,7 +65,9 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
   setRequestLocale(lang as Locale);
   const t = await getTranslations("landing_page");
   return (
-    <div className="min-h-screen font-sans selection:bg-primary selection:text-primary-foreground">
+    <main
+      id="main-content"
+      className="min-h-screen font-sans selection:bg-primary selection:text-primary-foreground">
       <Suspense>
         <Hero />
       </Suspense>
@@ -136,16 +139,18 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
-                <button className="group relative w-full sm:w-auto bg-primary text-primary-foreground px-10 py-5 rounded-2xl font-bold text-lg cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/20 overflow-hidden">
-                  <div className="relative z-10 flex items-center justify-center gap-3">
-                    {t("cta.primary")}
-                    <ArrowRight
-                      size={20}
-                      className="group-hover:translate-x-1 transition-transform"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                </button>
+                <Link href="/dashboard">
+                  <button className="group relative w-full sm:w-auto bg-primary text-primary-foreground px-10 py-5 rounded-2xl font-bold text-lg cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/20 overflow-hidden">
+                    <div className="relative z-10 flex items-center justify-center gap-3">
+                      {t("cta.primary")}
+                      <ArrowRight
+                        size={20}
+                        className="group-hover:translate-x-1 transition-transform"
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  </button>
+                </Link>
 
                 <button className="w-full sm:w-auto bg-secondary hover:bg-secondary/80 text-secondary-foreground px-10 py-5 rounded-2xl font-bold text-lg border border-border cursor-pointer transition-all flex items-center justify-center gap-2">
                   <Zap size={18} className="text-muted-foreground" />
@@ -159,6 +164,6 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
           <div className="absolute -bottom-6 -right-6 w-24 h-24 border-b-2 border-r-2 border-primary/10 rounded-br-3xl -z-10" />
         </div>
       </section>
-    </div>
+    </main>
   );
 }

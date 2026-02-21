@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
@@ -14,19 +13,6 @@ import { Suspense } from "react";
 import { bgBG, enGB } from "@clerk/localizations";
 import { shadcn } from "@clerk/themes";
 import { ViewTransition } from 'react'
-
-const notoSans = Noto_Sans({ variable: "--font-sans" });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata.root_layout");
   return {
@@ -57,12 +43,6 @@ export default async function RootLayout({
   return (
     <ViewTransition>
       <NextIntlClientProvider>
-        <html
-          lang={lang}
-          className={notoSans.variable}
-          suppressHydrationWarning>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
             <Suspense>
               <ClerkProvider
                 localization={lang === "bg" ? bgBG : enGB}
@@ -80,14 +60,11 @@ export default async function RootLayout({
                   disableTransitionOnChange
                   enableColorScheme>
                   <Navigation />
-
-                  <main>{children}</main>
+                  {children}
                   <Footer />
                 </ThemeProvider>
               </ClerkProvider>
             </Suspense>
-          </body>
-        </html>
       </NextIntlClientProvider>
     </ViewTransition>
   );

@@ -168,7 +168,9 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           });
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-12">
+    <main
+      id="main-content"
+      className="min-h-screen bg-background text-foreground pb-12">
       <div className="max-w-7xl mx-auto px-6 pt-22">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 gap-2">
           <div>
@@ -222,9 +224,14 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
               <div>
                 <p className="text-sm font-bold">{t("upcoming_alert.title")}</p>
                 <p className="text-xs text-muted-foreground">
-                  {t("upcoming_alert.description", {
+                  {t.rich("upcoming_alert.description", {
                     names: namesText,
                     amount: priceFormatter(totalUpcomingAmount),
+                    bold: (chunks) => (
+                      <span className="text-foreground font-bold">
+                        {chunks}
+                      </span>
+                    ),
                   })}
                 </p>
               </div>
@@ -279,7 +286,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             <Download size={16} />
             {t("audit.title")}
           </h3>
-          <p className="text-xs text-background/60 mb-4 relative z-10 leading-relaxed">
+          <p className="text-xs text-background/70 mb-4 relative z-10 leading-relaxed">
             {t("audit.description")}
           </p>
           <button className="w-full lg:w-lg mx-auto bg-background text-foreground py-3 rounded-xl text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all relative z-10 flex items-center justify-center gap-2 shadow-xl shadow-black/20 cursor-pointer">
@@ -287,6 +294,6 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

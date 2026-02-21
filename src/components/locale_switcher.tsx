@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { routing } from "@/i18n/routing";
-import { Button } from "@base-ui/react/button";
+import { Button } from "@/components/ui/button";
 
 export default function LocaleSwitcher() {
   const currentLocale = useLocale();
@@ -33,7 +33,7 @@ export default function LocaleSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button className="group flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-border bg-card/50 hover:bg-secondary hover:border-primary/40 transition-all duration-300 cursor-pointer outline-none focus:ring-2 focus:ring-primary/20">
+          <Button className="group flex items-center gap-2.5 p-1.5 rounded-full border border-border bg-card/50 hover:bg-secondary hover:border-primary/40 transition-all duration-300 cursor-pointer">
             <div className="relative flex items-center justify-center">
               <Globe className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
             </div>

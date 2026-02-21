@@ -18,3 +18,4 @@ export const categoryEnum = z.enum(
 export const statusEnum = z.enum(["Active", "Paused", "Cancelled"]);
 export type BillingCycle = z.infer<typeof billingCycleEnum>;
 export type Category = z.infer<typeof categoryEnum>;
+export type Status = z.infer<typeof statusEnum>

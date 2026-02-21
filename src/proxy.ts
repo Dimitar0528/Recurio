@@ -29,7 +29,7 @@ const clerk = clerkMiddleware(async (auth, req) => {
         return NextResponse.redirect(redirectUrl);
       }
     }
-}, {clockSkewInMs: 8000});
+}, {clockSkewInMs: 15000});
 
 export default async function middleware(request: NextRequest, event: NextFetchEvent) {
   // Let next-intl middleware handle locale detection and redirects FIRST

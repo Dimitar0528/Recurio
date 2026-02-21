@@ -102,7 +102,7 @@ export default function DataVisualization() {
                     </div>
 
                     {year.highlight && (
-                      <div className="absolute -top-12 -right-4 bg-primary/80 text-primary-foreground px-3 py-1 rounded text-[10px] font-bold rotate-6 shadow-xl">
+                      <div className="absolute -top-12 -right-4 bg-primary/40 text-primary-foreground px-3 py-1 rounded text-[10px] font-bold rotate-6 shadow-xl">
                         {t("opportunity_cost")}
                       </div>
                     )}

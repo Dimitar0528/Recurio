@@ -152,7 +152,7 @@ export default function Testimonials() {
     },
   ];
   return (
-    <section id="testimonials" className="py-12 px-6 overflow-hidden bg-primary/10">
+    <section id="reviews" className="py-12 px-6 overflow-hidden bg-primary/10">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         <div className="space-y-8 text-center">
           <h2 className="text-5xl md:text-6xl font-bold tracking-tighter">
@@ -165,10 +165,7 @@ export default function Testimonials() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[520px] -mt-8">
           <ScrollingColumn items={testimonials.slice(0, 9)} duration={45} />
-          <ScrollingColumn
-            items={testimonials.slice(9, 18)}
-            duration={45}
-          />
+          <ScrollingColumn items={testimonials.slice(9, 18)} duration={45} />
         </div>
       </div>
     </section>

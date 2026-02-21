@@ -87,7 +87,7 @@ export function SpendingCard({
               className={cn(
                 "text-xs font-bold uppercase block mb-1",
                 isDarkCardVariant
-                  ? "text-gray-200 dark:text-gray-600"
+                  ? "text-gray-200 dark:text-gray-700"
                   : "text-gray-700 dark:text-gray-400",
               )}>
               {primaryLabel}
@@ -110,7 +110,7 @@ export function SpendingCard({
               className={cn(
                 "text-[10px] font-bold uppercase block mb-1",
                 isDarkCardVariant
-                  ? "text-background/60"
+                  ? "text-background/70"
                   : "text-gray-600 dark:text-gray-400",
               )}>
               {secondaryLabel}
@@ -119,7 +119,7 @@ export function SpendingCard({
               className={cn(
                 "text-xl font-mono font-medium",
                 isDarkCardVariant
-                  ? "text-background/60"
+                  ? "text-background/70"
                   : "text-gray-600 dark:text-gray-400",
               )}>
               {secondaryValue}

@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import {
   ArrowDown,
+  Check,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  PlusCircle,
   Settings2,
 } from "lucide-react";
 import {
@@ -18,6 +20,8 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   VisibilityState,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
 } from "@tanstack/react-table";
 
 import {
@@ -46,10 +50,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import DataTableSkeleton from "./DataTableSkeleton";
 import { useTranslations } from "next-intl";
 import { useColumns } from "./columns";
 import { Subscription } from "@/lib/validations/form";
+import { Status, statusEnum } from "@/lib/validations/enum";
+import { cn } from "@/lib/utils";
 type DataTableProps = {
   data: Subscription[];
 };
@@ -57,6 +79,7 @@ type DataTableProps = {
 export function DataTable({
   data,
 }: DataTableProps) {
+  const tReusable = useTranslations("Reusable")
   const t = useTranslations("dashboard_page.data_table_component");
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -69,10 +92,12 @@ export function DataTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
     getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
@@ -116,6 +141,13 @@ export function DataTable({
     return () => window.removeEventListener("resize", handleResize);
   }, [table]);
 
+  const column = table.getColumn("status");
+  if (!column) return null;
+
+  const facets = column?.getFacetedUniqueValues() as Map<Status, number>;
+  const selectedStatuses = new Set(column?.getFilterValue() as Status[]);
+
+  const allSubscriptionStatuses = Object.values(statusEnum.enum) 
   if (!hasMounted) {
     return <DataTableSkeleton />;
   }
@@ -128,7 +160,7 @@ export function DataTable({
         </h2>
       </div>
 
-      <div className="flex items-center justify-start py-4 flex-col md:flex-row">
+      <div className="flex items-center justify-start py-4 flex-col md:flex-row gap-2">
         <Input
           placeholder={t("filter_placeholder")}
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -137,6 +169,113 @@ export function DataTable({
           }
           className="max-w-sm"
         />
+
+        <Popover>
+          <PopoverTrigger
+            render={
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 border-dashed bg-transparent hover:bg-secondary/50 cursor-pointer">
+                <PlusCircle className="mr-2 h-4 w-4 opacity-60" />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  {t("table.columns.status")}
+                </span>
+                {selectedStatuses?.size > 0 && (
+                  <>
+                    <Separator orientation="vertical" className="mx-2 h-4" />
+                    <Badge
+                      variant="secondary"
+                      className="rounded-sm px-1 font-mono font-bold text-[10px] lg:hidden">
+                      {selectedStatuses.size}
+                    </Badge>
+                    <div className="hidden space-x-1 lg:flex">
+                      {selectedStatuses.size > 1 ? (
+                        <Badge
+                          variant="secondary"
+                          className="rounded-sm px-1 font-mono font-bold text-[10px]">
+                          {selectedStatuses.size}
+                        </Badge>
+                      ) : (
+                        Array.from(selectedStatuses).map((status) => (
+                          <Badge
+                            variant="secondary"
+                            key={status}
+                            className="rounded-sm px-1 font-mono font-bold text-[10px] uppercase">
+                            {tReusable(`status.${status}`)}
+                          </Badge>
+                        ))
+                      )}
+                    </div>
+                  </>
+                )}
+              </Button>
+            }></PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0" align="start">
+            <Command>
+              <CommandInput
+                placeholder={t("table.columns.status")}
+                className="h-9 font-sans"
+              />
+              <CommandList>
+                <CommandEmpty>{t("no_results")}</CommandEmpty>
+                <CommandGroup>
+                  {allSubscriptionStatuses.map((status) => {
+                    const isSelected = selectedStatuses.has(status);
+
+                    return (
+                      <CommandItem
+                        key={status}
+                        onSelect={() => {
+                          if (isSelected) {
+                            selectedStatuses.delete(status);
+                          } else {
+                            selectedStatuses.add(status);
+                          }
+                          const filterValues = Array.from(selectedStatuses);
+                          column?.setFilterValue(
+                            filterValues.length ? filterValues : undefined,
+                          );
+                        }}
+                        className="cursor-pointer">
+                        <div
+                          className={cn(
+                            "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary transition-colors",
+                            isSelected
+                              ? "bg-primary text-primary-foreground"
+                              : "opacity-50 [&_svg]:invisible",
+                          )}>
+                          <Check className={cn("h-4 w-4")} />
+                        </div>
+                        <span className="capitalize text-sm font-medium">
+                          {tReusable(`status.${status}`)}
+                        </span>
+                        {facets?.get(status) && (
+                          <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-[10px] text-muted-foreground">
+                            {facets.get(status)}
+                          </span>
+                        )}
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+                {selectedStatuses.size > 0 && (
+                  <>
+                    <CommandSeparator />
+                    <CommandGroup>
+                      <CommandItem
+                        onSelect={() => column?.setFilterValue(undefined)}
+                        className="text-xs font-bold uppercase tracking-widest hover:text-foreground cursor-pointer">
+                        {t("status_button_clear_text")}
+                      </CommandItem>
+                    </CommandGroup>
+                  </>
+                )}
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
         <div className="flex md:ml-auto gap-2 flex-col md:flex-row mt-2 md:mt-0 items-center">
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -150,7 +289,9 @@ export function DataTable({
             />
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
-                <DropdownMenuLabel className="text-center">{t("toggle_columns")}</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-center">
+                  {t("toggle_columns")}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {table
                   .getAllColumns()
@@ -240,11 +381,13 @@ export function DataTable({
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => table.setPageSize(Number(value))}>
-              <SelectTrigger id="select-rows-per-page" className="w-[65px] scale-[0.90] cursor-pointer">
+              <SelectTrigger
+                id="select-rows-per-page"
+                className="w-[65px] scale-[0.90] cursor-pointer">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent side="top">
-                {[10, 20, 25, 30, 40, 50].map((pageSize) => (
+                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                   <SelectItem key={pageSize} value={`${pageSize}`}>
                     {pageSize}
                   </SelectItem>

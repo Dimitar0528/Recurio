@@ -26,6 +26,14 @@
             "description": "All fields are required!",
             "submit": "{action} Subscription",
             "cancel": "Cancel"
+        },
+        "navigation_component":{
+            "dashboard_link": "Dashboard",
+            "insights_link": "Insights",
+            "payments_link": "Payments",
+            "reviews_link": "Reviews",
+            "pricing_link": "Pricing",
+            "sign_in_link": "Get Started"
         }
     },
     "Metadata": {
@@ -175,7 +183,7 @@
         },
         "upcoming_alert": {
             "title": "Upcoming charges detected",
-            "description": "{names} will charge {amount} in the next 7 days.",
+            "description": "<bold>{names}</bold> will charge <bold>{amount}</bold> in the next 7 days.",
             "cta": "Review Schedule",
             "names_format": {
                 "one": "{name}",
@@ -255,6 +263,7 @@
         "data_table_component": {
             "title": "Your Subscriptions",
             "filter_placeholder": "Filter name...",
+            "status_button_clear_text": "Clear",
             "view_button": "View",
             "toggle_columns": "Toggle columns",
             "no_results": "No results available.",

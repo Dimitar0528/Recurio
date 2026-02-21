@@ -72,7 +72,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         const billingDate = dateFormatter(nextBilling, locale);
         const statusClasses = {
           Active:
-            "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
+            "bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-300",
           Paused:
             "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300",
           Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
@@ -180,7 +180,9 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           <div className="flex flex-col">
             <span className="font-medium leading-none">
               {formattedPrice} /{" "}
-              <span className="text-xs text-primary">{tReusable(`billingCycle.${billingCycle}`)}</span>
+              <span className="text-xs text-primary">
+                {tReusable(`billingCycle.${billingCycle}`)}
+              </span>
             </span>
             {billingCycle === "Annual" && (
               <span className="ml-1 text-[10px] text-muted-foreground font-medium">
@@ -257,11 +259,15 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           title={t("table.columns.status")}
         />
       ),
+      filterFn: (row, columnId, value) => {
+         if (!value || value.length === 0) return true;
+         return value.includes(row.getValue(columnId));
+      },
       cell: ({ row }) => {
         const { status } = row.original;
         const statusClasses = {
           Active:
-            "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
+            "bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-300",
           Paused:
             "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300",
           Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
@@ -355,7 +361,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                     <AlertTriangle size={20} />
                   </div>
                   <DialogTitle className="text-destructive">
-                    Are you absolutely sure?
+                    {t("delete_dialog.title")}
                   </DialogTitle>
                 </div>
                 <div className="p-4 space-y-6">
@@ -367,43 +373,45 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                     }}>
                     <div className="text-sm leading-relaxed text-foreground/80 space-y-4">
                       <p>
-                        {" "}
-                        Once deleted, the subscription and all related data will
-                        be
-                        <strong className="text-foreground"> removed</strong>.
+                        {t.rich("delete_dialog.warning", {
+                          important: (c) => (
+                            <strong className="text-foreground">{c}</strong>
+                          ),
+                        })}
                       </p>
                       <div className="p-2 rounded-lg bg-muted/50 border border-border text-xs leading-normal">
                         <span className="font-bold text-foreground block mb-1 uppercase tracking-wider">
-                          Statistical Impact
+                          {t("delete_dialog.impact_title")}
                         </span>
-                        Deletion will affect aggregated subscription statistics
-                        such as totals, averages, historical insights etc.
-                        <span className="text-muted-foreground italic">
-                          {" "}
-                          These numbers will be recalculated and may no longer
-                          reflect past reality.
-                        </span>
+                        {t.rich("delete_dialog.impact_text", {
+                          italic: (c) => (
+                            <span className="text-muted-foreground italic">
+                              {c}
+                            </span>
+                          ),
+                        })}
                       </div>
 
                       <p className="text-xs bg-accent/50 p-2 rounded-lg border border-border">
-                        <span className="font-bold">Recommendation:</span>{" "}
-                        Deletion should only be performed for
-                        <strong> extremely critical reasons</strong>. In most
-                        cases, changing the status of the subscription to
-                        <strong> &quot;Paused&quot;</strong> or{" "}
-                        <strong>&quot;Cancelled&quot;</strong> is the more
-                        appropriate and safer alternative.
+                        <span className="font-bold">
+                          {t("delete_dialog.recommendation_title")}
+                        </span>{" "}
+                        {t.rich("delete_dialog.recommendation_text", {
+                          critical: (c) => <strong>{c}</strong>,
+                          paused: (c) => <strong>{c}</strong>,
+                          cancelled: (c) => <strong>{c}</strong>,
+                        })}
                       </p>
                     </div>
 
                     <div className="space-y-3 select-none">
-                      <Label
-                        htmlFor="requiredPhrase"
-                        className="text-[11px] uppercase font-bold tracking-widest text-muted-foreground mt-4">
-                        Verification Required
+                      <Label className="text-[11px] uppercase font-bold tracking-widest text-muted-foreground mt-4">
+                        {t("delete_dialog.verification_label")}
                       </Label>
                       <div className="p-3 bg-secondary/50 border border-border rounded-md text-sm mb-2">
-                        <span className="text-muted-foreground">Type: </span>
+                        <span className="text-muted-foreground">
+                          {t("delete_dialog.type_phrase")}{" "}
+                        </span>
                         <span className="font-mono font-bold text-destructive">
                           {requiredPhrase}
                         </span>
@@ -425,12 +433,15 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                                     field.handleChange(e.target.value)
                                   }
                                   aria-invalid={isInvalid}
-                                  placeholder="Type the phrase above..."
+                                  aria-describedby="requiredPhraseError"
+                                  placeholder={t("delete_dialog.placeholder")}
                                   autoComplete="off"
                                 />
                                 {isInvalid && (
                                   <FieldError
+                                    id="requiredPhraseError"
                                     errors={field.state.meta.errors}
+                                    aria-live="polite"
                                   />
                                 )}
                               </Field>
@@ -448,7 +459,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                       <Button
                         variant="outline"
                         className="cursor-pointer border-border hover:bg-accent font-semibold">
-                        Cancel
+                        {t("delete_dialog.cancel")}
                       </Button>
                     }
                   />
@@ -458,7 +469,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                     disabled={!form.state.canSubmit}
                     variant="destructive"
                     className="cursor-pointer font-bold shadow-lg shadow-destructive/20 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase">
-                    Delete Subscription
+                    {t("delete_dialog.confirm")}
                   </Button>
                 </DialogFooter>
               </DialogContent>

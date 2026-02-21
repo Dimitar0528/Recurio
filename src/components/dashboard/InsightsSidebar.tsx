@@ -5,7 +5,7 @@ import { cn, priceFormatter } from "@/lib/utils";
 import { Subscription } from "@/lib/validations/form";
 import { PieChart } from "lucide-react";
 import { Button } from "../ui/button";
-import type { BillingCycle, Category } from "@/lib/validations/enum";
+import { categoryEnum, type BillingCycle, type Category } from "@/lib/validations/enum";
 import { Input } from "../ui/input";
 import { useUser } from "@clerk/nextjs";
 
@@ -85,7 +85,7 @@ export default function InsightsSidebar({
 
   const aggregatedByCategory = data
     .filter((subscription) => subscription.status === "Active")
-    .reduce<Record<string, number>>(
+    .reduce<Record<Category, number>>(
       (acc, { price, billingCycle, category }) => {
         let normalizedAmount = price;
 
@@ -98,9 +98,8 @@ export default function InsightsSidebar({
         acc[category] = (acc[category] ?? 0) + normalizedAmount;
         return acc;
       },
-      {},
+      {} as Record<Category, number>,
     );
-
   const totalSpend = Object.values(aggregatedByCategory).reduce(
     (sum, amount) => sum + amount,
     0,
@@ -109,7 +108,7 @@ export default function InsightsSidebar({
   const categoryItems = Object.entries(aggregatedByCategory).map(
     ([category, amount]) => {
       const percentage =
-        totalSpend === 0 ? 0 : Math.round((amount / totalSpend) * 100);
+        totalSpend === 0 ? 0 : ((amount / totalSpend) * 100).toFixed(1);
         const typedCategory = category as Category
       return {
         key: typedCategory,
@@ -120,14 +119,26 @@ export default function InsightsSidebar({
     },
   );
 
-  const categoryColors: Record<string, string> = {
-    Software: "bg-primary",
-    Education: "bg-blue-500",
-    Entertainment: "bg-purple-500",
-    Utilities: "bg-zinc-500",
-    Fitness: "bg-green-500",
-    Other: "bg-orange-500",
-  };
+  const allCategories = Object.values(categoryEnum.enum);
+  const baseColors = [
+    "bg-purple-500",
+    "bg-primary",
+    "bg-blue-500",
+    "bg-zinc-500",
+    "bg-green-500",
+    "bg-orange-500",
+    "bg-pink-500",
+    "bg-yellow-500",
+    "bg-cyan-500",
+    "bg-red-500",
+  ];
+   const categoryColors: Record<Category, string> = allCategories.reduce(
+    (acc, category, index) => {
+      acc[category] = baseColors[index % baseColors.length];
+      return acc;
+    },
+    {} as Record<Category, string>,
+  );
 
   return (
     <div className="lg:col-span-4 space-y-6">
@@ -215,11 +226,16 @@ export default function InsightsSidebar({
                           onChange={(e) => field.handleChange(e.target.value)}
                           aria-invalid={isInvalid}
                           placeholder={t("income_ratio.form.placeholder")}
-                          autoComplete="off"
+                          autoComplete="on"
                           className="h-6"
+                          aria-describedby="netSalaryError"
                         />
                         {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
+                          <FieldError
+                            id="netSalaryError"
+                            errors={field.state.meta.errors}
+                            aria-live="polite"
+                          />
                         )}
                       </Field>
                     );
@@ -284,7 +300,7 @@ export default function InsightsSidebar({
                     "text-[11px] inline text-muted-foreground leading-tight p-0.25 px-2 rounded-lg",
                     ratio > 10
                       ? "bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-200"
-                      : "bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200",
+                      : "bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-200",
                   )}>
                   {ratio > 10
                     ? t("income_ratio.stats.feedback_high")
@@ -308,7 +324,7 @@ export default function InsightsSidebar({
               className={` rounded-lg transition-all cursor-pointer hover:bg-primary hover:text-background dark:hover:text-foreground active:scale-[0.98] ${
                 viewMode === "Monthly"
                   ? "bg-primary/30 shadow text-foreground"
-                  : "text-gray-600 dark:text-gray-400 bg-secondary"
+                  : "text-gray-700 dark:text-gray-300 bg-secondary"
               }`}>
               {t("breakdown.monthly")}
             </Button>
@@ -317,7 +333,7 @@ export default function InsightsSidebar({
               className={` rounded-lg transition-all cursor-pointer hover:bg-primary hover:text-background dark:hover:text-foreground active:scale-[0.98] ${
                 viewMode === "Annual"
                   ? "bg-primary/30 shadow text-foreground"
-                  : "text-gray-600 dark:text-gray-400 bg-secondary"
+                  : "text-gray-700 dark:text-gray-300 bg-secondary"
               }`}>
               {t("breakdown.annual")}
             </Button>

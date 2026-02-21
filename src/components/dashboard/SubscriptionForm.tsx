@@ -53,13 +53,12 @@ export default function SubscriptionForm({
   const dateLocale = locale === "bg" ? bg : enUS;
 
   const initialModifiedValues = initialValues
-    ? {
+    && {
         ...initialValues,
         startDate: format(initialValues.startDate, "yyyy-MM-dd"),
         nextBilling: format(initialValues.nextBilling, "yyyy-MM-dd"),
         price: initialValues.price.toFixed(2),
       }
-    : undefined;
 
   const form = useForm({
     defaultValues: initialModifiedValues ?? {
@@ -118,16 +117,24 @@ export default function SubscriptionForm({
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   placeholder={t("fields.name_placeholder")}
-                  autoComplete="off"
+                  autoComplete="on"
+                  aria-describedby="nameError"
+                  aria-invalid={
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  }
                 />
-                <FieldError errors={field.state.meta.errors} />
+                <FieldError
+                  id="nameError"
+                  errors={field.state.meta.errors}
+                  aria-live="polite"
+                />
               </Field>
             )}
           </form.Field>
 
           <form.Field name="category">
             {(field) => {
-              const typedCategory = field.state.value as Category
+              const typedCategory = field.state.value as Category;
               return (
                 <Field orientation="responsive">
                   <FieldContent>
@@ -140,11 +147,13 @@ export default function SubscriptionForm({
                       onValueChange={(value) => {
                         if (value) field.handleChange(value);
                       }}>
-                      <SelectTrigger id="select-category" className="w-full">
+                      <SelectTrigger
+                        id="select-category"
+                        className="w-full"
+                        aria-describedby="categoryError">
                         <SelectValue>
-                          {field.state.value && tReusable(
-                            `categories.${typedCategory}`,
-                          )}
+                          {field.state.value &&
+                            tReusable(`categories.${typedCategory}`)}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
@@ -155,17 +164,25 @@ export default function SubscriptionForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FieldError errors={field.state.meta.errors} />
+                    <FieldError
+                      id="categoryError"
+                      errors={field.state.meta.errors}
+                      aria-live="polite"
+                    />
                   </FieldContent>
                 </Field>
-              );}}
+              );
+            }}
           </form.Field>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <form.Field name="price">
             {(field) => (
-              <Field>
+              <Field
+                data-invalid={
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                }>
                 <FieldLabel htmlFor={field.name}>
                   {t("fields.price")}
                 </FieldLabel>
@@ -176,8 +193,17 @@ export default function SubscriptionForm({
                   onChange={(e) => field.handleChange(e.target.value)}
                   placeholder={t("fields.price_placeholder")}
                   className="w-full"
+                  aria-describedby="priceError"
+                  aria-invalid={
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  }
+                  autoComplete="on"
                 />
-                <FieldError errors={field.state.meta.errors} />
+                <FieldError
+                  id="priceError"
+                  errors={field.state.meta.errors}
+                  aria-live="polite"
+                />
               </Field>
             )}
           </form.Field>
@@ -205,7 +231,10 @@ export default function SubscriptionForm({
                       );
                       field.form.setFieldValue("nextBilling", nextDate);
                     }}>
-                    <SelectTrigger id="select-cycle" className="w-full">
+                    <SelectTrigger
+                      id="select-cycle"
+                      className="w-full"
+                      aria-describedby="billingCycleError">
                       <SelectValue>
                         {tReusable(`billingCycle.${field.state.value}`)}
                       </SelectValue>
@@ -218,7 +247,11 @@ export default function SubscriptionForm({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FieldError errors={field.state.meta.errors} />
+                  <FieldError
+                    id="billingCycleError"
+                    errors={field.state.meta.errors}
+                    aria-live="polite"
+                  />
                 </FieldContent>
               </Field>
             )}
@@ -236,47 +269,55 @@ export default function SubscriptionForm({
                   <FieldLabel htmlFor={field.name}>
                     {t("fields.start_date")}
                   </FieldLabel>
-                  <Popover>
-                    <PopoverTrigger
-                      render={
-                        <Button
-                          variant="outline"
-                          className="w-32 justify-between font-normal">
-                          {dateValue
-                            ? format(dateValue, "PP", { locale: dateLocale })
-                            : t("fields.date_placeholder")}
-                          <ChevronDownIcon data-icon="inline-end" />
-                        </Button>
-                      }
-                    />
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        locale={dateLocale}
-                        mode="single"
-                        captionLayout="dropdown"
-                        fixedWeeks
-                        selected={dateValue}
-                        onSelect={(selectedDate) => {
-                          if (!selectedDate) return;
-                          const formatted = format(selectedDate, "yyyy-MM-dd");
-                          field.handleChange(formatted);
-                          const options =
-                            field.form.getFieldValue("billingCycle") ===
-                            "Annual"
-                              ? { advanceYearNumber: 1 }
-                              : { advanceMonthNumber: 1 };
-                          field.form.setFieldValue(
-                            "nextBilling",
-                            format(
-                              advanceDateWithClamp(selectedDate, options),
-                              "yyyy-MM-dd",
-                            ),
-                          );
-                        }}
+                    <Popover>
+                      <PopoverTrigger
+                        render={
+                          <Button
+                            variant="outline"
+                            className="w-32 justify-between font-normal">
+                            {dateValue
+                              ? format(dateValue, "PP", { locale: dateLocale })
+                              : t("fields.date_placeholder")}
+                            <ChevronDownIcon data-icon="inline-end" />
+                          </Button>
+                        }
+                        aria-describedby="startDateError"
                       />
-                    </PopoverContent>
-                  </Popover>
-                  <FieldError errors={field.state.meta.errors} />
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          locale={dateLocale}
+                          mode="single"
+                          captionLayout="dropdown"
+                          fixedWeeks
+                          selected={dateValue}
+                          onSelect={(selectedDate) => {
+                            if (!selectedDate) return;
+                            const formatted = format(
+                              selectedDate,
+                              "yyyy-MM-dd",
+                            );
+                            field.handleChange(formatted);
+                            const options =
+                              field.form.getFieldValue("billingCycle") ===
+                              "Annual"
+                                ? { advanceYearNumber: 1 }
+                                : { advanceMonthNumber: 1 };
+                            field.form.setFieldValue(
+                              "nextBilling",
+                              format(
+                                advanceDateWithClamp(selectedDate, options),
+                                "yyyy-MM-dd",
+                              ),
+                            );
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FieldError
+                      id="startDateError"
+                      errors={field.state.meta.errors}
+                      aria-live="polite"
+                    />
                 </Field>
               );
             }}
@@ -292,43 +333,48 @@ export default function SubscriptionForm({
                   <FieldLabel htmlFor={field.name}>
                     {t("fields.next_billing")}
                   </FieldLabel>
-                  <Popover>
-                    <PopoverTrigger
-                      render={
-                        <Button
-                          variant="outline"
-                          className="w-32 justify-between font-normal">
-                          {dateValue
-                            ? format(dateValue, "PP", { locale: dateLocale })
-                            : t("fields.date_placeholder")}
-                          <ChevronDownIcon data-icon="inline-end" />
-                        </Button>
-                      }
-                    />
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        locale={dateLocale}
-                        mode="single"
-                        captionLayout="dropdown"
-                        endMonth={
-                          new Date(
-                            new Date().getFullYear(),
-                            new Date().getMonth() + 18,
-                          )
+                    <Popover>
+                      <PopoverTrigger
+                        render={
+                          <Button
+                            variant="outline"
+                            className="w-32 justify-between font-normal">
+                            {dateValue
+                              ? format(dateValue, "PP", { locale: dateLocale })
+                              : t("fields.date_placeholder")}
+                            <ChevronDownIcon data-icon="inline-end" />
+                          </Button>
                         }
-                        fixedWeeks
-                        selected={dateValue}
-                        onSelect={(selectedDate) => {
-                          if (!selectedDate) return;
-                          field.handleChange(
-                            format(selectedDate, "yyyy-MM-dd"),
-                          );
-                        }}
-                        defaultMonth={dateValue || undefined}
+                        aria-describedby="nextBillingError"
                       />
-                    </PopoverContent>
-                  </Popover>
-                  <FieldError errors={field.state.meta.errors} />
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          locale={dateLocale}
+                          mode="single"
+                          captionLayout="dropdown"
+                          endMonth={
+                            new Date(
+                              new Date().getFullYear(),
+                              new Date().getMonth() + 18,
+                            )
+                          }
+                          fixedWeeks
+                          selected={dateValue}
+                          onSelect={(selectedDate) => {
+                            if (!selectedDate) return;
+                            field.handleChange(
+                              format(selectedDate, "yyyy-MM-dd"),
+                            );
+                          }}
+                          defaultMonth={dateValue || undefined}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FieldError
+                      id="nextBillingError"
+                      errors={field.state.meta.errors}
+                      aria-live="polite"
+                    />
                 </Field>
               );
             }}
@@ -352,6 +398,12 @@ export default function SubscriptionForm({
                     id="switch-auto-renew"
                     checked={field.state.value}
                     onCheckedChange={field.handleChange}
+                    aria-describedby="autoRenewError"
+                  />
+                  <FieldError
+                    id="autoRenewError"
+                    errors={field.state.meta.errors}
+                    aria-live="polite"
                   />
                 </FieldContent>
               </Field>
@@ -361,17 +413,20 @@ export default function SubscriptionForm({
           <form.Field name="status">
             {(field) => (
               <Field orientation="responsive">
+                <FieldLabel className="mb-1.5" htmlFor="select-status">
+                  {t("fields.status")}
+                </FieldLabel>
                 <FieldContent>
-                  <FieldLabel className="mb-1.5" htmlFor="select-status">
-                    {t("fields.status")}
-                  </FieldLabel>
                   <Select
                     name={field.name}
                     value={field.state.value}
                     onValueChange={(value) => {
                       if (value) field.handleChange(value);
                     }}>
-                    <SelectTrigger id="select-status" className="w-full">
+                    <SelectTrigger
+                      id="select-status"
+                      className="w-full"
+                      aria-describedby="statusError">
                       <SelectValue>
                         {tReusable(`status.${field.state.value}`)}
                       </SelectValue>
@@ -384,7 +439,11 @@ export default function SubscriptionForm({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FieldError errors={field.state.meta.errors} />
+                  <FieldError
+                    id="statusError"
+                    errors={field.state.meta.errors}
+                    aria-live="polite"
+                  />
                 </FieldContent>
               </Field>
             )}
