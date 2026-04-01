@@ -54,13 +54,17 @@ export function getCurrentDateRange(
   period: "month" | "year",
 ) {
   if (period === "month") {
-    const start = new Date(date.getUTCFullYear(), date.getUTCMonth(), 1);
-    const end = new Date(date.getUTCFullYear(), date.getUTCMonth() + 1, 1);
+    const start = new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1),
+    );
+    const end = new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 1),
+    );
     return { start, end };
   }
 
-  const start = new Date(date.getUTCFullYear(), 0, 1);
-  const end = new Date(date.getUTCFullYear() + 1, 0, 1);
+  const start = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const end = new Date(Date.UTC(date.getUTCFullYear() + 1, 0, 1));
   return { start, end };
 }
 

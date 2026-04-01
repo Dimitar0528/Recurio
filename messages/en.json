@@ -1,4 +1,43 @@
 {
+    "Metadata": {
+        "root_layout": {
+            "description": "The only modern subscription management tool you need."
+        },
+        "landing_page": {
+            "title": "Home Page - {brandName}",
+            "description": "A subscription management app that helps you track your expenses, avoid unnecessary fees, and have complete control over your monthly budget."
+        },
+        "dashboard_page": {
+            "title": "Dashboard",
+            "description": "A centralized dashboard for viewing your subscriptions, monthly and annual expenses, as well as summary data for better financial control."
+        }
+    },
+    "Validation": {
+        "subscription": {
+            "name":{
+                "min": "Name must be at least {min} characters.",
+                "max": "Name can't be more than {max} characters.'"
+            },
+            "price":{
+                "required": "Price is required.",
+                "positive": "Price must be a positive number.",
+                "decimal_count": "Price can have at most 2 decimal places."
+            },
+            "category":{
+                "invalid": "Choose a valid category."
+            },
+            "nextBilling": {
+                "required": "Next billing date is required.",
+                "invalid": "Invalid billing date.",
+                "cannot_be_in_the_past": "Date cannot be in the past."
+            }
+        },
+        "netSalary": {
+            "min": "Net salary is required.",
+            "positive": "Net salary must be a positive number.",
+            "decimal_count": "Net salary can have at most 2 decimal places."
+        }
+    },
     "Reusable":{
         "categories": {
             "Entertainment": "Entertainment",
@@ -33,20 +72,12 @@
             "payments_link": "Payments",
             "reviews_link": "Reviews",
             "pricing_link": "Pricing",
-            "sign_in_link": "Get Started"
-        }
-    },
-    "Metadata": {
-        "root_layout": {
-            "description": "The only modern subscription management tool you need."
-        },
-        "landing_page": {
-            "title": "Home Page - {brandName}",
-            "description": "A subscription management app that helps you track your expenses, avoid unnecessary fees, and have complete control over your monthly budget."
-        },
-        "dashboard_page": {
-            "title": "Dashboard",
-            "description": "A centralized dashboard for viewing your subscriptions, monthly and annual expenses, as well as summary data for better financial control."
+            "sign_in_link": "Get Started",
+            "theme_switcher": {
+                "light": "Light",
+                "dark": "Dark",
+                "system": "System"
+            }
         }
     },
     "landing_page": {
@@ -247,7 +278,6 @@
                 "price": "Price (€)",
                 "price_placeholder": "9.99 €",
                 "billing_cycle": "Billing Cycle",
-                "start_date": "Start Date",
                 "next_billing": "Next Billing",
                 "date_placeholder": "Pick a date",
                 "auto_renew": "Auto Renew",

@@ -45,9 +45,9 @@ export default function Navigation() {
   const pathname = usePathname();
 
   const themes = [
-    { name: "Light", value: "light", Icon: Sun },
-    { name: "Dark", value: "dark", Icon: Moon },
-    { name: "System", value: "system", Icon: Laptop },
+    { name: tReusable("theme_switcher.light"), value: "light", Icon: Sun },
+    { name: tReusable("theme_switcher.dark"), value: "dark", Icon: Moon },
+    { name: tReusable("theme_switcher.system"), value: "system", Icon: Laptop },
   ] as const;
 
   const navLinks = [

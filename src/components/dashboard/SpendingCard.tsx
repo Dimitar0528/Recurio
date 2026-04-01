@@ -70,7 +70,7 @@ export function SpendingCard({
             className={cn(
               "p-2 rounded-xl text-primary transition-transform ml-2",
               isDarkCardVariant
-                ? "bg-background/10 group-hover:rotate-12"
+                ? "bg-background/85 group-hover:rotate-12"
                 : "bg-secondary group-hover:scale-110",
             )}>
             {icon}

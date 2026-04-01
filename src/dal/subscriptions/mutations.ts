@@ -1,19 +1,18 @@
 import "server-only";
-import { Subscription } from "@/lib/validations/form";
+import { SubscriptionFormValues } from "@/lib/validations/schemas";
 import { db } from "@/db/db";
 import { subscriptionsTable } from "@/db/schema";
 import { revalidatePath, updateTag } from "next/cache";
 import { and, eq } from "drizzle-orm";
 import { verifyUser } from "../users/verifyUser";
 
-export async function insertUserSubscription(subscription: Subscription) {
+export async function insertUserSubscription(subscription: SubscriptionFormValues) {
   const userId = await verifyUser();
-  
+
   await db.insert(subscriptionsTable).values({
     name: subscription.name,
     price: subscription.price.toFixed(2),
     billingCycle: subscription.billingCycle,
-    startDate: subscription.startDate,
     nextBilling: subscription.nextBilling,
     category: subscription.category,
     status: subscription.status,
@@ -26,7 +25,7 @@ export async function insertUserSubscription(subscription: Subscription) {
 
 export async function updateUserSubscription(
   id: string,
-  subscription: Subscription,
+  subscription: SubscriptionFormValues,
 ) {
   const userId = await verifyUser();
 
@@ -37,7 +36,6 @@ export async function updateUserSubscription(
       category: subscription.category,
       price: subscription.price.toFixed(2),
       billingCycle: subscription.billingCycle,
-      startDate: subscription.startDate,
       nextBilling: subscription.nextBilling,
       autoRenew: subscription.autoRenew,
       status: subscription.status,
@@ -56,7 +54,7 @@ export async function deleteUserSubscription(id: string) {
   await db
     .update(subscriptionsTable)
     .set({
-      deleted_at: new Date(),
+      deletedAt: new Date(),
     })
     .where(
       and(eq(subscriptionsTable.userId, userId), eq(subscriptionsTable.id, id)),
@@ -68,11 +66,11 @@ export async function deleteUserSubscription(id: string) {
 
 export async function undoDeleteUserSubscription(id: string) {
   const userId = await verifyUser();
-  
+
   await db
     .update(subscriptionsTable)
     .set({
-      deleted_at: null,
+      deletedAt: null,
     })
     .where(
       and(eq(subscriptionsTable.userId, userId), eq(subscriptionsTable.id, id)),

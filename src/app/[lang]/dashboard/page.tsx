@@ -18,13 +18,13 @@ import {
   getCurrentDateRange,
   priceFormatter,
   setDateHoursToZero,
-  SEVEN_DAYS_MS
+  SEVEN_DAYS_MS,
 } from "@/lib/utils";
 import { getUserSubscriptions } from "@/dal/subscriptions/queries";
 import { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
-import { Subscription } from "@/lib/validations/form";
+import { Subscription } from "@/lib/validations/schemas";
 import { SpendingCard } from "@/components/dashboard/SpendingCard";
 
 export async function generateMetadata({
@@ -50,7 +50,9 @@ export async function getDailyDate() {
 }
 
 function calculateAverageSpending(subscriptions: Subscription[]) {
-  const activeSubscriptions = subscriptions.filter((subscription) => subscription.status === "Active");
+  const activeSubscriptions = subscriptions.filter(
+    (subscription) => subscription.status === "Active",
+  );
 
   const averageMonthly = activeSubscriptions.reduce(
     (acc, sub) =>
@@ -70,24 +72,24 @@ function calculateSubscriptionActualChargesInRange(
   rangeStart: Date,
   rangeEnd: Date,
 ) {
-  const today = setDateHoursToZero(new Date());
   let total = 0;
-  const billingDate = new Date(sub.startDate);
-  while (billingDate < rangeEnd) {
-    const isInRange = billingDate >= rangeStart && billingDate < rangeEnd;
-    const isFutureCharge = billingDate >= today;
-
-    if (isInRange && (sub.status === "Active" || !isFutureCharge)) {
-        total += sub.price;
-        if (sub.billingCycle === "Annual") {
-          break;
+  const startingBillingDate = setDateHoursToZero(new Date(sub.createdAt));
+  while (startingBillingDate < rangeEnd) {
+    const isInRange =
+      startingBillingDate >= rangeStart && startingBillingDate < rangeEnd;
+    if (isInRange && sub.status === "Active") {
+      total += sub.price;
+      if (sub.billingCycle === "Annual") {
+        break;
       }
     }
 
     if (sub.billingCycle === "Monthly") {
-     billingDate.setUTCMonth(billingDate.getUTCMonth() + 1);
+      startingBillingDate.setUTCMonth(startingBillingDate.getUTCMonth() + 1);
     } else {
-      billingDate.setUTCFullYear(billingDate.getUTCFullYear() + 1);
+      startingBillingDate.setUTCFullYear(
+        startingBillingDate.getUTCFullYear() + 1,
+      );
     }
   }
 
@@ -101,12 +103,14 @@ function calculateActualMonthlySpending(
   const { start, end } = getCurrentDateRange(today, "month");
 
   return subscriptions.reduce(
-    (total, subscription) => total + calculateSubscriptionActualChargesInRange(subscription, start, end),
+    (total, subscription) =>
+      total +
+      calculateSubscriptionActualChargesInRange(subscription, start, end),
     0,
   );
 }
 
- function calculateActualYearlySpending(
+function calculateActualYearlySpending(
   subscriptions: Subscription[],
   today = new Date(),
 ) {
@@ -123,7 +127,7 @@ function calculateActualMonthlySpending(
 export default async function Page({ params }: PageProps<"/[lang]">) {
   const locale = (await params).lang as Locale;
   setRequestLocale(locale);
-  const tReusable = await getTranslations({locale, namespace: "Reusable"})
+  const tReusable = await getTranslations({ locale, namespace: "Reusable" });
   const t = await getTranslations({ locale, namespace: "dashboard_page" });
   const userSubscriptions = await getUserSubscriptions();
 
@@ -151,7 +155,6 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
     0,
   );
 
-  // Internationalized Names Text Logic
   const namesText =
     upcomingSubscriptionNames.length === 1
       ? t("upcoming_alert.names_format.one", {
@@ -213,7 +216,8 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         {upcomingSubscriptions.length > 0 && (
           <Link
             href="/payments"
-            className="mb-8 bg-primary/[0.05] border border-primary/20 rounded-2xl p-2 flex flex-col md:flex-row items-center justify-between group hover:bg-primary/[0.15] transition-colors cursor-pointer">
+            className="mb-8 bg-primary/[0.05] border border-primary/20 rounded-2xl p-2 pl-4 flex flex-col md:flex-row items-center justify-between group hover:bg-primary/[0.15] transition-colors cursor-pointer relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
             <div className="flex items-center gap-4">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />

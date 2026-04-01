@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { cn, priceFormatter } from "@/lib/utils";
-import { Subscription } from "@/lib/validations/form";
+import { Subscription } from "@/lib/validations/schemas";
 import { PieChart } from "lucide-react";
 import { Button } from "../ui/button";
-import { categoryEnum, type BillingCycle, type Category } from "@/lib/validations/enum";
+import {
+  CATEGORY_VALUES,
+  type BillingCycle,
+  type Category,
+} from "@/lib/validations/enums";
 import { Input } from "../ui/input";
 import { useUser } from "@clerk/nextjs";
 
-import { netSalarySchema } from "@/lib/validations/form";
+import { i18nNetSalarySchema } from "@/lib/validations/schemas";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { Field, FieldError, FieldLabel } from "../ui/field";
@@ -25,8 +29,10 @@ export default function InsightsSidebar({
   data,
   monthlySpend,
 }: InsightsSidebarProps) {
+  const tValidation = useTranslations("Validation")
   const tReusable = useTranslations("Reusable");
   const t = useTranslations("dashboard_page.insights_sidebar_component");
+  const netSalarySchema = i18nNetSalarySchema(tValidation);
   const { user, isLoaded } = useUser();
   const [salary, setSalary] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -65,7 +71,7 @@ export default function InsightsSidebar({
         console.error("Failed to update salary:", err);
       }
     },
-  })
+  });
 
   const handleRemove = async () => {
     if (!user) return;
@@ -109,7 +115,7 @@ export default function InsightsSidebar({
     ([category, amount]) => {
       const percentage =
         totalSpend === 0 ? 0 : ((amount / totalSpend) * 100).toFixed(1);
-        const typedCategory = category as Category
+      const typedCategory = category as Category;
       return {
         key: typedCategory,
         label: tReusable(`categories.${typedCategory}`),
@@ -119,7 +125,6 @@ export default function InsightsSidebar({
     },
   );
 
-  const allCategories = Object.values(categoryEnum.enum);
   const baseColors = [
     "bg-purple-500",
     "bg-primary",
@@ -132,7 +137,7 @@ export default function InsightsSidebar({
     "bg-cyan-500",
     "bg-red-500",
   ];
-   const categoryColors: Record<Category, string> = allCategories.reduce(
+  const categoryColors: Record<Category, string> = CATEGORY_VALUES.reduce(
     (acc, category, index) => {
       acc[category] = baseColors[index % baseColors.length];
       return acc;

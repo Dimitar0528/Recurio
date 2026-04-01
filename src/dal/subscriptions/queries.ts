@@ -17,12 +17,12 @@ async function getSubscriptionsData(userID: string) {
   // This cache will revalidate after a day even if no explicit
   // revalidate instruction was received
   cacheLife("days");
-  const { created_at, updated_at, deleted_at, userId, ...rest } =
+  const { updatedAt, deletedAt, userId, ...rest } =
     getTableColumns(subscriptionsTable);
   const rawData = await db
     .select({ ...rest })
     .from(subscriptionsTable)
-    .where(and(eq(userId, userID), isNull(subscriptionsTable.deleted_at)))
+    .where(and(eq(userId, userID), isNull(subscriptionsTable.deletedAt)))
     .orderBy(asc(subscriptionsTable.nextBilling));
 
   const data = rawData.map((row) => ({

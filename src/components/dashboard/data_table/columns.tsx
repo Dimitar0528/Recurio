@@ -2,19 +2,32 @@
 import * as z from "zod";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { type Subscription} from "@/lib/validations/form";
+import { type Subscription } from "@/lib/validations/schemas";
 import { AlertTriangle, Delete, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
 import { Checkbox } from "@/components/ui/checkbox";
-import { dateFormatter, priceFormatter, SEVEN_DAYS_MS, FOURTEEN_DAYS_MS, setDateHoursToZero } from "@/lib/utils";
+import {
+  dateFormatter,
+  priceFormatter,
+  SEVEN_DAYS_MS,
+  FOURTEEN_DAYS_MS,
+  setDateHoursToZero,
+} from "@/lib/utils";
 import { useLocale, useTranslations } from "next-intl";
 import SubscriptionDialog from "../SubscriptionDialog";
 import SubscriptionForm from "../SubscriptionForm";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import {
@@ -260,8 +273,8 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         />
       ),
       filterFn: (row, columnId, value) => {
-         if (!value || value.length === 0) return true;
-         return value.includes(row.getValue(columnId));
+        if (!value || value.length === 0) return true;
+        return value.includes(row.getValue(columnId));
       },
       cell: ({ row }) => {
         const { status } = row.original;
@@ -479,4 +492,4 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
       },
     },
   ];
-} 
+};

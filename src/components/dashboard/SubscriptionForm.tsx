@@ -18,13 +18,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { subscriptionFormSchema, Subscription } from "@/lib/validations/form";
+import {
+  i18nSubscriptionFormSchema,
+  Subscription,
+} from "@/lib/validations/schemas";
 import {
   billingCycleEnum,
-  Category,
-  categoryEnum,
+  CATEGORY_VALUES,
   statusEnum,
-} from "@/lib/validations/enum";
+  type Category,
+} from "@/lib/validations/enums";
 
 import { Switch } from "../ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -47,18 +50,17 @@ export default function SubscriptionForm({
   initialValues,
 }: SubscriptionFormProps) {
   const locale = useLocale();
+  const tValidation = useTranslations("Validation");
   const tReusable = useTranslations("Reusable");
   const t = useTranslations("dashboard_page.subscription_form_component");
-
+  const subscriptionFormSchema = i18nSubscriptionFormSchema(tValidation);
   const dateLocale = locale === "bg" ? bg : enUS;
 
-  const initialModifiedValues = initialValues
-    && {
-        ...initialValues,
-        startDate: format(initialValues.startDate, "yyyy-MM-dd"),
-        nextBilling: format(initialValues.nextBilling, "yyyy-MM-dd"),
-        price: initialValues.price.toFixed(2),
-      }
+  const initialModifiedValues = initialValues && {
+    ...initialValues,
+    nextBilling: format(initialValues.nextBilling, "yyyy-MM-dd"),
+    price: initialValues.price.toFixed(2),
+  };
 
   const form = useForm({
     defaultValues: initialModifiedValues ?? {
@@ -66,7 +68,6 @@ export default function SubscriptionForm({
       category: "",
       price: "",
       billingCycle: billingCycleEnum.options[0],
-      startDate: new Date().toISOString().split("T")[0],
       nextBilling: advanceDateWithClamp(new Date(), { advanceMonthNumber: 1 })
         .toISOString()
         .split("T")[0],
@@ -93,7 +94,7 @@ export default function SubscriptionForm({
       }
     },
   });
-
+  
   return (
     <form
       id="subscription-form"
@@ -157,7 +158,7 @@ export default function SubscriptionForm({
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        {categoryEnum.options.map((category) => (
+                        {CATEGORY_VALUES.map((category) => (
                           <SelectItem key={category} value={category}>
                             {tReusable(`categories.${category}`)}
                           </SelectItem>
@@ -258,71 +259,7 @@ export default function SubscriptionForm({
           </form.Field>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <form.Field name="startDate">
-            {(field) => {
-              const dateValue = field.state.value
-                ? new Date(field.state.value)
-                : undefined;
-              return (
-                <Field>
-                  <FieldLabel htmlFor={field.name}>
-                    {t("fields.start_date")}
-                  </FieldLabel>
-                    <Popover>
-                      <PopoverTrigger
-                        render={
-                          <Button
-                            variant="outline"
-                            className="w-32 justify-between font-normal">
-                            {dateValue
-                              ? format(dateValue, "PP", { locale: dateLocale })
-                              : t("fields.date_placeholder")}
-                            <ChevronDownIcon data-icon="inline-end" />
-                          </Button>
-                        }
-                        aria-describedby="startDateError"
-                      />
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          locale={dateLocale}
-                          mode="single"
-                          captionLayout="dropdown"
-                          fixedWeeks
-                          selected={dateValue}
-                          onSelect={(selectedDate) => {
-                            if (!selectedDate) return;
-                            const formatted = format(
-                              selectedDate,
-                              "yyyy-MM-dd",
-                            );
-                            field.handleChange(formatted);
-                            const options =
-                              field.form.getFieldValue("billingCycle") ===
-                              "Annual"
-                                ? { advanceYearNumber: 1 }
-                                : { advanceMonthNumber: 1 };
-                            field.form.setFieldValue(
-                              "nextBilling",
-                              format(
-                                advanceDateWithClamp(selectedDate, options),
-                                "yyyy-MM-dd",
-                              ),
-                            );
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FieldError
-                      id="startDateError"
-                      errors={field.state.meta.errors}
-                      aria-live="polite"
-                    />
-                </Field>
-              );
-            }}
-          </form.Field>
-
+        <div className="grid grid-cols-2 gap-4 items-end">
           <form.Field name="nextBilling">
             {(field) => {
               const dateValue = field.state.value
@@ -333,55 +270,52 @@ export default function SubscriptionForm({
                   <FieldLabel htmlFor={field.name}>
                     {t("fields.next_billing")}
                   </FieldLabel>
-                    <Popover>
-                      <PopoverTrigger
-                        render={
-                          <Button
-                            variant="outline"
-                            className="w-32 justify-between font-normal">
-                            {dateValue
-                              ? format(dateValue, "PP", { locale: dateLocale })
-                              : t("fields.date_placeholder")}
-                            <ChevronDownIcon data-icon="inline-end" />
-                          </Button>
-                        }
-                        aria-describedby="nextBillingError"
-                      />
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          locale={dateLocale}
-                          mode="single"
-                          captionLayout="dropdown"
-                          endMonth={
-                            new Date(
-                              new Date().getFullYear(),
-                              new Date().getMonth() + 18,
-                            )
-                          }
-                          fixedWeeks
-                          selected={dateValue}
-                          onSelect={(selectedDate) => {
-                            if (!selectedDate) return;
-                            field.handleChange(
-                              format(selectedDate, "yyyy-MM-dd"),
-                            );
-                          }}
-                          defaultMonth={dateValue || undefined}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FieldError
-                      id="nextBillingError"
-                      errors={field.state.meta.errors}
-                      aria-live="polite"
+                  <Popover>
+                    <PopoverTrigger
+                      render={
+                        <Button
+                          variant="outline"
+                          className="w-32 justify-between font-normal">
+                          {dateValue
+                            ? format(dateValue, "PP", { locale: dateLocale })
+                            : t("fields.date_placeholder")}
+                          <ChevronDownIcon data-icon="inline-end" />
+                        </Button>
+                      }
+                      aria-describedby="nextBillingError"
                     />
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        locale={dateLocale}
+                        mode="single"
+                        captionLayout="dropdown"
+                        endMonth={
+                          new Date(
+                            new Date().getFullYear(),
+                            new Date().getMonth() + 18,
+                          )
+                        }
+                        fixedWeeks
+                        selected={dateValue}
+                        onSelect={(selectedDate) => {
+                          if (!selectedDate) return;
+                          field.handleChange(
+                            format(selectedDate, "yyyy-MM-dd"),
+                          );
+                        }}
+                        defaultMonth={dateValue || undefined}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FieldError
+                    id="nextBillingError"
+                    errors={field.state.meta.errors}
+                    aria-live="polite"
+                  />
                 </Field>
               );
             }}
           </form.Field>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 items-end">
           <form.Field name="autoRenew">
             {(field) => (
               <Field orientation="horizontal">
@@ -409,46 +343,45 @@ export default function SubscriptionForm({
               </Field>
             )}
           </form.Field>
-
-          <form.Field name="status">
-            {(field) => (
-              <Field orientation="responsive">
-                <FieldLabel className="mb-1.5" htmlFor="select-status">
-                  {t("fields.status")}
-                </FieldLabel>
-                <FieldContent>
-                  <Select
-                    name={field.name}
-                    value={field.state.value}
-                    onValueChange={(value) => {
-                      if (value) field.handleChange(value);
-                    }}>
-                    <SelectTrigger
-                      id="select-status"
-                      className="w-full"
-                      aria-describedby="statusError">
-                      <SelectValue>
-                        {tReusable(`status.${field.state.value}`)}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {statusEnum.options.map((status) => (
-                        <SelectItem key={status} value={status}>
-                          {tReusable(`status.${status}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FieldError
-                    id="statusError"
-                    errors={field.state.meta.errors}
-                    aria-live="polite"
-                  />
-                </FieldContent>
-              </Field>
-            )}
-          </form.Field>
         </div>
+        <form.Field name="status">
+          {(field) => (
+            <Field orientation="responsive">
+              <FieldLabel className="mb-1.5" htmlFor="select-status">
+                {t("fields.status")}
+              </FieldLabel>
+              <FieldContent>
+                <Select
+                  name={field.name}
+                  value={field.state.value}
+                  onValueChange={(value) => {
+                    if (value) field.handleChange(value);
+                  }}>
+                  <SelectTrigger
+                    id="select-status"
+                    className="w-full"
+                    aria-describedby="statusError">
+                    <SelectValue>
+                      {tReusable(`status.${field.state.value}`)}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusEnum.options.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {tReusable(`status.${status}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError
+                  id="statusError"
+                  errors={field.state.meta.errors}
+                  aria-live="polite"
+                />
+              </FieldContent>
+            </Field>
+          )}
+        </form.Field>
       </FieldGroup>
     </form>
   );

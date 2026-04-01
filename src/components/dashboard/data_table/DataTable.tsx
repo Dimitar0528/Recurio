@@ -69,17 +69,15 @@ import { Separator } from "@/components/ui/separator";
 import DataTableSkeleton from "./DataTableSkeleton";
 import { useTranslations } from "next-intl";
 import { useColumns } from "./columns";
-import { Subscription } from "@/lib/validations/form";
-import { Status, statusEnum } from "@/lib/validations/enum";
+import { Subscription } from "@/lib/validations/schemas";
+import { Status, STATUS_VALUES } from "@/lib/validations/enums";
 import { cn } from "@/lib/utils";
 type DataTableProps = {
   data: Subscription[];
 };
 
-export function DataTable({
-  data,
-}: DataTableProps) {
-  const tReusable = useTranslations("Reusable")
+export function DataTable({ data }: DataTableProps) {
+  const tReusable = useTranslations("Reusable");
   const t = useTranslations("dashboard_page.data_table_component");
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -147,7 +145,6 @@ export function DataTable({
   const facets = column?.getFacetedUniqueValues() as Map<Status, number>;
   const selectedStatuses = new Set(column?.getFilterValue() as Status[]);
 
-  const allSubscriptionStatuses = Object.values(statusEnum.enum) 
   if (!hasMounted) {
     return <DataTableSkeleton />;
   }
@@ -220,7 +217,7 @@ export function DataTable({
               <CommandList>
                 <CommandEmpty>{t("no_results")}</CommandEmpty>
                 <CommandGroup>
-                  {allSubscriptionStatuses.map((status) => {
+                  {STATUS_VALUES.map((status) => {
                     const isSelected = selectedStatuses.has(status);
 
                     return (

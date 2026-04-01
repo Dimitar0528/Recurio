@@ -1,6 +1,6 @@
 "use server";
 
-import { Subscription } from "@/lib/validations/form";
+import { SubscriptionFormValues } from "@/lib/validations/schemas";
 import {
   deleteUserSubscription,
   insertUserSubscription,
@@ -8,13 +8,13 @@ import {
   updateUserSubscription,
 } from "@/dal/subscriptions/mutations";
 
-export async function createSubscription(subscription: Subscription) {
+export async function createSubscription(subscription: SubscriptionFormValues) {
   await insertUserSubscription(subscription);
 }
 
 export async function updateSubscription(
   id: string,
-  subscription: Subscription,
+  subscription: SubscriptionFormValues,
 ) {
   await updateUserSubscription(id, subscription);
 }
