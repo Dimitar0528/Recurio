@@ -122,7 +122,7 @@ export function DataTable({ data }: DataTableProps) {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       table.setColumnVisibility({
-        select: true,
+        select: !mobile,
         mobile: mobile,
         name: !mobile,
         price: !mobile,
@@ -151,127 +151,127 @@ export function DataTable({ data }: DataTableProps) {
 
   return (
     <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">
-      <div className="p-2 px-4 border-b border-border bg-primary dark:bg-primary/50 text-primary-foreground rounded-2xl">
+      <div className="p-[2.5] border-b border-border bg-primary dark:bg-primary/50 text-primary-foreground rounded-2xl">
         <h2 className="font-bold uppercase tracking-[0.125em] text-center gap-2">
           {t("title")}
         </h2>
       </div>
 
       <div className="flex items-center justify-start py-4 flex-col md:flex-row gap-2">
-        <Input
-          placeholder={t("filter_placeholder")}
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-
-        <Popover>
-          <PopoverTrigger
-            render={
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 border-dashed bg-transparent hover:bg-secondary/50 cursor-pointer">
-                <PlusCircle className="mr-2 h-4 w-4 opacity-60" />
-                <span className="text-xs font-bold uppercase tracking-wider">
-                  {t("table.columns.status")}
-                </span>
-                {selectedStatuses?.size > 0 && (
-                  <>
-                    <Separator orientation="vertical" className="mx-2 h-4" />
-                    <Badge
-                      variant="secondary"
-                      className="rounded-sm px-1 font-mono font-bold text-[10px] lg:hidden">
-                      {selectedStatuses.size}
-                    </Badge>
-                    <div className="hidden space-x-1 lg:flex">
-                      {selectedStatuses.size > 1 ? (
-                        <Badge
-                          variant="secondary"
-                          className="rounded-sm px-1 font-mono font-bold text-[10px]">
-                          {selectedStatuses.size}
-                        </Badge>
-                      ) : (
-                        Array.from(selectedStatuses).map((status) => (
+        <div className="flex flex-grow gap-4">
+          <Input
+            placeholder={t("filter_placeholder")}
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("name")?.setFilterValue(event.target.value)
+            }
+            className="max-w-md"
+          />
+          <Popover>
+            <PopoverTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 border-dashed bg-transparent hover:bg-secondary/50 cursor-pointer">
+                  <PlusCircle className="mr-2 h-4 w-4 opacity-60 text-primary" />
+                  <span className="text-xs font-bold uppercase tracking-wider">
+                    {t("table.columns.status")}
+                  </span>
+                  {selectedStatuses?.size > 0 && (
+                    <>
+                      <Separator orientation="vertical" className="mx-2 h-4" />
+                      <Badge
+                        variant="secondary"
+                        className="rounded-sm px-1 font-mono font-bold text-[10px] lg:hidden">
+                        {selectedStatuses.size}
+                      </Badge>
+                      <div className="hidden space-x-1 lg:flex">
+                        {selectedStatuses.size > 1 ? (
                           <Badge
                             variant="secondary"
-                            key={status}
-                            className="rounded-sm px-1 font-mono font-bold text-[10px] uppercase">
-                            {tReusable(`status.${status}`)}
+                            className="rounded-sm px-1 font-mono font-bold text-[10px]">
+                            {selectedStatuses.size}
                           </Badge>
-                        ))
-                      )}
-                    </div>
-                  </>
-                )}
-              </Button>
-            }></PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0" align="start">
-            <Command>
-              <CommandInput
-                placeholder={t("table.columns.status")}
-                className="h-9 font-sans"
-              />
-              <CommandList>
-                <CommandEmpty>{t("no_results")}</CommandEmpty>
-                <CommandGroup>
-                  {STATUS_VALUES.map((status) => {
-                    const isSelected = selectedStatuses.has(status);
-
-                    return (
-                      <CommandItem
-                        key={status}
-                        onSelect={() => {
-                          if (isSelected) {
-                            selectedStatuses.delete(status);
-                          } else {
-                            selectedStatuses.add(status);
-                          }
-                          const filterValues = Array.from(selectedStatuses);
-                          column?.setFilterValue(
-                            filterValues.length ? filterValues : undefined,
-                          );
-                        }}
-                        className="cursor-pointer">
-                        <div
-                          className={cn(
-                            "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary transition-colors",
-                            isSelected
-                              ? "bg-primary text-primary-foreground"
-                              : "opacity-50 [&_svg]:invisible",
-                          )}>
-                          <Check className={cn("h-4 w-4")} />
-                        </div>
-                        <span className="capitalize text-sm font-medium">
-                          {tReusable(`status.${status}`)}
-                        </span>
-                        {facets?.get(status) && (
-                          <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-[10px] text-muted-foreground">
-                            {facets.get(status)}
-                          </span>
+                        ) : (
+                          Array.from(selectedStatuses).map((status) => (
+                            <Badge
+                              variant="secondary"
+                              key={status}
+                              className="rounded-sm px-1 font-mono font-bold text-[10px] uppercase">
+                              {tReusable(`status.${status}`)}
+                            </Badge>
+                          ))
                         )}
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-                {selectedStatuses.size > 0 && (
-                  <>
-                    <CommandSeparator />
-                    <CommandGroup>
-                      <CommandItem
-                        onSelect={() => column?.setFilterValue(undefined)}
-                        className="text-xs font-bold uppercase tracking-widest hover:text-foreground cursor-pointer">
-                        {t("status_button_clear_text")}
-                      </CommandItem>
-                    </CommandGroup>
-                  </>
-                )}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+                      </div>
+                    </>
+                  )}
+                </Button>
+              }></PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0" align="start">
+              <Command>
+                <CommandInput
+                  placeholder={t("table.columns.status")}
+                  className="h-9 font-sans"
+                />
+                <CommandList>
+                  <CommandEmpty>{t("no_results")}</CommandEmpty>
+                  <CommandGroup>
+                    {STATUS_VALUES.map((status) => {
+                      const isSelected = selectedStatuses.has(status);
+                      return (
+                        <CommandItem
+                          key={status}
+                          onSelect={() => {
+                            if (isSelected) {
+                              selectedStatuses.delete(status);
+                            } else {
+                              selectedStatuses.add(status);
+                            }
+                            const filterValues = Array.from(selectedStatuses);
+                            column?.setFilterValue(
+                              filterValues.length ? filterValues : undefined,
+                            );
+                          }}
+                          className="cursor-pointer">
+                          <div
+                            className={cn(
+                              "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary transition-colors",
+                              isSelected
+                                ? "bg-primary text-primary-foreground"
+                                : "opacity-50 [&_svg]:invisible",
+                            )}>
+                            <Check className={cn("h-4 w-4")} />
+                          </div>
+                          <span className="capitalize text-sm font-medium">
+                            {tReusable(`status.${status}`)}
+                          </span>
+                          {facets?.get(status) && (
+                            <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-[10px] text-muted-foreground">
+                              {facets.get(status)}
+                            </span>
+                          )}
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandGroup>
+                  {selectedStatuses.size > 0 && (
+                    <>
+                      <CommandSeparator />
+                      <CommandGroup>
+                        <CommandItem
+                          onSelect={() => column?.setFilterValue(undefined)}
+                          className="text-xs font-bold uppercase tracking-widest hover:text-foreground cursor-pointer">
+                          {t("status_button_clear_text")}
+                        </CommandItem>
+                      </CommandGroup>
+                    </>
+                  )}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
 
         <div className="flex md:ml-auto gap-2 flex-col md:flex-row mt-2 md:mt-0 items-center">
           <DropdownMenu>

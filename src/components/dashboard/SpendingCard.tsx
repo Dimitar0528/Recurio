@@ -34,11 +34,15 @@ export function SpendingCard({
       viewport={{ once: true }}
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
       className={cn(
-        "group relative rounded-3xl overflow-hidden transition-all duration-300",
+        "group relative rounded-3xl overflow-hidden transition-all duration-300  lg:w-[30.5rem] lg:mx-auto xl:w-lg",
         isDarkCardVariant
           ? "bg-foreground/95 text-background hover:shadow-2xl hover:shadow-primary/10"
           : "bg-card border border-border hover:border-primary/80",
-      )}>
+      )}
+      style={{
+        clipPath:
+          "polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px)",
+      }}>
       <div className="p-4">
         <div className="flex justify-between items-start mb-6">
           <motion.div

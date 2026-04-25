@@ -1,4 +1,4 @@
-import "./[lang]/globals.css";
+import "./globals.css";
 import { Inter, Geist_Mono } from "next/font/google";
 import type { Metadata } from "next";
 import { FileQuestion, ArrowRight, Home } from "lucide-react";

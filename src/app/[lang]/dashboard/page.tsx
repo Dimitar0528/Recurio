@@ -195,7 +195,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             trigger={
               <Button
                 variant="outline"
-                className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary/50 dark:hover:bg-primary/70 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-85 md:w-70 aria-expanded:bg-primary aria-expanded:text-primary-foreground hover:scale-[1.02] active:scale-[0.98] transition-all">
+                className="cursor-pointer font-bold text-sm uppercase tracking-wider bg-primary dark:bg-primary/50 dark:hover:bg-primary/70 text-primary-foreground hover:bg-primary/85 hover:text-white p-4 w-83 md:w-70 aria-expanded:bg-primary aria-expanded:text-primary-foreground hover:scale-[1.02] active:scale-[0.98] transition-all">
                 {tReusable("dialog.title", {
                   action: locale === "bg" ? "+ Добави" : "+ Add",
                 })}
@@ -246,7 +246,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           </Link>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <SpendingCard
             variant="light"
             title={t("cards.monthly.title")}
@@ -272,7 +272,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           />
         </div>
 
-        <div className="grid lg:grid-cols-12 gap-6 items-start">
+        <div className="grid lg:grid-cols-12 gap-6 items-center">
           <div className="lg:col-span-8">
             <DataTable data={userSubscriptions} />
           </div>
@@ -282,20 +282,38 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           />
         </div>
 
-        <div className="lg:w-3xl mx-auto bg-foreground/95 text-background rounded-2xl p-3 mt-6 relative overflow-hidden group shadow-2xl text-center">
-          <div className="absolute top-0 right-0 p-3 opacity-20">
-            <ShieldCheck size={40} />
+        <div
+          className="lg:w-3xl mx-auto bg-foreground/95 text-background rounded-2xl p-3 mt-6 relative overflow-hidden group shadow-2xl text-center"
+          style={{
+            clipPath:
+              "polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))",
+          }}>
+          <div
+            aria-hidden
+            className="absolute -right-4 -top-4 text-background/[0.06] pointer-events-none select-none">
+            <ShieldCheck size={120} />
           </div>
-          <h3 className="text-sm font-bold mb-2 relative z-10 flex items-center justify-center gap-2">
-            <Download size={16} />
-            {t("audit.title")}
-          </h3>
-          <p className="text-xs text-background/70 mb-4 relative z-10 leading-relaxed">
-            {t("audit.description")}
-          </p>
-          <button className="w-full lg:w-lg mx-auto bg-background text-foreground py-3 rounded-xl text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-all relative z-10 flex items-center justify-center gap-2 shadow-xl shadow-black/20 cursor-pointer">
-            {t("audit.button")}
-          </button>
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 p-1">
+            <div className="text-center md:text-left">
+              <h3 className="font-mono text-[12px] uppercase tracking-[0.3em] text-muted-background mb-2 flex items-center justify-center md:justify-start gap-2">
+                <Download size={10} />
+                {t("audit.title")}
+              </h3>
+              <p className="text-sm text-background/80 leading-relaxed max-w-md">
+                {t("audit.description")}
+              </p>
+            </div>
+            <button
+              className="shrink-0 bg-background text-foreground px-8 py-3 font-mono font-bold text-xs uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3 shadow-xl shadow-black/30 cursor-pointer"
+              style={{
+                clipPath:
+                  "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%)",
+              }}>
+              <Download size={14} />
+              {t("audit.button")}
+            </button>
+          </div>
         </div>
       </div>
     </main>

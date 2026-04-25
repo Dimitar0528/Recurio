@@ -86,14 +86,14 @@ export default function Navigation() {
   return (
     <nav className="fixed top-0 w-full z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        
-        <a suppressHydrationWarning
+        <a
+          suppressHydrationWarning
           href="#main-content"
           className="absolute left-2 -top-1 -translate-y-full focus:translate-y-4 z-[100] px-4 py-2 bg-foreground text-background text-xs font-mono font-black uppercase tracking-widest rounded-lg shadow-2xl shadow-primary/40 transition-transform duration-300 ease-out outline-none ring-2 ring-primary ring-offset-2
         ">
           Skip to main content
         </a>
-  
+
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Repeat size={20} className="text-primary-foreground" />
@@ -205,26 +205,28 @@ export default function Navigation() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-4">
             <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
-              Navigation
+              {locale === "bg" ? "Навигация" : "Navigation"}
             </p>
-            {navLinks.map(({ name, href, Icon }) => (
+            {navLinks.map(({ name, label, href, Icon }) => (
               <Link
                 key={name}
                 href={href as Route}
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-3 text-lg font-semibold text-foreground hover:text-primary transition-colors">
-                <Icon size={20} />
-                <span>{name}</span>
+                className="flex items-center gap-3 text-sm font-semibold text-foreground hover:text-primary transition-colors">
+                <Icon className="text-primary" size={16} />
+                <span>{label}</span>
               </Link>
             ))}
           </div>
 
-          <div className="pt-6 border-t border-border flex flex-col gap-4">
+          <div className="pt-3 border-t border-border flex flex-col gap-2">
             <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
-              Preferences
+              {locale === "bg" ? "Преференции" : "Preferences"}
             </p>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Language</span>
+              <span className="text-sm font-medium">
+                {locale === "bg" ? "Език" : "Language"}
+              </span>
               <LocaleSwitcher />
             </div>
           </div>

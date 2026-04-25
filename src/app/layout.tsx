@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono, Noto_Sans } from "next/font/google";
-import "./[lang]/globals.css";
+import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 

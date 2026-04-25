@@ -4,15 +4,10 @@ import DataVisualization from "@/components/landing_page/DataVisualization";
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowRight,
-  ChartPie,
-  CreditCardIcon,
-  MessageCircleWarningIcon,
-  TrendingUp,
   Zap,
 } from "lucide-react";
 
-import { Suspense, type ComponentType } from "react";
-import type { LucideProps } from "lucide-react";
+import { Suspense } from "react";;
 import Testimonials from "@/components/landing_page/Testimonials";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
@@ -34,32 +29,6 @@ export async function generateMetadata({
   };
 }
 
-type MetricCardProps = {
-  label: string;
-  value: string | number;
-  subtext: string;
-  icon?: ComponentType<LucideProps>;
-};
-
-function MetricCard({ label, value, subtext, icon: Icon }: MetricCardProps) {
-  return (
-    <div className="bg-card border border-border p-6 rounded-xl">
-      <div className="flex items-center justify-between mb-4">
-        {Icon ? (
-          <div className="p-2 rounded-lg bg-secondary text-foreground">
-            <Icon size={24} color="oklch(0.59 0.20 277)" />
-          </div>
-        ) : null}
-        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          {label}
-        </span>
-      </div>
-      <div className="text-3xl font-mono font-bold mb-1">{value}</div>
-      <p className="text-sm text-muted-foreground">{subtext}</p>
-    </div>
-  );
-}
-
 export default async function LandingPage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   setRequestLocale(lang as Locale);
@@ -72,36 +41,7 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
         <Hero />
       </Suspense>
 
-      <section className="px-6 pb-24">
-        <div className="max-w-7xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard
-            label={t("metrics.efficiency.label")}
-            value={t("metrics.efficiency.value")}
-            subtext={t("metrics.efficiency.subtext")}
-            icon={ChartPie}
-          />
-          <MetricCard
-            label={t("metrics.pending.label")}
-            value={t("metrics.pending.value")}
-            subtext={t("metrics.pending.subtext")}
-            icon={MessageCircleWarningIcon}
-          />
-          <MetricCard
-            label={t("metrics.leak.label")}
-            value={t("metrics.leak.value")}
-            subtext={t("metrics.leak.subtext")}
-            icon={CreditCardIcon}
-          />
-          <MetricCard
-            label={t("metrics.annual_burn.label")}
-            value={t("metrics.annual_burn.value")}
-            subtext={t("metrics.annual_burn.subtext")}
-            icon={TrendingUp}
-          />
-        </div>
-      </section>
-
-      <section id="problem" className="py-20 px-6 border-y border-border">
+      <section id="problem" className="py-24 px-6 border-y border-border">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-xl font-bold uppercase tracking-[0.3em] text-primary mb-8 underline decoration-2 underline-offset-8">
             {t("problem.title")}
@@ -128,40 +68,73 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
         />
 
         <div className="max-w-5xl mx-auto relative">
-          <div className="bg-card border border-border rounded-[3rem] p-8 md:p-20 relative shadow-2xl shadow-black/5">
-            <div className="flex flex-col items-center text-center">
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-8 max-w-3xl leading-[1.1] text-foreground">
+          <div
+            className="absolute inset-0 -z-10 opacity-[0.03]"
+            style={{
+              backgroundImage: `radial-gradient(circle, currentColor 1px, transparent 1px)`,
+              backgroundSize: "28px 28px",
+            }}
+          />
+          <div
+            aria-hidden
+            className="absolute -top-8 -left-4 text-[12rem] md:text-[18rem] font-black leading-none select-none pointer-events-none text-foreground opacity-[0.03] tracking-tighter -z-10">
+            GO
+          </div>
+          <div className="flex items-center gap-4 mb-12">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs font-mono text-muted-foreground tracking-[0.25em] uppercase">
+              ✦ ✦ ✦
+            </span>
+            <div className="h-px w-12 bg-primary" />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-20 items-end">
+            <div className="relative">
+              <div className="absolute -left-6 top-0 bottom-0 w-[3px] bg-primary rounded-full" />
+              <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.95] text-foreground mb-6 pl-4">
                 {t("cta.title")}
               </h2>
-
-              <p className="text-muted-foreground mb-12 text-lg md:text-xl max-w-xl leading-relaxed">
+              <p className="text-muted-foreground text-lg leading-relaxed max-w-md pl-4">
                 {t("cta.subtitle")}
               </p>
-
-              <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
-                <Link href="/dashboard">
-                  <button className="group relative w-full sm:w-auto bg-primary text-primary-foreground px-10 py-5 rounded-2xl font-bold text-lg cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/20 overflow-hidden">
-                    <div className="relative z-10 flex items-center justify-center gap-3">
-                      {t("cta.primary")}
-                      <ArrowRight
-                        size={20}
-                        className="group-hover:translate-x-1 transition-transform"
-                      />
-                    </div>
-                    <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                  </button>
-                </Link>
-
-                <button className="w-full sm:w-auto bg-secondary hover:bg-secondary/80 text-secondary-foreground px-10 py-5 rounded-2xl font-bold text-lg border border-border cursor-pointer transition-all flex items-center justify-center gap-2">
-                  <Zap size={18} className="text-muted-foreground" />
-                  {t("cta.secondary")}
+            </div>
+            <div className="flex flex-col gap-3 lg:items-end shrink-0">
+              <Link href="/dashboard">
+                <button
+                  className="group relative w-full lg:w-auto bg-primary text-primary-foreground px-10 py-5 font-bold text-base tracking-wide cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
+                  style={{
+                    clipPath:
+                      "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%)",
+                  }}>
+                  <div className="relative z-10 flex items-center gap-3">
+                    {t("cta.primary")}
+                    <ArrowRight
+                      size={18}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
                 </button>
-              </div>
+              </Link>
+              <button
+                className="group w-full lg:w-auto relative px-10 py-5 font-bold text-base tracking-wide cursor-pointer border border-border text-foreground hover:border-primary/50 transition-colors flex items-center gap-3 bg-transparent"
+                style={{
+                  clipPath:
+                    "polygon(16px 0, 100% 0, 100% 100%, 0 100%, 0 16px)",
+                }}>
+                <Zap
+                  size={16}
+                  className="text-primary group-hover:scale-110 transition-transform"
+                />
+                {t("cta.secondary")}
+              </button>
             </div>
           </div>
-
-          <div className="absolute -top-6 -left-6 w-24 h-24 border-t-2 border-l-2 border-primary/10 rounded-tl-3xl -z-10" />
-          <div className="absolute -bottom-6 -right-6 w-24 h-24 border-b-2 border-r-2 border-primary/10 rounded-br-3xl -z-10" />
+          <div className="flex items-center gap-4 mt-14">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs font-mono text-muted-foreground/40">
+              ✦ ✦ ✦
+            </span>
+          </div>
         </div>
       </section>
     </main>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Check, Minus, TrendingDown } from "lucide-react";
+import { ArrowRight, Check, Minus } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { motion, AnimatePresence, easeOut } from "framer-motion";
@@ -213,15 +213,9 @@ export default function HeroSection() {
           <div className="relative bg-card border border-border rounded-2xl shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.01]">
             <div className="border-b border-border p-4 flex items-center justify-between bg-muted/30">
               <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-border" />
-                <div className="w-3 h-3 rounded-full bg-border" />
-                <div className="w-3 h-3 rounded-full bg-border" />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="animate-pulse w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-xs font-mono text-muted-foreground">
-                  live_preview.exe
-                </span>
+                <div className="w-3 h-3 rounded-full bg-border bg-red-500" />
+                <div className="w-3 h-3 rounded-full bg-border bg-yellow-500" />
+                <div className="w-3 h-3 rounded-full bg-border bg-emerald-500" />
               </div>
             </div>
 
@@ -245,10 +239,6 @@ export default function HeroSection() {
                     <p className="text-[10px] uppercase font-bold text-primary">
                       {t("metrics.yearly_impact")}
                     </p>
-                    <TrendingDown
-                      size={14}
-                      className="text-primary opacity-50"
-                    />
                   </div>
                   <motion.p
                     key={yearlyImpact}
@@ -259,7 +249,7 @@ export default function HeroSection() {
                   </motion.p>
                 </div>
               </div>
-            
+
               <motion.div
                 layout
                 className="space-y-0 border border-border rounded-lg overflow-hidden bg-background">

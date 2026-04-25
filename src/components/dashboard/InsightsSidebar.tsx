@@ -1,9 +1,7 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { cn, priceFormatter } from "@/lib/utils";
 import { Subscription } from "@/lib/validations/schemas";
-import { PieChart } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   CATEGORY_VALUES,
@@ -12,7 +10,6 @@ import {
 } from "@/lib/validations/enums";
 import { Input } from "../ui/input";
 import { useUser } from "@clerk/nextjs";
-
 import { i18nNetSalarySchema } from "@/lib/validations/schemas";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
@@ -29,13 +26,14 @@ export default function InsightsSidebar({
   data,
   monthlySpend,
 }: InsightsSidebarProps) {
-  const tValidation = useTranslations("Validation")
+  const tValidation = useTranslations("Validation");
   const tReusable = useTranslations("Reusable");
   const t = useTranslations("dashboard_page.insights_sidebar_component");
   const netSalarySchema = i18nNetSalarySchema(tValidation);
   const { user, isLoaded } = useUser();
   const [salary, setSalary] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [viewMode, setViewMode] = useState<BillingCycle>("Monthly");
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -48,23 +46,15 @@ export default function InsightsSidebar({
   const ratio = salary && salary > 0 ? (monthlySpend / salary) * 100 : 0;
 
   const form = useForm({
-    defaultValues: {
-      netSalary: salary?.toFixed(2) ?? "",
-    },
-    validators: {
-      onSubmit: netSalarySchema,
-    },
+    defaultValues: { netSalary: salary?.toFixed(2) ?? "" },
+    validators: { onSubmit: netSalarySchema },
     onSubmit: async ({ value }) => {
       if (!user) return;
       const result = netSalarySchema.safeParse(value);
       if (!result.success) return toast.error(result.error.message);
       const parsedNetSalary = result.data.netSalary;
       try {
-        await user.update({
-          unsafeMetadata: {
-            net_salary: parsedNetSalary,
-          },
-        });
+        await user.update({ unsafeMetadata: { net_salary: parsedNetSalary } });
         setSalary(parsedNetSalary);
         setIsEditing(false);
       } catch (err) {
@@ -76,99 +66,91 @@ export default function InsightsSidebar({
   const handleRemove = async () => {
     if (!user) return;
     try {
-      await user.update({
-        unsafeMetadata: {
-          net_salary: null,
-        },
-      });
+      await user.update({ unsafeMetadata: { net_salary: null } });
       setSalary(null);
     } catch (err) {
       console.error("Failed to remove salary:", err);
     }
   };
 
-  const [viewMode, setViewMode] = useState<BillingCycle>("Monthly");
-
   const aggregatedByCategory = data
-    .filter((subscription) => subscription.status === "Active")
+    .filter((s) => s.status === "Active")
     .reduce<Record<Category, number>>(
       (acc, { price, billingCycle, category }) => {
-        let normalizedAmount = price;
-
+        let normalized = price;
         if (viewMode === "Monthly") {
-          normalizedAmount = billingCycle === "Annual" ? price / 12 : price;
+          normalized = billingCycle === "Annual" ? price / 12 : price;
         } else {
-          normalizedAmount = billingCycle === "Monthly" ? price * 12 : price;
+          normalized = billingCycle === "Monthly" ? price * 12 : price;
         }
-
-        acc[category] = (acc[category] ?? 0) + normalizedAmount;
+        acc[category] = (acc[category] ?? 0) + normalized;
         return acc;
       },
       {} as Record<Category, number>,
     );
+
   const totalSpend = Object.values(aggregatedByCategory).reduce(
-    (sum, amount) => sum + amount,
+    (sum, v) => sum + v,
     0,
   );
 
-  const categoryItems = Object.entries(aggregatedByCategory).map(
-    ([category, amount]) => {
-      const percentage =
-        totalSpend === 0 ? 0 : ((amount / totalSpend) * 100).toFixed(1);
+  const categoryItems = Object.entries(aggregatedByCategory)
+    .map(([category, amount]) => {
+      const percentage = totalSpend === 0 ? 0 : (amount / totalSpend) * 100;
       const typedCategory = category as Category;
       return {
         key: typedCategory,
         label: tReusable(`categories.${typedCategory}`),
-        value: percentage,
+        value: parseFloat(percentage.toFixed(2)),
         money: priceFormatter(amount),
       };
-    },
-  );
+    })
+    .sort((a, b) => b.value - a.value);
 
-  const baseColors = [
-    "bg-purple-500",
-    "bg-primary",
-    "bg-blue-500",
-    "bg-zinc-500",
-    "bg-green-500",
-    "bg-orange-500",
-    "bg-pink-500",
-    "bg-yellow-500",
-    "bg-cyan-500",
-    "bg-red-500",
+  const accentColors = [
+    { bar: "bg-violet-500", dot: "bg-violet-500", text: "text-violet-500" },
+    { bar: "bg-sky-500", dot: "bg-sky-500", text: "text-sky-500" },
+    { bar: "bg-emerald-500", dot: "bg-emerald-500", text: "text-emerald-500" },
+    { bar: "bg-amber-500", dot: "bg-amber-500", text: "text-amber-500" },
+    { bar: "bg-rose-500", dot: "bg-rose-500", text: "text-rose-500" },
+    { bar: "bg-cyan-500", dot: "bg-cyan-500", text: "text-cyan-500" },
+    { bar: "bg-fuchsia-500", dot: "bg-fuchsia-500", text: "text-fuchsia-500" },
+    { bar: "bg-lime-500", dot: "bg-lime-500", text: "text-lime-500" },
+    { bar: "bg-orange-500", dot: "bg-orange-500", text: "text-orange-500" },
+    { bar: "bg-teal-500", dot: "bg-teal-500", text: "text-teal-500" },
   ];
-  const categoryColors: Record<Category, string> = CATEGORY_VALUES.reduce(
-    (acc, category, index) => {
-      acc[category] = baseColors[index % baseColors.length];
-      return acc;
-    },
-    {} as Record<Category, string>,
-  );
+
+  const categoryColorMap: Record<Category, (typeof accentColors)[0]> =
+    CATEGORY_VALUES.reduce(
+      (acc, category, i) => {
+        acc[category] = accentColors[i % accentColors.length];
+        return acc;
+      },
+      {} as Record<Category, (typeof accentColors)[0]>,
+    );
+
+  // Stacked bar segments
+  const stackedSegments = categoryItems.map((item) => ({
+    ...item,
+    color: categoryColorMap[item.key],
+  }));
 
   return (
-    <div className="lg:col-span-4 space-y-6">
-      <div className="bg-card border border-border rounded-2xl p-3">
+    <div className="lg:col-span-4 ">
+      <div className="bg-card border border-border rounded-md overflow-hidden">
         {!isLoaded ? (
-          <div className="space-y-2 animate-pulse">
-            <div className="flex justify-between items-center mb-4">
-              <Skeleton className="h-4 w-32 rounded" />
-              <div className="flex gap-2">
-                <Skeleton className="h-4 w-12 rounded" />
-                <Skeleton className="h-4 w-12 rounded" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full rounded" />
-              <Skeleton className="h-4 w-full rounded" />
-              <Skeleton className="h-7 w-full rounded" />
-            </div>
+          <div className="p-3 space-y-3 animate-pulse">
+            <Skeleton className="h-3 w-24 rounded" />
+            <Skeleton className="h-10 w-36 rounded" />
+            <Skeleton className="h-2 w-full rounded" />
+            <Skeleton className="h-3 w-48 rounded" />
           </div>
         ) : (
-          <>
-            <div className="flex justify-between mb-1">
-              <h3 className="text-sm font-bold flex items-center gap-1">
+          <div className="p-3">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground">
                 {t("income_ratio.title")}
-              </h3>
+              </p>
               {!isEditing && salary && (
                 <div className="flex items-center">
                   <button
@@ -185,24 +167,27 @@ export default function InsightsSidebar({
               )}
             </div>
 
+            {/* Empty state */}
             {!salary && !isEditing && (
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {t("income_ratio.intro")}{" "}
-                  <span className="block italic font-bold">
+              <div>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                  {t("income_ratio.intro")}
+                  <span className="block mt-0.25 italic opacity-70">
                     {t("income_ratio.disclaimer")}
                   </span>
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
+                <button
                   onClick={() => setIsEditing(true)}
-                  className="w-full text-xs font-bold border-dashed border-primary/30 hover:border-primary/60 text-primary cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all">
+                  className="group w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-primary/30 hover:border-primary/60 hover:bg-primary/5 px-4 py-2.5 text-xs font-semibold text-primary transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-[0.99]">
+                  <span className="text-primary/60 group-hover:text-primary transition-colors">
+                    +
+                  </span>
                   {t("income_ratio.add_salary")}
-                </Button>
+                </button>
               </div>
             )}
 
+            {/* Edit form */}
             {isEditing && (
               <form
                 id="net-salary-form"
@@ -210,7 +195,7 @@ export default function InsightsSidebar({
                   e.preventDefault();
                   form.handleSubmit();
                 }}
-                className="space-y-3">
+                className="space-y-2.5">
                 <form.Field name="netSalary">
                   {(field) => {
                     const isInvalid =
@@ -218,7 +203,7 @@ export default function InsightsSidebar({
                     return (
                       <Field data-invalid={isInvalid}>
                         <FieldLabel
-                          className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground"
+                          className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mt-4"
                           htmlFor={field.name}>
                           {t("income_ratio.form.label")}
                         </FieldLabel>
@@ -232,7 +217,7 @@ export default function InsightsSidebar({
                           aria-invalid={isInvalid}
                           placeholder={t("income_ratio.form.placeholder")}
                           autoComplete="on"
-                          className="h-6"
+                          className="h-8"
                           aria-describedby="netSalaryError"
                         />
                         {isInvalid && (
@@ -251,7 +236,7 @@ export default function InsightsSidebar({
                     type="submit"
                     form="net-salary-form"
                     size="sm"
-                    className="flex-1 text-xs font-bold h-6.5 cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="flex-1 h-7 text-xs font-bold cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
                     disabled={!form.state.canSubmit || form.state.isSubmitting}>
                     {form.state.isSubmitting
                       ? t("income_ratio.form.saving")
@@ -260,7 +245,7 @@ export default function InsightsSidebar({
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-6.5 text-xs cursor-pointer"
+                    className="h-7 text-xs cursor-pointer"
                     onClick={() => setIsEditing(false)}
                     disabled={form.state.isSubmitting}>
                     {t("income_ratio.form.cancel")}
@@ -269,112 +254,143 @@ export default function InsightsSidebar({
               </form>
             )}
 
+            {/* Ratio display */}
             {!isEditing && salary && (
-              <div className="space-y-2">
-                <div className="flex justify-between items-end">
+              <div className="space-y-3.5">
+                <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-[10px] uppercase font-bold text-gray-600 dark:text-gray-400 tracking-widest">
+                    <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground mt-1.5">
                       {t("income_ratio.stats.burn")}
                     </p>
-                    <p className="text-md font-mono font-bold">
-                      {ratio.toFixed(1)}%
+                    <p
+                      className={cn(
+                        "text-2xl font-black font-mono tabular-nums leading-none tracking-tighter transition-colors duration-500",
+                        ratio > 10 ? "text-orange-500" : "text-primary",
+                      )}>
+                      {ratio.toFixed(2)}
+                      <span className="text-2xl font-bold text-muted-foreground/60">
+                        &nbsp;%
+                      </span>
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] uppercase font-bold text-gray-600 dark:text-gray-400 tracking-widest">
+                    <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">
                       {t("income_ratio.stats.salary")}
                     </p>
-                    <p className="text-md font-mono uppercase font-bold">
+                    <p className="text-sm font-mono font-bold">
                       {priceFormatter(salary)}
                     </p>
                   </div>
                 </div>
                 <div
-                  className="h-1.5 w-full bg-secondary rounded-full overflow-hidden"
+                  className="h-1 w-full bg-secondary rounded-full overflow-hidden"
                   role="progressbar"
                   aria-valuenow={Math.min(ratio, 100)}
                   aria-valuemin={0}
                   aria-valuemax={100}>
                   <div
-                    className="h-full bg-primary transition-all duration-1000"
+                    className={cn(
+                      "h-full transition-all duration-1000 ease-out rounded-full",
+                      ratio > 10 ? "bg-orange-500" : "bg-primary",
+                    )}
                     style={{ width: `${Math.min(ratio, 100)}%` }}
                   />
                 </div>
-                <p
+                <span
                   className={cn(
-                    "text-[11px] inline text-muted-foreground leading-tight p-0.25 px-2 rounded-lg",
+                    "text-[10px] font-semibold uppercase tracking-wider rounded-full px-2.5 py-0.5",
                     ratio > 10
-                      ? "bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-200"
-                      : "bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-200",
+                      ? "bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300"
+                      : "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
                   )}>
                   {ratio > 10
                     ? t("income_ratio.stats.feedback_high")
                     : t("income_ratio.stats.feedback_healthy")}
-                </p>
+                </span>
               </div>
             )}
-          </>
-        )}
-      </div>
-
-      <div className="bg-card border border-border rounded-2xl p-3">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold flex items-center gap-2">
-            <PieChart size={16} className="text-primary" />
-            {t("breakdown.title")}
-          </h3>
-          <div className="flex bg-secondary rounded-md text-xs font-bold outline-solid outline-primary/20">
-            <Button
-              onClick={() => setViewMode("Monthly")}
-              className={` rounded-lg transition-all cursor-pointer hover:bg-primary hover:text-background dark:hover:text-foreground active:scale-[0.98] ${
-                viewMode === "Monthly"
-                  ? "bg-primary/30 shadow text-foreground"
-                  : "text-gray-700 dark:text-gray-300 bg-secondary"
-              }`}>
-              {t("breakdown.monthly")}
-            </Button>
-            <Button
-              onClick={() => setViewMode("Annual")}
-              className={` rounded-lg transition-all cursor-pointer hover:bg-primary hover:text-background dark:hover:text-foreground active:scale-[0.98] ${
-                viewMode === "Annual"
-                  ? "bg-primary/30 shadow text-foreground"
-                  : "text-gray-700 dark:text-gray-300 bg-secondary"
-              }`}>
-              {t("breakdown.annual")}
-            </Button>
           </div>
-        </div>
-        <div className="space-y-5">
+        )}
+        <div className="mx-1 border-t border-solid border-border/60 " />
+
+        {/* Category breakdown */}
+        <div className="p-3">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground">
+              {t("breakdown.title")}
+            </p>
+            <div className="flex items-center bg-secondary rounded-full p-0.5 text-[10px] font-bold uppercase tracking-wider">
+              <button
+                onClick={() => setViewMode("Monthly")}
+                className={cn(
+                  "px-3 py-1 rounded-full transition-all duration-200 cursor-pointer",
+                  viewMode === "Monthly"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-primary/20",
+                )}>
+                {t("breakdown.monthly")}
+              </button>
+              <button
+                onClick={() => setViewMode("Annual")}
+                className={cn(
+                  "px-3 py-1 rounded-full transition-all duration-200 cursor-pointer",
+                  viewMode === "Annual"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-primary/20",
+                )}>
+                {t("breakdown.annual")}
+              </button>
+            </div>
+          </div>
+
           {categoryItems.length > 0 ? (
-            categoryItems.map((item) => (
-              <div key={item.key}>
-                <div className="flex justify-between text-xs mb-2 items-baseline">
-                  <span className="text-gray-600 dark:text-gray-300 font-bold">
-                    {item.label}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-foreground">
+            <div className="space-y-1">
+              <div className="flex h-2 w-full rounded-full overflow-hidden gap-px mb-5">
+                {stackedSegments.map((seg) => (
+                  <div
+                    key={seg.key}
+                    className={cn(
+                      "h-full transition-all duration-700",
+                      seg.color.bar,
+                    )}
+                    style={{ width: `${seg.value}%` }}
+                    title={`${seg.label}: ${seg.value}%`}
+                  />
+                ))}
+              </div>
+              {categoryItems.map((item) => {
+                const colors = categoryColorMap[item.key];
+                return (
+                  <div
+                    key={item.key}
+                    className="flex items-center gap-3 py-0.5 group">
+                    <div
+                      className={cn(
+                        "w-1.5 h-1.5 rounded-full flex-shrink-0 transition-transform duration-200 group-hover:scale-125",
+                        colors.dot,
+                      )}
+                    />
+                    <span className="flex-1 text-xs font-medium text-foreground/80 truncate">
+                      {item.label}
+                    </span>
+                    <span className="text-xs font-mono font-bold text-foreground">
                       {item.money}
                     </span>
-                    <span className="text-muted-foreground text-[12px]">
-                      ({item.value}%)
+                    <span
+                      className={cn(
+                        "text-[10px] font-bold tabular-nums w-10 text-right",
+                        colors.text,
+                      )}>
+                      {item.value}%
                     </span>
                   </div>
-                </div>
-                <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${
-                      categoryColors[item.key] ?? "bg-muted"
-                    } transition-all duration-500`}
-                    style={{ width: `${item.value}%` }}
-                  />
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center text-sm">
-              {t("breakdown.no_results")}
+                );
+              })}
             </div>
+          ) : (
+            <p className="text-center text-xs text-muted-foreground py-4">
+              {t("breakdown.no_results")}
+            </p>
           )}
         </div>
       </div>

@@ -25,14 +25,14 @@ export default function DataVisualization() {
   return (
     <section className="py-14 px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-card border border-border rounded-[2.5rem] overflow-hidden">
+        <div
+          className="bg-card border border-border overflow-hidden rounded-[2.5rem]"
+          style={{
+            clipPath:
+              "polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 40px 100%, 0 calc(100% - 40px))",
+          }}>
           <div className="grid lg:grid-cols-2">
-            <div className="p-8 md:p-16 flex flex-col justify-center">
-              <div className="inline-flex items-center gap-2 text-primary font-mono text-xs mb-6 mx-auto lg:mx-0">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                {t("tagline")}
-              </div>
-
+            <div className="p-5 md:p-10 flex flex-col justify-center">
               <h2 className="text-4xl font-bold tracking-tight mb-6 leading-tight text-center lg:text-left">
                 {t("heading")}
               </h2>
@@ -65,7 +65,7 @@ export default function DataVisualization() {
               </div>
             </div>
 
-            <div className="bg-muted/50 p-8 md:p-16 border-l border-border">
+            <div className="bg-muted/50 p-5 md:p-10 border-l border-border">
               <div className="space-y-12">
                 {years.map((year) => (
                   <div key={year.label} className="relative">
@@ -109,9 +109,9 @@ export default function DataVisualization() {
                   </div>
                 ))}
 
-                <div className="pt-4 flex items-start gap-4 p-4 rounded-xl bg-card border border-border">
+                <div className="pt-2 flex items-start gap-4 p-2 rounded-xl bg-card border border-border">
                   <Eye className="text-primary mt-1" size={20} />
-                  <p className="text-xs text-muted-foreground leading-normal">
+                  <p className="text-xs max-w-sm text-muted-foreground leading-normal">
                     {t("disclaimer")}
                   </p>
                 </div>
