@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { hasLocale, Messages, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -40,32 +40,33 @@ export default async function RootLayout({
   // enable static rendering, by distribuing the locale that is received via params 
   // to all next-intl API's and storing it inside a cache.
   setRequestLocale(lang);
+  const messages = (await import(`../../../messages/${lang}.json`)).default as Messages;
   return (
     <ViewTransition>
-      <NextIntlClientProvider>
-            <Suspense>
-              <ClerkProvider
-                localization={lang === "bg" ? bgBG : enGB}
-                appearance={{
-                  theme: [shadcn],
-                  layout: {
-                    socialButtonsVariant: "blockButton",
-                  },
-                }}>
-                <Toaster position="top-center" richColors closeButton />
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="system"
-                  enableSystem
-                  disableTransitionOnChange
-                  enableColorScheme>
-                  <Navigation />
-                  {children}
-                  <Footer />
-                </ThemeProvider>
-              </ClerkProvider>
-            </Suspense>
-      </NextIntlClientProvider>
+      <Suspense>
+        <NextIntlClientProvider locale={lang} messages={messages}>
+          <ClerkProvider
+            localization={lang === "bg" ? bgBG : enGB}
+            appearance={{
+              theme: [shadcn],
+              layout: {
+                socialButtonsVariant: "blockButton",
+              },
+            }}>
+            <Toaster position="top-center" richColors closeButton />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              enableColorScheme>
+              <Navigation />
+              {children}
+              <Footer />
+            </ThemeProvider>
+          </ClerkProvider>
+        </NextIntlClientProvider>
+      </Suspense>
     </ViewTransition>
   );
 }

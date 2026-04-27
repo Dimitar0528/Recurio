@@ -42,6 +42,7 @@ import { advanceDateWithClamp } from "@/lib/utils";
 import { createSubscription, updateSubscription } from "@/app/actions";
 import { useLocale, useTranslations } from "next-intl";
 
+import { useDialogClose } from "@/context/subscription-dialog-context";
 type SubscriptionFormProps = {
   initialValues?: Subscription;
 };
@@ -49,10 +50,13 @@ type SubscriptionFormProps = {
 export default function SubscriptionForm({
   initialValues,
 }: SubscriptionFormProps) {
+  const closeDialog = useDialogClose();
+
   const locale = useLocale();
   const tValidation = useTranslations("Validation");
   const tReusable = useTranslations("Reusable");
   const t = useTranslations("dashboard_page.subscription_form_component");
+  
   const subscriptionFormSchema = i18nSubscriptionFormSchema(tValidation);
   const dateLocale = locale === "bg" ? bg : enUS;
 
@@ -87,9 +91,11 @@ export default function SubscriptionForm({
 
       if (initialValues && initialValues.id) {
         toast.success(t("messages.success_update"));
+        closeDialog();
         await updateSubscription(initialValues.id, result.data);
       } else {
         toast.success(t("messages.success_create"));
+        closeDialog();
         await createSubscription(result.data);
       }
     },

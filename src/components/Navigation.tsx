@@ -28,11 +28,10 @@ import { Button } from "@/components/ui/button";
 import LocaleSwitcher from "./locale_switcher";
 import { Route } from "next";
 import {
-  SignedOut,
   SignInButton,
-  SignedIn,
   UserButton,
   useUser,
+  Show
 } from "@clerk/nextjs";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -164,18 +163,18 @@ export default function Navigation() {
               </div>
             </div>
           )}
-          <SignedOut>
-            <div className="hidden md:block">
-              <SignInButton>
-                <button className="group relative inline-flex items-center justify-center h-8 px-3 bg-primary text-primary-foreground text-sm font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
-                  {tReusable("sign_in_link")}
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </button>
-              </SignInButton>
-            </div>
-          </SignedOut>
-
-          <SignedIn>
+          <Show
+            fallback={
+              <div className="hidden md:block">
+                <SignInButton>
+                  <button className="group relative inline-flex items-center justify-center h-8 px-3 bg-primary text-primary-foreground text-sm font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+                    {tReusable("sign_in_link")}
+                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                  </button>
+                </SignInButton>
+              </div>
+            }
+            when="signed-in">
             <UserButton
               appearance={{
                 elements: {
@@ -184,7 +183,7 @@ export default function Navigation() {
                 },
               }}
             />
-          </SignedIn>
+          </Show>
 
           <Button
             variant="ghost"
@@ -230,15 +229,14 @@ export default function Navigation() {
               <LocaleSwitcher />
             </div>
           </div>
-
-          <SignedOut>
+          <Show when="signed-out">
             <SignInButton>
               <button className="group relative inline-flex items-center justify-center h-8 px-3 bg-primary text-primary-foreground text-sm font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
                 Get Started
                 <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </SignInButton>
-          </SignedOut>
+          </Show>
         </div>
       </div>
     </nav>

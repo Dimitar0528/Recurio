@@ -17,6 +17,15 @@ const nextConfig: NextConfig = {
     cssChunking: true,
     viewTransition: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.google.com",
+        pathname: "/s2/favicons/**",
+      },
+    ],
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();

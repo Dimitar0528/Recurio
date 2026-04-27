@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { deleteSubscription, undoDeleteSubscription } from "@/app/actions";
+import { SubIcon } from "./SubIcon";
 
 export const useColumns = (): ColumnDef<Subscription>[] => {
   const tReusable = useTranslations("Reusable");
@@ -91,63 +92,47 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
         };
         return (
-          <div className="flex flex-col gap-2">
-            <div>
-              <div className="font-medium">{name}</div>
-              <div className="text-sm text-muted-foreground text-primary">
+          <div className="grid grid-cols-2 sm:grid-cols-4 items-center">
+            <div className="flex flex-col text-center items-center">
+              <span className="font-medium leading-tight">{name}</span>
+              <span className="text-xs text-primary">
                 {tReusable(`categories.${category}`)}
-              </div>
+              </span>
             </div>
-
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">
+            <div className="flex flex-col text-center">
+              <span className="text-xs text-muted-foreground">
                 {t("table.columns.billing")}
               </span>
-              <div className="flex flex-col">
-                <span className="font-medium leading-none text-xs">
-                  {formattedPrice} /{" "}
-                  <span className="text-xs text-primary">
-                    {tReusable(`billingCycle.${billingCycle}`)}
-                  </span>
+              <span className="font-medium leading-tight">
+                {formattedPrice}
+              </span>
+              <span className="text-xs text-primary">
+                {tReusable(`billingCycle.${billingCycle}`)}
+              </span>
+              {billingCycle === "Annual" && (
+                <span className="text-[10px] text-muted-foreground">
+                  {t("table.badges.monthly_estimate", {
+                    price: priceFormatter(price / 12),
+                  })}
                 </span>
-                {billingCycle === "Annual" && (
-                  <span className="text-xs text-muted-foreground font-medium">
-                    {t("table.badges.monthly_estimate", {
-                      price: priceFormatter(price / 12),
-                    })}
-                  </span>
-                )}
-              </div>
+              )}
             </div>
-
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">
+            <div className="flex flex-col text-center">
+              <span className="text-xs text-muted-foreground">
                 {t("table.columns.nextBilling")}
               </span>
-              <span>{billingDate}</span>{" "}
-              <Tooltip>
-                <TooltipTrigger className="text-primary">
-                  (
-                  {autoRenew
-                    ? t("table.badges.auto")
-                    : t("table.badges.manual")}
-                  )
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    {autoRenew
-                      ? t("table.badges.renews_auto")
-                      : t("table.badges.requires_manual")}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
+              <span className="text-sm">{billingDate}</span>
+              <span className="text-xs text-primary">
+                {autoRenew ? t("table.badges.auto") : t("table.badges.manual")}
+              </span>
             </div>
-
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">
+            <div className="flex flex-col text-center">
+              <span className="text-xs text-muted-foreground">
                 {t("table.columns.status")}
               </span>
-              <Badge variant="outline" className={`${statusClasses[status]}`}>
+              <Badge
+                variant="outline"
+                className={`${statusClasses[status]} text-xs mx-auto`}>
                 {tReusable(`status.${status}`)}
               </Badge>
             </div>
@@ -167,11 +152,14 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         const { name, category } = row.original;
 
         return (
-          <div className="flex flex-col">
-            <span className="font-medium leading-none">{name}</span>
-            <span className="text-xs text-primary dark:text-primary mt-1">
-              {tReusable(`categories.${category}`)}
-            </span>
+          <div className="flex items-center gap-2">
+            <SubIcon name={name} />
+            <div className="flex flex-col">
+              <span className="font-medium leading-none">{name}</span>
+              <span className="text-xs text-primary dark:text-primary mt-1">
+                {tReusable(`categories.${category}`)}
+              </span>
+            </div>
           </div>
         );
       },
@@ -256,7 +244,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
             {isActiveAndExpiringSoonSub && (
               <Badge
                 variant="secondary"
-                className="bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-200 text-[11px]">
+                className="bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-200 text-[10px]">
                 {t("table.badges.expiring_soon")}
               </Badge>
             )}
