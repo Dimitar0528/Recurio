@@ -4,10 +4,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import { hasLocale, Messages, NextIntlClientProvider } from "next-intl";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { bgBG, enGB } from "@clerk/localizations";
@@ -40,7 +40,7 @@ export default async function RootLayout({
   // enable static rendering, by distribuing the locale that is received via params 
   // to all next-intl API's and storing it inside a cache.
   setRequestLocale(lang);
-  const messages = (await import(`../../../messages/${lang}.json`)).default as Messages;
+  const messages = await getMessages({ locale: lang });
   return (
     <ViewTransition>
       <Suspense>

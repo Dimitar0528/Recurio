@@ -6,10 +6,10 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   cacheComponents: true,
   cacheLife: {
-    days: {
+    halfDay: {
       stale: 60 * 60 * 6, // 6h
-      revalidate: 60 * 60 * 24, // 24h
-      expire: 60 * 60 * 24 * 3, // 3d
+      revalidate: 60 * 60 * 12, // 12 h
+      expire: 60 * 60 * 24 * 2, // 2d
     },
   },
   experimental: {

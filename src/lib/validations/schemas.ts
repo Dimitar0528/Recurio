@@ -43,12 +43,23 @@ export const i18nSubscriptionFormSchema = (t: TFunction) => {
     autoRenew: z.boolean(),
     status: statusEnum,
   });
-}
+};
 export const i18nSubscriptionSchema = (t: TFunction) =>
   i18nSubscriptionFormSchema(t).extend({
     id: z.uuid(),
     createdAt: z.date(),
+    statusChangedAt: z.date().nullable().optional(),
+    lastRenewedAt: z.date().nullable().optional(),
+    manualRenewalGraceUntil: z.date().nullable().optional(),
   });
+
+export const billingEventSchema = z.object({
+  id: z.uuid(),
+  subscriptionId: z.uuid(),
+  amount: z.number().positive(),
+  chargedAt: z.date(),
+  source: z.enum(["initial", "auto", "manual"]),
+});
 
 export const i18nNetSalarySchema = (t: TFunction) => {
   return z.object({
@@ -71,3 +82,4 @@ export type SubscriptionFormValues = z.infer<
 >;
 
 export type Subscription = z.infer<ReturnType<typeof i18nSubscriptionSchema>>;
+export type BillingEvent = z.infer<typeof billingEventSchema>;

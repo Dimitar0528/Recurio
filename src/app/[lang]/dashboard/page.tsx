@@ -20,12 +20,16 @@ import {
   setDateHoursToZero,
   SEVEN_DAYS_MS,
 } from "@/lib/utils";
-import { getUserSubscriptions } from "@/dal/subscriptions/queries";
+import {
+  getUserBillingEvents,
+  getUserSubscriptions,
+} from "@/dal/subscriptions/queries";
 import { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Locale } from "next-intl";
-import { Subscription } from "@/lib/validations/schemas";
+import { BillingEvent, Subscription } from "@/lib/validations/schemas";
 import { SpendingCard } from "@/components/dashboard/SpendingCard";
+import { getProcessDueRenewalsForUser } from "@/dal/subscriptions/mutations";
 
 export async function generateMetadata({
   params,
@@ -45,7 +49,11 @@ export async function generateMetadata({
 export async function getDailyDate() {
   "use cache";
   cacheTag("getDailyDate");
-  cacheLife("days");
+   cacheLife({
+     stale: 60 * 60 * 6,
+     revalidate: 60 * 60 * 24,
+     expire: 60 * 60 * 24,
+   });
   return new Date();
 }
 
@@ -67,61 +75,32 @@ function calculateAverageSpending(subscriptions: Subscription[]) {
   };
 }
 
-function calculateSubscriptionActualChargesInRange(
-  sub: Subscription,
+function calculateActualChargesInRange(
+  billingEvents: BillingEvent[],
   rangeStart: Date,
   rangeEnd: Date,
 ) {
-  let total = 0;
-  const startingBillingDate = setDateHoursToZero(new Date(sub.createdAt));
-  while (startingBillingDate < rangeEnd) {
-    const isInRange =
-      startingBillingDate >= rangeStart && startingBillingDate < rangeEnd;
-    if (isInRange && sub.status === "Active") {
-      total += sub.price;
-      if (sub.billingCycle === "Annual") {
-        break;
-      }
-    }
-
-    if (sub.billingCycle === "Monthly") {
-      startingBillingDate.setUTCMonth(startingBillingDate.getUTCMonth() + 1);
-    } else {
-      startingBillingDate.setUTCFullYear(
-        startingBillingDate.getUTCFullYear() + 1,
-      );
-    }
-  }
-
-  return total;
+  return billingEvents.reduce((total, billingEvent) => {
+    const chargedAt = setDateHoursToZero(new Date(billingEvent.chargedAt));
+    const isInRange = chargedAt >= rangeStart && chargedAt < rangeEnd;
+    return total + (isInRange ? billingEvent.amount : 0);
+  }, 0);
 }
 
 function calculateActualMonthlySpending(
-  subscriptions: Subscription[],
+  billingEvents: BillingEvent[],
   today = new Date(),
 ) {
   const { start, end } = getCurrentDateRange(today, "month");
-
-  return subscriptions.reduce(
-    (total, subscription) =>
-      total +
-      calculateSubscriptionActualChargesInRange(subscription, start, end),
-    0,
-  );
+  return calculateActualChargesInRange(billingEvents, start, end);
 }
 
 function calculateActualYearlySpending(
-  subscriptions: Subscription[],
+  billingEvents: BillingEvent[],
   today = new Date(),
 ) {
   const { start, end } = getCurrentDateRange(today, "year");
-
-  return subscriptions.reduce(
-    (total, subscription) =>
-      total +
-      calculateSubscriptionActualChargesInRange(subscription, start, end),
-    0,
-  );
+  return calculateActualChargesInRange(billingEvents, start, end);
 }
 
 export default async function Page({ params }: PageProps<"/[lang]">) {
@@ -129,12 +108,15 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   setRequestLocale(locale);
   const tReusable = await getTranslations({ locale, namespace: "Reusable" });
   const t = await getTranslations({ locale, namespace: "dashboard_page" });
-  const userSubscriptions = await getUserSubscriptions();
 
+  await getProcessDueRenewalsForUser();
+  const userSubscriptions = await getUserSubscriptions();
+  const billingEvents = await getUserBillingEvents();
+  
   const { averageMonthly, projectedYearly } =
     calculateAverageSpending(userSubscriptions);
-  const actualMonthlySpend = calculateActualMonthlySpending(userSubscriptions);
-  const actualYearlySpend = calculateActualYearlySpending(userSubscriptions);
+  const actualMonthlySpend = calculateActualMonthlySpending(billingEvents);
+  const actualYearlySpend = calculateActualYearlySpending(billingEvents);
   const activeSubscriptions = userSubscriptions.filter(
     (s) => s.status === "Active",
   ).length;

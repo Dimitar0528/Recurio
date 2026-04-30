@@ -14,16 +14,16 @@
     },
     "Validation": {
         "subscription": {
-            "name":{
+            "name": {
                 "min": "Name must be at least {min} characters.",
                 "max": "Name can't be more than {max} characters.'"
             },
-            "price":{
+            "price": {
                 "required": "Price is required.",
                 "positive": "Price must be a positive number.",
                 "decimal_count": "Price can have at most 2 decimal places."
             },
-            "category":{
+            "category": {
                 "invalid": "Choose a valid category."
             },
             "nextBilling": {
@@ -38,7 +38,7 @@
             "decimal_count": "Net salary can have at most 2 decimal places."
         }
     },
-    "Reusable":{
+    "Reusable": {
         "categories": {
             "Entertainment": "Entertainment",
             "Software": "Software",
@@ -66,7 +66,7 @@
             "submit": "{action} Subscription",
             "cancel": "Cancel"
         },
-        "navigation_component":{
+        "navigation_component": {
             "dashboard_link": "Dashboard",
             "insights_link": "Insights",
             "payments_link": "Payments",
@@ -92,7 +92,7 @@
             "secondary": "Read our Privacy Policy"
         },
         "hero_component": {
-            "title":{
+            "title": {
                 "part_1": "Subscriptions are",
                 "part_2": "silent.",
                 "part_3": "Make them",
@@ -160,7 +160,7 @@
         "testimonials_component": {
             "heading": "Feel the Love From Our Users",
             "description": "Don’t just take our word for it—our users rave about how Recurio has transformed their financial habits. From saving more effectively to tracking expenses effortlessly, here are a few of our top reviews from real people across the globe.",
-            "people":{
+            "people": {
                 "alex": "Absolutely transformed how I manage my finances. Finally, an app that just works.",
                 "samira": "The UI is so intuitive! I was tracking expenses in minutes.",
                 "jordan": "Recurio helped me save for a vacation faster than I ever thought possible.",
@@ -179,7 +179,6 @@
                 "hannah": "I recommend Recurio to anyone serious about controlling their finances.",
                 "noah": "The app is lightweight, fast, and the design is aesthetically pleasing.",
                 "maya": "I actually enjoy opening it daily to see my spending trends."
-                
             }
         }
     },
@@ -257,7 +256,7 @@
                 "next_billing": "Next Billing",
                 "date_placeholder": "Pick a date",
                 "auto_renew": "Auto Renew",
-                "auto_renew_description": "Disable auto renewing.",
+                "auto_renew_description": "{value, select, true {Disable auto renewing.} false {Enable auto renewing.} other {Неизвестно}}",
                 "status": "Status"
             },
             "messages": {
@@ -305,12 +304,11 @@
                     "renews_auto": "Renews automatically",
                     "requires_manual": "Requires manual renewal",
                     "expiring_soon": "Expires in 7–14 days",
+                    "renew_required": "Renewal required",
                     "monthly_estimate": "(~{price} / Monthly)"
                 }
             },
             "delete_dialog": {
-                "trigger_label": "Delete button",
-                "edit_trigger_label": "Edit button",
                 "title": "Are you absolutely sure?",
                 "warning": "Once deleted, the subscription and all related data will be <important>removed</important>.",
                 "impact_title": "Statistical Impact",
@@ -330,7 +328,26 @@
                 "deleted": "Subscription deleted successfully!",
                 "undo": "Undo",
                 "error": "An error has occured!"
+            },
+            "manual_renewal": {
+                "title": "Renewal due",
+                "follow_up": "Mark this subscription as:",
+                "grace_not_started": "Grace period starts now.",
+                "grace_expired": "Grace period expired. This subscription will be paused automatically.",
+                "grace_days_left": "Auto-pauses in {count} days.",
+                "actions": {
+                    "renew_yes": "Renewed",
+                    "renew_no": "Not renewed"
+                },
+                "messages": {
+                    "renewing": "Confirming renewal...",
+                    "renewed": "Renewal recorded and next billing updated.",
+                    "updating_status": "Updating subscription status...",
+                    "paused": "Subscription set to paused.",
+                    "cancelled": "Subscription set to cancelled.",
+                    "error": "Something went wrong."
+                }
             }
         }
-    }   
+    }
 }

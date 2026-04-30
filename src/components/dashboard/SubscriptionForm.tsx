@@ -331,7 +331,9 @@ export default function SubscriptionForm({
                       {t("fields.auto_renew")}
                     </FieldLabel>
                     <FieldDescription>
-                      {t("fields.auto_renew_description")}
+                      {t("fields.auto_renew_description", {
+                        value: String(field.state.value),
+                      })}
                     </FieldDescription>
                   </div>
                   <Switch

@@ -2,7 +2,9 @@
 
 import { SubscriptionFormValues } from "@/lib/validations/schemas";
 import {
+  confirmManualRenewalForUser,
   deleteUserSubscription,
+  declineManualRenewalForUser,
   insertUserSubscription,
   undoDeleteUserSubscription,
   updateUserSubscription,
@@ -25,4 +27,15 @@ export async function deleteSubscription(id: string) {
 
 export async function undoDeleteSubscription(id: string) {
   await undoDeleteUserSubscription(id);
+}
+
+export async function confirmManualRenewal(id: string) {
+  await confirmManualRenewalForUser(id);
+}
+
+export async function declineManualRenewal(
+  id: string,
+  status: "Paused" | "Cancelled",
+) {
+  await declineManualRenewalForUser(id, status);
 }

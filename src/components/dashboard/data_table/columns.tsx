@@ -6,13 +6,13 @@ import { type Subscription } from "@/lib/validations/schemas";
 import { AlertTriangle, Delete, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   dateFormatter,
   priceFormatter,
   SEVEN_DAYS_MS,
   FOURTEEN_DAYS_MS,
   setDateHoursToZero,
+  isDue,
 } from "@/lib/utils";
 import { useLocale, useTranslations } from "next-intl";
 import SubscriptionDialog from "../SubscriptionDialog";
@@ -36,7 +36,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { deleteSubscription, undoDeleteSubscription } from "@/app/actions";
+import {
+  deleteSubscription,
+  undoDeleteSubscription,
+} from "@/app/actions";
 import { SubIcon } from "./SubIcon";
 
 export const useColumns = (): ColumnDef<Subscription>[] => {
@@ -45,30 +48,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
   const locale = useLocale();
 
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          className="cursor-pointer"
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            table.getIsSomePageRowsSelected()
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          className="cursor-pointer"
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+
     {
       id: "mobile",
       header: () => null,
@@ -82,8 +62,10 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           status,
           autoRenew,
         } = row.original;
+
         const formattedPrice = priceFormatter(price);
         const billingDate = dateFormatter(nextBilling, locale);
+
         const statusClasses = {
           Active:
             "bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-300",
@@ -91,6 +73,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
             "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300",
           Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
         };
+
         return (
           <div className="grid grid-cols-2 sm:grid-cols-4 items-center">
             <div className="flex flex-col text-center items-center">
@@ -220,6 +203,8 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           subscriptionTime >= dailyTime &&
           subscriptionTime - dailyTime <= FOURTEEN_DAYS_MS &&
           subscriptionTime - dailyTime >= SEVEN_DAYS_MS;
+        const isPendingRenewal =
+          !autoRenew && status === "Active" && isDue(nextBilling, new Date());
         return (
           <div className="flex flex-col">
             <div>
@@ -246,6 +231,11 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                 variant="secondary"
                 className="bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-200 text-[10px]">
                 {t("table.badges.expiring_soon")}
+              </Badge>
+            )}
+            {isPendingRenewal && (
+              <Badge variant="destructive" className="text-[10px]">
+                {t("table.badges.renew_required")}
               </Badge>
             )}
           </div>

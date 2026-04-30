@@ -71,7 +71,8 @@ import { useTranslations } from "next-intl";
 import { useColumns } from "./columns";
 import { Subscription } from "@/lib/validations/schemas";
 import { Status, STATUS_VALUES } from "@/lib/validations/enums";
-import { cn } from "@/lib/utils";
+import { cn, isDue } from "@/lib/utils";
+import { ManualRenewalControls } from "./ManualRenewalControls";
 type DataTableProps = {
   data: Subscription[];
 };
@@ -98,12 +99,10 @@ export function DataTable({ data }: DataTableProps) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
     },
   });
 
@@ -148,6 +147,11 @@ export function DataTable({ data }: DataTableProps) {
   if (!hasMounted) {
     return <DataTableSkeleton />;
   }
+
+  const pendingRenewalSubscriptions = data.filter(
+    ({ autoRenew, status, nextBilling }) =>
+      !autoRenew && status === "Active" && isDue(nextBilling, new Date())
+  );
 
   return (
     <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">
@@ -316,6 +320,11 @@ export function DataTable({ data }: DataTableProps) {
           </DropdownMenu>
         </div>
       </div>
+      <ManualRenewalControls
+        pendingRenewalSubscriptions={pendingRenewalSubscriptions}
+        t={t}
+        tReusable={tReusable}
+      />
 
       <div className="overflow-hidden rounded-md border">
         <Table>
