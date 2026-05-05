@@ -10,12 +10,35 @@ import {
 } from "@/lib/validations/enums";
 import { Input } from "../ui/input";
 import { useUser } from "@clerk/nextjs";
-import { i18nNetSalarySchema } from "@/lib/validations/schemas";
+import { netSalarySchema } from "@/lib/validations/schemas";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Skeleton } from "../ui/skeleton";
 import { useTranslations } from "next-intl";
+
+type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
+
+function localizeFieldErrors(errors: unknown[], t: ValidationTFunction) {
+  const messages = {
+    NET_SALARY_REQUIRED: t("netSalary.min", { min: 3 }),
+    NET_SALARY_NOT_POSITIVE: t("netSalary.positive"),
+    NET_SALARY_DECIMALS: t("netSalary.decimal_count"),
+  };
+  return errors.map((error) => {
+    const code =
+      typeof error === "string"
+        ? error
+        : typeof error === "object" &&
+            error !== null &&
+            "message" in error &&
+            typeof error.message === "string"
+          ? error.message
+          : String(error ?? "");
+    const message = messages[code as keyof typeof messages] ?? code;
+    return { message };
+  });
+}
 
 type InsightsSidebarProps = {
   data: Subscription[];
@@ -26,10 +49,11 @@ export default function InsightsSidebar({
   data,
   monthlySpend,
 }: InsightsSidebarProps) {
-  const tValidation = useTranslations("Validation");
   const tReusable = useTranslations("Reusable");
+  const tValidation = useTranslations("Validation");
   const t = useTranslations("dashboard_page.insights_sidebar_component");
-  const netSalarySchema = i18nNetSalarySchema(tValidation);
+
+
   const { user, isLoaded } = useUser();
   const [salary, setSalary] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -223,7 +247,10 @@ export default function InsightsSidebar({
                         {isInvalid && (
                           <FieldError
                             id="netSalaryError"
-                            errors={field.state.meta.errors}
+                            errors={localizeFieldErrors(
+                              field.state.meta.errors,
+                              tValidation,
+                            )}
                             aria-live="polite"
                           />
                         )}

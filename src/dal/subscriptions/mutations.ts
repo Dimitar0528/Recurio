@@ -1,35 +1,26 @@
 import "server-only";
-import { SubscriptionFormValues } from "@/lib/validations/schemas";
+import { subscriptionBaseSchema, SubscriptionFormValues } from "@/lib/validations/schemas";
 import { db } from "@/db/db";
 import {
   subscriptionBillingEventsTable,
   subscriptionsTable,
 } from "@/db/schema";
 import { cacheLife, cacheTag, revalidatePath, updateTag } from "next/cache";
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, eq, inArray, isNotNull, isNull, } from "drizzle-orm";
+import { DatabaseError } from "pg";
+import { DrizzleQueryError } from "drizzle-orm/errors";
+
 import { verifyUser } from "../users/verifyUser";
 import {
-  setDateHoursToZero,
   isDue,
   canGenerateCharge,
   getNextBillingDateFromCycle,
   getManualRenewalGraceDate,
   isManualGraceExpired,
 } from "@/lib/utils";
-import { BillingCycle, Status } from "@/lib/validations/enums";
+import { startOfDay } from "date-fns";
 
 type RenewalDecisionStatus = "Paused" | "Cancelled";
-
-type OwnedSubscription = {
-  id: string;
-  userId: string;
-  price: string;
-  billingCycle: BillingCycle;
-  status: Status;
-  nextBilling: Date;
-  autoRenew: boolean;
-  manualRenewalGraceUntil: Date | null;
-};
 
 async function getOwnedSubscriptionOrThrow(id: string, userId: string) {
   const [subscription] = await db
@@ -48,10 +39,11 @@ async function getOwnedSubscriptionOrThrow(id: string, userId: string) {
       and(eq(subscriptionsTable.id, id), eq(subscriptionsTable.userId, userId)),
     )
     .limit(1);
+    
   if (!subscription) {
     throw new Error("Subscription not found");
   }
-  return subscription as OwnedSubscription;
+  return subscription ;
 }
 
 async function invalidateSubscriptionDashboardCache(userId: string) {
@@ -64,35 +56,46 @@ export async function insertUserSubscription(
   subscription: SubscriptionFormValues,
 ) {
   const userId = await verifyUser();
+  const result = subscriptionBaseSchema.safeParse(subscription);
+  if (!result.success) throw new Error("Invalid subscription data shape!")
+  
+  const parsedSubscription = result.data
   const now = new Date();
-
-  await db.transaction(async (tx) => {
-    const [createdSubscription] = await tx
-      .insert(subscriptionsTable)
-      .values({
-        name: subscription.name,
-        price: subscription.price.toFixed(2),
-        billingCycle: subscription.billingCycle,
-        nextBilling: subscription.nextBilling,
-        category: subscription.category,
-        status: subscription.status,
-        statusChangedAt: now,
-        lastRenewedAt: now,
-        userId: userId,
-      })
-      .returning({
-        id: subscriptionsTable.id,
+  try{
+    await db.transaction(async (tx) => {
+      const [createdSubscription] = await tx
+        .insert(subscriptionsTable)
+        .values({
+          name: parsedSubscription.name,
+          price: parsedSubscription.price.toFixed(2),
+          billingCycle: parsedSubscription.billingCycle,
+          nextBilling: parsedSubscription.nextBilling,
+          category: parsedSubscription.category,
+          status: parsedSubscription.status,
+          statusChangedAt: now,
+          lastRenewedAt: now,
+          userId: userId,
+        })
+        .returning({
+          id: subscriptionsTable.id,
+        });
+  
+      await tx.insert(subscriptionBillingEventsTable).values({
+        subscriptionId: createdSubscription.id,
+        userId,
+        amount: parsedSubscription.price.toFixed(2),
+        chargedAt: now,
+        source: "initial",
       });
-
-    await tx.insert(subscriptionBillingEventsTable).values({
-      subscriptionId: createdSubscription.id,
-      userId,
-      amount: subscription.price.toFixed(2),
-      chargedAt: now,
-      source: "initial",
     });
-  });
-  await invalidateSubscriptionDashboardCache(userId);
+    await invalidateSubscriptionDashboardCache(userId);
+  } catch(err){
+    if (err instanceof DrizzleQueryError && err.cause instanceof DatabaseError) {
+     if(err.cause.code === "23505"){
+       throw new Error("Subscription already exists");
+     }
+    }
+  }
 }
 
 export async function updateUserSubscription(
@@ -100,21 +103,27 @@ export async function updateUserSubscription(
   subscription: SubscriptionFormValues,
 ) {
   const userId = await verifyUser();
+  const result = subscriptionBaseSchema.safeParse(subscription);
+  if (!result.success) throw new Error("Invalid subscription data shape!");
+  
+  const parsedSubscription = result.data;
   const now = new Date();
   const existingSubscription = await getOwnedSubscriptionOrThrow(id, userId);
 
   await db
     .update(subscriptionsTable)
     .set({
-      name: subscription.name,
-      category: subscription.category,
-      price: subscription.price.toFixed(2),
-      billingCycle: subscription.billingCycle,
-      nextBilling: subscription.nextBilling,
-      autoRenew: subscription.autoRenew,
-      status: subscription.status,
+      name: parsedSubscription.name,
+      category: parsedSubscription.category,
+      price: parsedSubscription.price.toFixed(2),
+      billingCycle: parsedSubscription.billingCycle,
+      nextBilling: parsedSubscription.nextBilling,
+      autoRenew: parsedSubscription.autoRenew,
+      status: parsedSubscription.status,
       statusChangedAt:
-        existingSubscription.status !== subscription.status ? now : undefined,
+        existingSubscription.status !== parsedSubscription.status
+          ? now
+          : undefined,
     })
     .where(
       and(eq(subscriptionsTable.userId, userId), eq(subscriptionsTable.id, id)),
@@ -126,36 +135,52 @@ export async function updateUserSubscription(
 export async function deleteUserSubscription(id: string) {
   const userId = await verifyUser();
 
-  await db
+  const result = await db
     .update(subscriptionsTable)
     .set({
       deletedAt: new Date(),
     })
     .where(
-      and(eq(subscriptionsTable.userId, userId), eq(subscriptionsTable.id, id)),
-    );
+      and(
+        eq(subscriptionsTable.userId, userId),
+        eq(subscriptionsTable.id, id),
+        isNull(subscriptionsTable.deletedAt),
+      ),
+    )
+    .returning({ id: subscriptionsTable.id });;
 
+    if (result.length === 0) {
+      throw new Error("Subscription not found or already deleted");
+    }
   await invalidateSubscriptionDashboardCache(userId);
 }
 
 export async function undoDeleteUserSubscription(id: string) {
   const userId = await verifyUser();
 
-  await db
+  const result = await db
     .update(subscriptionsTable)
     .set({
       deletedAt: null,
     })
     .where(
-      and(eq(subscriptionsTable.userId, userId), eq(subscriptionsTable.id, id)),
-    );
+      and(
+        eq(subscriptionsTable.userId, userId),
+        eq(subscriptionsTable.id, id),
+        isNotNull(subscriptionsTable.deletedAt),
+      ),
+    )
+    .returning({ id: subscriptionsTable.id });
 
+    if (result.length === 0) {
+      throw new Error("Not found or not deleted");
+    }
   await invalidateSubscriptionDashboardCache(userId);
 }
 
 export async function getProcessDueRenewalsForUser() {
   const userId = await verifyUser();
-  const now = setDateHoursToZero(new Date());
+  const now = startOfDay(new Date());
   return await processDueRenewalsForUser(userId, now);
 }
 
@@ -178,9 +203,13 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
       createdAt: subscriptionsTable.createdAt,
     })
     .from(subscriptionsTable)
-    .where(eq(subscriptionsTable.userId, userId));
+    .where(
+      and(
+        eq(subscriptionsTable.userId, userId),
+        isNull(subscriptionsTable.deletedAt),
+      ),
+    );
   const subscriptionIds = subscriptions
-    .filter((subscription) => !subscription.deletedAt)
     .map((subscription) => subscription.id);
 
   if (subscriptionIds.length > 0) {
@@ -202,7 +231,6 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
     );
     const missingEvents = subscriptions.filter(
       (subscription) =>
-        !subscription.deletedAt &&
         !existingSubscriptionIds.has(subscription.id),
     );
     if (missingEvents.length > 0) {
@@ -243,6 +271,7 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
           .where(
             and(
               eq(subscriptionsTable.id, subscription.id),
+              eq(subscriptionsTable.userId, userId),
               eq(subscriptionsTable.nextBilling, subscription.nextBilling),
             ),
           )
@@ -269,7 +298,12 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
           .set({
             manualRenewalGraceUntil: graceUntil,
           })
-          .where(eq(subscriptionsTable.id, subscription.id));
+          .where(
+            and(
+              eq(subscriptionsTable.id, subscription.id),
+              eq(subscriptionsTable.userId, userId),
+            ),
+          );
         continue;
       }
 
@@ -281,7 +315,12 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
             statusChangedAt: now,
             manualRenewalGraceUntil: null,
           })
-          .where(eq(subscriptionsTable.id, subscription.id));
+          .where(
+            and(
+              eq(subscriptionsTable.id, subscription.id),
+              eq(subscriptionsTable.userId, userId),
+            ),
+          );
       }
     }
   });
@@ -289,7 +328,7 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
 
 export async function confirmManualRenewalForUser(id: string) {
   const userId = await verifyUser();
-  const now = setDateHoursToZero(new Date());
+  const now = startOfDay(new Date());
   const subscription = await getOwnedSubscriptionOrThrow(id, userId);
 
   if (!canGenerateCharge(subscription.status)) {
@@ -309,14 +348,25 @@ export async function confirmManualRenewalForUser(id: string) {
       chargedAt: now,
       source: "manual",
     });
-    await tx
+    const updated = await tx
       .update(subscriptionsTable)
       .set({
         nextBilling,
         lastRenewedAt: now,
         manualRenewalGraceUntil: null,
       })
-      .where(eq(subscriptionsTable.id, id));
+      .where(
+        and(
+          eq(subscriptionsTable.id, subscription.id),
+          eq(subscriptionsTable.userId, userId),
+          eq(subscriptionsTable.nextBilling, subscription.nextBilling),
+        ),
+      )
+      .returning({ id: subscriptionsTable.id });
+
+      if (updated.length === 0) {
+        throw new Error("Concurrent update detected");
+      }
   });
 
   await invalidateSubscriptionDashboardCache(userId);
@@ -330,7 +380,7 @@ export async function declineManualRenewalForUser(
   const now = new Date();
   await getOwnedSubscriptionOrThrow(id, userId);
 
-  await db
+  const result = await db
     .update(subscriptionsTable)
     .set({
       status,
@@ -339,7 +389,11 @@ export async function declineManualRenewalForUser(
     })
     .where(
       and(eq(subscriptionsTable.userId, userId), eq(subscriptionsTable.id, id)),
-    );
+    )
+    .returning({ id: subscriptionsTable.id });
 
+    if (result.length === 0) {
+      throw new Error("Update failed");
+    }
   await invalidateSubscriptionDashboardCache(userId);
 }

@@ -3,9 +3,10 @@ import { confirmManualRenewal, declineManualRenewal } from "@/app/actions";
 import { Subscription } from "@/lib/validations/schemas";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { cn, setDateHoursToZero } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowUp } from "lucide-react";
+import { startOfDay } from "date-fns";
 
 type ManualRenewalControlsProps = {
   pendingRenewalSubscriptions: Subscription[];
@@ -21,11 +22,11 @@ export function ManualRenewalControls({
   const [expandedDeclineId, setExpandedDeclineId] = useState<string | null>(
     null,
   );
-  const today = setDateHoursToZero(new Date());
+  const today = startOfDay(new Date());
 
   const items = pendingRenewalSubscriptions.filter(
     ({ autoRenew, status, nextBilling }) => {
-      const dueDate = setDateHoursToZero(new Date(nextBilling));
+      const dueDate = startOfDay(new Date(nextBilling));
       return !autoRenew && status === "Active" && dueDate <= today;
     },
   );
@@ -38,7 +39,7 @@ export function ManualRenewalControls({
         const { id, manualRenewalGraceUntil, name } = subscription;
 
         const graceDate = manualRenewalGraceUntil
-          ? setDateHoursToZero(new Date(manualRenewalGraceUntil))
+          ? startOfDay(new Date(manualRenewalGraceUntil))
           : null;
 
         const daysLeft = graceDate

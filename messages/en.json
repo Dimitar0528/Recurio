@@ -200,13 +200,13 @@
         "cards": {
             "monthly": {
                 "title": "Monthly Spending",
-                "description": "All charges scheduled for this month vs. your monthly run rate",
+                "description": "All charges for this month vs. your monthly run rate",
                 "primary_label": "Total This Month",
                 "secondary_label": "Monthly Run Rate"
             },
             "yearly": {
                 "title": "Yearly Spending",
-                "description": "All charges scheduled for this year vs. your annual run rate",
+                "description": "All charges for this year vs. your annual run rate",
                 "primary_label": "Total for {year}",
                 "secondary_label": "Annual Run Rate"
             }
@@ -261,8 +261,10 @@
             },
             "messages": {
                 "no_changes": "No changes were made!",
-                "success_update": "Subscription updated successfully!",
-                "success_create": "Subscription created successfully!"
+                "loading": "Creating subscription...",
+                "success_create": "Subscription created successfully!",
+                "error_already_exists": "The Subscription already exists!",
+                "success_update": "Subscription updated successfully!"
             }
         },
         "data_table_component": {

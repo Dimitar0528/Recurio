@@ -6,6 +6,7 @@ import {
   pgEnum,
   pgTable,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -14,6 +15,7 @@ import {
   BILLING_CYCLE_VALUES,
   STATUS_VALUES,
 } from "@/lib/validations/enums";
+import { sql } from "drizzle-orm";
 
 export const dbCategoryEnum = pgEnum("category", CATEGORY_VALUES);
 export const dbBillingCycleEnum = pgEnum("billing_cycle", BILLING_CYCLE_VALUES);
@@ -37,12 +39,18 @@ export const subscriptionsTable = pgTable(
     autoRenew: boolean().notNull().default(true),
     status: dbStatusEnum().notNull(),
     statusChangedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
-    lastRenewedAt: timestamp({ withTimezone: true }),
+    lastRenewedAt: timestamp({ withTimezone: true }).notNull(),
     manualRenewalGraceUntil: timestamp({ withTimezone: true }),
     userId: char({ length: 32 }).notNull(),
     ...timestamps,
   },
-  (table) => [index("name_idx").on(table.name)],
+  (table) => [
+    index("name_idx").on(table.name),
+    uniqueIndex("subNameUniquePerUser").on(
+      table.userId,
+      sql`lower(${table.name})`,
+    ),
+  ],
 );
 
 export const dbBillingEventSourceEnum = pgEnum("billing_event_source", [

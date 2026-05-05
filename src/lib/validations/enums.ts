@@ -1,5 +1,4 @@
 import * as z from "zod";
-import { TFunction } from "./schemas";
 
 export const CATEGORY_VALUES = [
     "Entertainment",
@@ -16,11 +15,11 @@ export const CATEGORY_VALUES = [
 export const BILLING_CYCLE_VALUES = ["Monthly", "Annual"] as const;
 export const STATUS_VALUES = ["Active", "Paused", "Cancelled"] as const;
 
-export const categoryEnum = z.enum(CATEGORY_VALUES);
 export const billingCycleEnum = z.enum(BILLING_CYCLE_VALUES);
 
-export const i18nCategoryEnum = (t: TFunction) =>
-  z.enum(CATEGORY_VALUES, { error: t("subscription.category.invalid") });
+export const categoryEnum = z.enum(CATEGORY_VALUES, {
+  error: () => ({ message: "CATEGORY_INVALID" }),
+});
 export const statusEnum = z.enum(STATUS_VALUES);
 
 export type Category = z.infer<typeof categoryEnum>;

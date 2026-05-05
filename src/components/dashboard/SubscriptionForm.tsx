@@ -19,8 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  i18nSubscriptionFormSchema,
   Subscription,
+  subscriptionFormSchema,
 } from "@/lib/validations/schemas";
 import {
   billingCycleEnum,
@@ -43,6 +43,40 @@ import { createSubscription, updateSubscription } from "@/app/actions";
 import { useLocale, useTranslations } from "next-intl";
 
 import { useDialogClose } from "@/context/subscription-dialog-context";
+
+// localizing zod errors
+type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
+
+function localizeFieldErrors(errors: unknown[], t: ValidationTFunction) {
+  const messages = {
+    NAME_TOO_SHORT: t("subscription.name.min", { min: 3 }),
+    NAME_TOO_LONG: t("subscription.name.max", { max: 50 }),
+
+    PRICE_REQUIRED: t("subscription.price.required"),
+    PRICE_NOT_POSITIVE: t("subscription.price.positive"),
+    PRICE_DECIMALS: t("subscription.price.decimal_count"),
+
+    NEXT_BILLING_REQUIRED: t("subscription.nextBilling.required"),
+    NEXT_BILLING_INVALID: t("subscription.nextBilling.invalid"),
+    NEXT_BILLING_PAST: t("subscription.nextBilling.cannot_be_in_the_past"),
+
+    CATEGORY_INVALID: t("subscription.category.invalid"),
+  };
+  return errors.map((error) => {
+    const code =
+      typeof error === "string"
+        ? error
+        : typeof error === "object" &&
+            error !== null &&
+            "message" in error &&
+            typeof error.message === "string"
+          ? error.message
+          : String(error ?? "");
+    const message = messages[code as keyof typeof messages] ?? code;
+    return { message };
+  });
+}
+
 type SubscriptionFormProps = {
   initialValues?: Subscription;
 };
@@ -53,11 +87,10 @@ export default function SubscriptionForm({
   const closeDialog = useDialogClose();
 
   const locale = useLocale();
-  const tValidation = useTranslations("Validation");
   const tReusable = useTranslations("Reusable");
+  const tValidation = useTranslations("Validation");
   const t = useTranslations("dashboard_page.subscription_form_component");
-  
-  const subscriptionFormSchema = i18nSubscriptionFormSchema(tValidation);
+
   const dateLocale = locale === "bg" ? bg : enUS;
 
   const initialModifiedValues = initialValues && {
@@ -94,13 +127,16 @@ export default function SubscriptionForm({
         closeDialog();
         await updateSubscription(initialValues.id, result.data);
       } else {
-        toast.success(t("messages.success_create"));
+        toast.promise(createSubscription(result.data), {
+          loading: t("messages.loading"),
+          success: t("messages.success_create"),
+          error: t("messages.error_already_exists"),
+        });
         closeDialog();
-        await createSubscription(result.data);
       }
     },
   });
-  
+ 
   return (
     <form
       id="subscription-form"
@@ -132,7 +168,10 @@ export default function SubscriptionForm({
                 />
                 <FieldError
                   id="nameError"
-                  errors={field.state.meta.errors}
+                  errors={localizeFieldErrors(
+                    field.state.meta.errors,
+                    tValidation,
+                  )}
                   aria-live="polite"
                 />
               </Field>
@@ -173,7 +212,10 @@ export default function SubscriptionForm({
                     </Select>
                     <FieldError
                       id="categoryError"
-                      errors={field.state.meta.errors}
+                      errors={localizeFieldErrors(
+                        field.state.meta.errors,
+                        tValidation,
+                      )}
                       aria-live="polite"
                     />
                   </FieldContent>
@@ -208,7 +250,10 @@ export default function SubscriptionForm({
                 />
                 <FieldError
                   id="priceError"
-                  errors={field.state.meta.errors}
+                  errors={localizeFieldErrors(
+                    field.state.meta.errors,
+                    tValidation,
+                  )}
                   aria-live="polite"
                 />
               </Field>
@@ -256,7 +301,10 @@ export default function SubscriptionForm({
                   </Select>
                   <FieldError
                     id="billingCycleError"
-                    errors={field.state.meta.errors}
+                    errors={localizeFieldErrors(
+                      field.state.meta.errors,
+                      tValidation,
+                    )}
                     aria-live="polite"
                   />
                 </FieldContent>
@@ -315,7 +363,10 @@ export default function SubscriptionForm({
                   </Popover>
                   <FieldError
                     id="nextBillingError"
-                    errors={field.state.meta.errors}
+                    errors={localizeFieldErrors(
+                      field.state.meta.errors,
+                      tValidation,
+                    )}
                     aria-live="polite"
                   />
                 </Field>
@@ -344,7 +395,10 @@ export default function SubscriptionForm({
                   />
                   <FieldError
                     id="autoRenewError"
-                    errors={field.state.meta.errors}
+                    errors={localizeFieldErrors(
+                      field.state.meta.errors,
+                      tValidation,
+                    )}
                     aria-live="polite"
                   />
                 </FieldContent>
@@ -383,7 +437,10 @@ export default function SubscriptionForm({
                 </Select>
                 <FieldError
                   id="statusError"
-                  errors={field.state.meta.errors}
+                  errors={localizeFieldErrors(
+                    field.state.meta.errors,
+                    tValidation,
+                  )}
                   aria-live="polite"
                 />
               </FieldContent>

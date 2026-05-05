@@ -9,9 +9,6 @@ import { DataTableColumnHeader } from "./DataTableColumnHeader";
 import {
   dateFormatter,
   priceFormatter,
-  SEVEN_DAYS_MS,
-  FOURTEEN_DAYS_MS,
-  setDateHoursToZero,
   isDue,
 } from "@/lib/utils";
 import { useLocale, useTranslations } from "next-intl";
@@ -41,6 +38,7 @@ import {
   undoDeleteSubscription,
 } from "@/app/actions";
 import { SubIcon } from "./SubIcon";
+import { isWithinInterval, startOfDay, subDays } from "date-fns";
 
 export const useColumns = (): ColumnDef<Subscription>[] => {
   const tReusable = useTranslations("Reusable");
@@ -77,7 +75,9 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         return (
           <div className="grid grid-cols-2 sm:grid-cols-4 items-center">
             <div className="flex flex-col text-center items-center">
-              <span className="font-medium leading-tight">{name}</span>
+              <span className="font-medium leading-tight truncate w-full ">
+                {name}
+              </span>
               <span className="text-xs text-primary">
                 {tReusable(`categories.${category}`)}
               </span>
@@ -196,13 +196,15 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           billingDate = dateFormatter(nextBilling, locale);
         }
 
-        const dailyTime = setDateHoursToZero(new Date()).getTime();
-        const subscriptionTime = setDateHoursToZero(nextBilling).getTime();
+        const dailyTime = startOfDay(new Date()).getTime();
+        const subscriptionTime = startOfDay(nextBilling).getTime();
         const isActiveAndExpiringSoonSub =
           status === "Active" &&
           subscriptionTime >= dailyTime &&
-          subscriptionTime - dailyTime <= FOURTEEN_DAYS_MS &&
-          subscriptionTime - dailyTime >= SEVEN_DAYS_MS;
+          isWithinInterval(dailyTime, {
+            start: subDays(subscriptionTime, 14),
+            end: subDays(subscriptionTime, 7),
+          });
         const isPendingRenewal =
           !autoRenew && status === "Active" && isDue(nextBilling, new Date());
         return (

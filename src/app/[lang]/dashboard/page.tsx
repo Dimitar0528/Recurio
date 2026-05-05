@@ -17,8 +17,6 @@ import SubscriptionDialog from "@/components/dashboard/SubscriptionDialog";
 import {
   getCurrentDateRange,
   priceFormatter,
-  setDateHoursToZero,
-  SEVEN_DAYS_MS,
 } from "@/lib/utils";
 import {
   getUserBillingEvents,
@@ -30,6 +28,7 @@ import { Locale } from "next-intl";
 import { BillingEvent, Subscription } from "@/lib/validations/schemas";
 import { SpendingCard } from "@/components/dashboard/SpendingCard";
 import { getProcessDueRenewalsForUser } from "@/dal/subscriptions/mutations";
+import { startOfDay, addDays, isWithinInterval } from "date-fns";
 
 export async function generateMetadata({
   params,
@@ -81,7 +80,7 @@ function calculateActualChargesInRange(
   rangeEnd: Date,
 ) {
   return billingEvents.reduce((total, billingEvent) => {
-    const chargedAt = setDateHoursToZero(new Date(billingEvent.chargedAt));
+    const chargedAt = startOfDay(new Date(billingEvent.chargedAt));
     const isInRange = chargedAt >= rangeStart && chargedAt < rangeEnd;
     return total + (isInRange ? billingEvent.amount : 0);
   }, 0);
@@ -121,14 +120,15 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
     (s) => s.status === "Active",
   ).length;
 
-  const dailyTime = setDateHoursToZero(await getDailyDate()).getTime();
+  const dailyTime = startOfDay(await getDailyDate()).getTime();
+  const sevenDaysFromNow = addDays(dailyTime, 7);
   const upcomingSubscriptions = userSubscriptions.filter((sub) => {
-    const subscriptionTime = setDateHoursToZero(sub.nextBilling).getTime();
-    return (
-      subscriptionTime >= dailyTime &&
-      subscriptionTime - dailyTime <= SEVEN_DAYS_MS &&
-      sub.status === "Active"
-    );
+    if (sub.status !== "Active") return false;
+    const subscriptionTime = startOfDay(new Date(sub.nextBilling));
+    return isWithinInterval(subscriptionTime, {
+      start: dailyTime,
+      end: sevenDaysFromNow,
+    });
   });
 
   const upcomingSubscriptionNames = upcomingSubscriptions.map((s) => s.name);
