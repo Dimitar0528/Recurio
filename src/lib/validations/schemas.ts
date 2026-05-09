@@ -76,7 +76,7 @@ export const subscriptionSchema = subscriptionBaseSchema.extend({
   id: z.uuid(),
   createdAt: z.date(),
   statusChangedAt: z.date().nullable().optional(),
-  lastRenewedAt: z.date().nullable().optional(),
+  lastRenewedAt: z.date(),
   manualRenewalGraceUntil: z.date().nullable().optional(),
 });
 

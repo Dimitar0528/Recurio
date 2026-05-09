@@ -39,6 +39,7 @@ import {
 } from "@/app/actions";
 import { SubIcon } from "./SubIcon";
 import { isWithinInterval, startOfDay, subDays } from "date-fns";
+import { RateLimitError } from "@/lib/security/rateLimit";
 
 export const useColumns = (): ColumnDef<Subscription>[] => {
   const tReusable = useTranslations("Reusable");
@@ -298,21 +299,23 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           validators: {
             onSubmit: deleteSubscriptionSchema,
           },
-          onSubmit: async ({}) => {
-            toast.promise(deleteSubscription(id), {
-              loading: t("messages.deleting"),
-              success: () => {
-                return {
-                  message: t("messages.deleted"),
-                  action: {
-                    label: t("messages.undo"),
-                    onClick: async () => await undoDeleteSubscription(id),
-                  },
-                  duration: 8000,
-                };
-              },
-              error: `${t("messages.error")}`,
-            });
+          onSubmit: async () => {
+            try {
+              await deleteSubscription(id);
+              toast.success(t("delete_messages.deleted"), {
+                duration: 8000,
+                action: {
+                  label: t("delete_messages.undo"),
+                  onClick: async () => await undoDeleteSubscription(id),
+                },
+              });
+            } catch (err) {
+              const message = err instanceof RateLimitError
+                  ? t("delete_messages.rate_limited")
+                  : t("delete_messages.error");
+
+              toast.error(message);
+            }
           },
         });
         return (

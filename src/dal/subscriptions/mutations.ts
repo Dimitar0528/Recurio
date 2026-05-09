@@ -1,12 +1,15 @@
 import "server-only";
-import { subscriptionBaseSchema, SubscriptionFormValues } from "@/lib/validations/schemas";
+import {
+  subscriptionBaseSchema,
+  SubscriptionFormValues,
+} from "@/lib/validations/schemas";
 import { db } from "@/db/db";
 import {
   subscriptionBillingEventsTable,
   subscriptionsTable,
 } from "@/db/schema";
 import { cacheLife, cacheTag, revalidatePath, updateTag } from "next/cache";
-import { and, eq, inArray, isNotNull, isNull, } from "drizzle-orm";
+import { and, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { DatabaseError } from "pg";
 import { DrizzleQueryError } from "drizzle-orm/errors";
 
@@ -19,6 +22,7 @@ import {
   isManualGraceExpired,
 } from "@/lib/utils";
 import { startOfDay } from "date-fns";
+import { enforceRateLimit, rateLimiters } from "@/lib/security/rateLimit";
 
 type RenewalDecisionStatus = "Paused" | "Cancelled";
 
@@ -43,7 +47,7 @@ async function getOwnedSubscriptionOrThrow(id: string, userId: string) {
   if (!subscription) {
     throw new Error("Subscription not found");
   }
-  return subscription ;
+  return subscription;
 }
 
 async function invalidateSubscriptionDashboardCache(userId: string) {
@@ -56,12 +60,14 @@ export async function insertUserSubscription(
   subscription: SubscriptionFormValues,
 ) {
   const userId = await verifyUser();
+  await enforceRateLimit(rateLimiters.createSubscription, userId);
+
   const result = subscriptionBaseSchema.safeParse(subscription);
-  if (!result.success) throw new Error("Invalid subscription data shape!")
+  if (!result.success) throw new Error("Invalid subscription data shape!");
   
   const parsedSubscription = result.data
   const now = new Date();
-  try{
+  try {
     await db.transaction(async (tx) => {
       const [createdSubscription] = await tx
         .insert(subscriptionsTable)
@@ -89,11 +95,14 @@ export async function insertUserSubscription(
       });
     });
     await invalidateSubscriptionDashboardCache(userId);
-  } catch(err){
-    if (err instanceof DrizzleQueryError && err.cause instanceof DatabaseError) {
-     if(err.cause.code === "23505"){
-       throw new Error("Subscription already exists");
-     }
+  } catch (err) {
+    if (
+      err instanceof DrizzleQueryError &&
+      err.cause instanceof DatabaseError
+    ) {
+      if (err.cause.code === "23505") {
+        throw new Error("SUB_ALREADY_EXISTS");
+      }
     }
   }
 }
@@ -103,6 +112,8 @@ export async function updateUserSubscription(
   subscription: SubscriptionFormValues,
 ) {
   const userId = await verifyUser();
+  await enforceRateLimit(rateLimiters.updateSubscription, userId);
+
   const result = subscriptionBaseSchema.safeParse(subscription);
   if (!result.success) throw new Error("Invalid subscription data shape!");
   
@@ -134,7 +145,7 @@ export async function updateUserSubscription(
 
 export async function deleteUserSubscription(id: string) {
   const userId = await verifyUser();
-
+  await enforceRateLimit(rateLimiters.deleteSubscription, userId);
   const result = await db
     .update(subscriptionsTable)
     .set({
@@ -147,7 +158,7 @@ export async function deleteUserSubscription(id: string) {
         isNull(subscriptionsTable.deletedAt),
       ),
     )
-    .returning({ id: subscriptionsTable.id });;
+    .returning({ id: subscriptionsTable.id });
 
     if (result.length === 0) {
       throw new Error("Subscription not found or already deleted");
@@ -209,8 +220,7 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
         isNull(subscriptionsTable.deletedAt),
       ),
     );
-  const subscriptionIds = subscriptions
-    .map((subscription) => subscription.id);
+  const subscriptionIds = subscriptions.map((subscription) => subscription.id);
 
   if (subscriptionIds.length > 0) {
     const existingEventRows = await db
@@ -230,8 +240,7 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
       existingEventRows.map((row) => row.subscriptionId),
     );
     const missingEvents = subscriptions.filter(
-      (subscription) =>
-        !existingSubscriptionIds.has(subscription.id),
+      (subscription) => !existingSubscriptionIds.has(subscription.id),
     );
     if (missingEvents.length > 0) {
       await db.insert(subscriptionBillingEventsTable).values(
@@ -364,9 +373,9 @@ export async function confirmManualRenewalForUser(id: string) {
       )
       .returning({ id: subscriptionsTable.id });
 
-      if (updated.length === 0) {
-        throw new Error("Concurrent update detected");
-      }
+    if (updated.length === 0) {
+      throw new Error("Concurrent update detected");
+    }
   });
 
   await invalidateSubscriptionDashboardCache(userId);
@@ -392,8 +401,8 @@ export async function declineManualRenewalForUser(
     )
     .returning({ id: subscriptionsTable.id });
 
-    if (result.length === 0) {
-      throw new Error("Update failed");
-    }
+  if (result.length === 0) {
+    throw new Error("Update failed");
+  }
   await invalidateSubscriptionDashboardCache(userId);
 }

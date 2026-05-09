@@ -2,7 +2,16 @@ import { clsx, type ClassValue } from "clsx";
 import { Locale } from "next-intl";
 import { twMerge } from "tailwind-merge";
 import { BillingCycle, Status } from "@/lib/validations/enums";
-import { startOfDay, addMonths, addYears, setHours } from "date-fns";
+import {
+  startOfDay,
+  addMonths,
+  addYears,
+  setHours,
+  isWithinInterval,
+  subDays,
+  addDays,
+} from "date-fns";
+import { Subscription } from "./validations/schemas";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -68,10 +77,7 @@ const MANUAL_RENEWAL_GRACE_DAYS = 7;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 export function isDue(nextBilling: Date, now = new Date()) {
-  return (
-    startOfDay(new Date(nextBilling)) <=
-    startOfDay(new Date(now))
-  );
+  return startOfDay(new Date(nextBilling)) <= startOfDay(new Date(now));
 }
 
 export function canGenerateCharge(status: Status) {
@@ -95,7 +101,34 @@ export function getManualRenewalGraceDate(nextBilling: Date) {
 }
 
 export function isManualGraceExpired(graceUntil: Date, now = new Date()) {
-  return (
-    startOfDay(new Date(graceUntil)) < startOfDay(new Date(now))
-  );
+  return startOfDay(new Date(graceUntil)) < startOfDay(new Date(now));
+}
+
+export function getSubscriptionsWithinTimeInterval(
+  subscriptions: Subscription[],
+  mode: "upcoming-7-days" | "previous-7-days",
+) {
+  const today = startOfDay(new Date());
+  const interval =
+    mode === "upcoming-7-days"
+      ? {
+          start: today,
+          end: addDays(today, 7),
+        }
+      : {
+          start: subDays(today, 7),
+          end: today,
+        };
+  const subscriptionsWithinTimeInterval = subscriptions.filter((sub) => {
+    if (mode === "upcoming-7-days" && sub.status !== "Active") {
+      return false;
+    }
+    const dateToCheck =
+      mode === "upcoming-7-days"
+        ? new Date(sub.nextBilling)
+        : sub.lastRenewedAt;
+
+    return isWithinInterval(startOfDay(dateToCheck), interval);
+  });
+  return subscriptionsWithinTimeInterval;
 }

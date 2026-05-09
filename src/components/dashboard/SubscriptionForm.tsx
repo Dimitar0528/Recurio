@@ -43,6 +43,7 @@ import { createSubscription, updateSubscription } from "@/app/actions";
 import { useLocale, useTranslations } from "next-intl";
 
 import { useDialogClose } from "@/context/subscription-dialog-context";
+import { RateLimitError } from "@/lib/security/rateLimit";
 
 // localizing zod errors
 type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
@@ -116,23 +117,51 @@ export default function SubscriptionForm({
     },
     onSubmit: async ({ value }) => {
       const result = subscriptionFormSchema.safeParse(value);
-      if (!result.success) return toast.error(result.error.message);
-
-      if (initialValues && initialModifiedValues === value) {
-        return toast.info(t("messages.no_changes"));
+      if (!result.success) {
+        return toast.error(result.error.message);
       }
+      if (initialValues && initialModifiedValues === value) {
+        return toast.info(t("messages.update.no_changes"));
+      }
+      if (initialValues?.id) {
+        try {
+          await updateSubscription(initialValues.id, result.data);
+          toast.success(t("messages.update.success"));
+          closeDialog();
+        } catch (err) {
+          const message =
+            err instanceof RateLimitError
+              ? t("messages.rate_limited")
+              : t("messages.update.error");
 
-      if (initialValues && initialValues.id) {
-        toast.success(t("messages.success_update"));
-        closeDialog();
-        await updateSubscription(initialValues.id, result.data);
-      } else {
-        toast.promise(createSubscription(result.data), {
-          loading: t("messages.loading"),
-          success: t("messages.success_create"),
-          error: t("messages.error_already_exists"),
+          toast.error(message);
+        }
+        return;
+      }
+      const loadingCreateToast = toast.loading(t("messages.create.loading"));
+      try {
+        await createSubscription(result.data);
+        toast.success(t("messages.create.success"), {
+          id: loadingCreateToast,
         });
         closeDialog();
+      } catch (err) {
+        if (err instanceof RateLimitError) {
+          toast.error(t("messages.rate_limited"), {
+            id: loadingCreateToast,
+          });
+        } else if (
+          err instanceof Error &&
+          err.message === "SUB_ALREADY_EXISTS"
+        ) {
+          toast.error(t("messages.create.error_already_exists"), {
+            id: loadingCreateToast,
+          });
+        } else {
+          toast.error(t("messages.create.error"), {
+            id: loadingCreateToast,
+          });
+        }
       }
     },
   });

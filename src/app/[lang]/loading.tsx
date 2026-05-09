@@ -50,11 +50,11 @@ export default function Loading() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="flex items-center gap-3">
-          <div className="h-[1px] w-4 bg-primary/30" />
+          <div className="h-px w-4 bg-primary/30" />
           <span className="text-xl font-mono font-black uppercase tracking-[0.5em] text-primary">
             Recurio
           </span>
-          <div className="h-[1px] w-4 bg-primary/30" />
+          <div className="h-px w-4 bg-primary/30" />
         </motion.div>
         <div className="flex items-center gap-1">
           <span className="text-lg font-mono text-muted-foreground uppercase tracking-widest">

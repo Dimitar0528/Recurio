@@ -260,11 +260,18 @@
                 "status": "Status"
             },
             "messages": {
-                "no_changes": "No changes were made!",
-                "loading": "Creating subscription...",
-                "success_create": "Subscription created successfully!",
-                "error_already_exists": "The Subscription already exists!",
-                "success_update": "Subscription updated successfully!"
+                "create": {
+                    "loading": "Creating subscription...",
+                    "success": "Subscription created successfully!",
+                    "error": "An error occurred while creating a subscription!",
+                    "error_already_exists": "The Subscription already exists!"
+                },
+                "update": {
+                    "success": "Subscription updated successfully!",
+                    "error": "An error occurred while editing the subscription!",
+                    "no_changes": "No changes were made!"
+                },
+                "rate_limited": "Too many requests! Please try again in a minute."
             }
         },
         "data_table_component": {
@@ -325,11 +332,12 @@
                 "phrase_template": "I want to delete {name}",
                 "validation_error": "You must type exactly: \"{phrase}\""
             },
-            "messages": {
+            "delete_messages": {
                 "deleting": "Deleting subscription...",
                 "deleted": "Subscription deleted successfully!",
                 "undo": "Undo",
-                "error": "An error has occured!"
+                "error": "An error has occured!",
+                "rate_limited": "Too many requests! Please try again in a minute."
             },
             "manual_renewal": {
                 "title": "Renewal due",

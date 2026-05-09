@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   Download,
 } from "lucide-react";
-import { cacheTag, cacheLife } from "next/cache";
 
 import SubscriptionForm from "@/components/dashboard/SubscriptionForm";
 import InsightsSidebar from "@/components/dashboard/InsightsSidebar";
@@ -16,6 +15,7 @@ import Link from "next/link";
 import SubscriptionDialog from "@/components/dashboard/SubscriptionDialog";
 import {
   getCurrentDateRange,
+  getSubscriptionsWithinTimeInterval,
   priceFormatter,
 } from "@/lib/utils";
 import {
@@ -28,7 +28,7 @@ import { Locale } from "next-intl";
 import { BillingEvent, Subscription } from "@/lib/validations/schemas";
 import { SpendingCard } from "@/components/dashboard/SpendingCard";
 import { getProcessDueRenewalsForUser } from "@/dal/subscriptions/mutations";
-import { startOfDay, addDays, isWithinInterval } from "date-fns";
+import { startOfDay } from "date-fns";
 
 export async function generateMetadata({
   params,
@@ -43,17 +43,6 @@ export async function generateMetadata({
     title: t("title"),
     description: t("description"),
   };
-}
-
-export async function getDailyDate() {
-  "use cache";
-  cacheTag("getDailyDate");
-   cacheLife({
-     stale: 60 * 60 * 6,
-     revalidate: 60 * 60 * 24,
-     expire: 60 * 60 * 24,
-   });
-  return new Date();
 }
 
 function calculateAverageSpending(subscriptions: Subscription[]) {
@@ -120,16 +109,8 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
     (s) => s.status === "Active",
   ).length;
 
-  const dailyTime = startOfDay(await getDailyDate()).getTime();
-  const sevenDaysFromNow = addDays(dailyTime, 7);
-  const upcomingSubscriptions = userSubscriptions.filter((sub) => {
-    if (sub.status !== "Active") return false;
-    const subscriptionTime = startOfDay(new Date(sub.nextBilling));
-    return isWithinInterval(subscriptionTime, {
-      start: dailyTime,
-      end: sevenDaysFromNow,
-    });
-  });
+  const upcomingSubscriptions =
+    getSubscriptionsWithinTimeInterval(userSubscriptions, "upcoming-7-days");
 
   const upcomingSubscriptionNames = upcomingSubscriptions.map((s) => s.name);
   const totalUpcomingAmount = upcomingSubscriptions.reduce(
@@ -198,7 +179,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         {upcomingSubscriptions.length > 0 && (
           <Link
             href="/payments"
-            className="mb-8 bg-primary/[0.05] border border-primary/20 rounded-2xl p-2 pl-4 flex flex-col md:flex-row items-center justify-between group hover:bg-primary/[0.15] transition-colors cursor-pointer relative overflow-hidden">
+            className="mb-8 bg-primary/5 border border-primary/20 rounded-2xl p-2 pl-4 flex flex-col md:flex-row items-center justify-between group hover:bg-primary/15 transition-colors cursor-pointer relative overflow-hidden">
             <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
             <div className="flex items-center gap-4">
               <div className="relative">
@@ -272,7 +253,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           }}>
           <div
             aria-hidden
-            className="absolute -right-4 -top-4 text-background/[0.06] pointer-events-none select-none">
+            className="absolute -right-4 -top-4 text-background/6 pointer-events-none select-none">
             <ShieldCheck size={120} />
           </div>
 
