@@ -3,6 +3,11 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import {
+  SpendingDataForDateRange,
+  compareCurrentVsPreviousSpend,
+} from "@/lib/analytics/spending_for_date_ranges";
+import { TrendingDown, TrendingUp } from "lucide-react";
 
 type SpendingCardProps = {
   variant: "light" | "dark";
@@ -13,6 +18,7 @@ type SpendingCardProps = {
   primaryValue: string;
   secondaryLabel: string;
   secondaryValue: string;
+  spendData: SpendingDataForDateRange[]
 };
 
 export function SpendingCard({
@@ -24,8 +30,12 @@ export function SpendingCard({
   primaryValue,
   secondaryLabel,
   secondaryValue,
+  spendData,
 }: SpendingCardProps) {
   const isDarkCardVariant = variant === "dark";
+  
+  const growthRate = compareCurrentVsPreviousSpend(spendData);
+  const isIncrease = growthRate > 0;
 
   return (
     <motion.div
@@ -34,7 +44,7 @@ export function SpendingCard({
       viewport={{ once: true }}
       whileHover={{ y: -5, transition: { duration: 0.2 } }}
       className={cn(
-        "group relative rounded-3xl overflow-hidden transition-all duration-300  lg:w-[30.5rem] lg:mx-auto xl:w-lg",
+        "group relative rounded-3xl overflow-hidden transition-all duration-300  lg:w-122 lg:mx-auto xl:w-lg",
         isDarkCardVariant
           ? "bg-foreground/95 text-background hover:shadow-2xl hover:shadow-primary/10"
           : "bg-card border border-border hover:border-primary/80",
@@ -81,7 +91,7 @@ export function SpendingCard({
           </div>
         </div>
 
-        <div className="flex items-end gap-6">
+        <div className="flex items-end gap-6 relative">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -129,6 +139,22 @@ export function SpendingCard({
               {secondaryValue}
             </p>
           </motion.div>
+          {growthRate != 0 && (
+            <span
+              className={cn(
+                "text-xs font-bold px-2  rounded-full flex items-center gap-1 absolute bottom-15 sm:bottom-16 lg:relative lg:bottom-0 ",
+                isIncrease
+                  ? "text-red-500 bg-red-500/10"
+                  : "text-emerald-500 bg-emerald-500/10",
+              )}>
+              {isIncrease ? (
+                <TrendingUp size={10} />
+              ) : (
+                <TrendingDown size={10} />
+              )}
+              {growthRate.toFixed(2)}% vs last month
+            </span>
+          )}
         </div>
       </div>
       <div className="absolute bottom-0 left-0 w-full h-1.5 bg-secondary overflow-hidden">

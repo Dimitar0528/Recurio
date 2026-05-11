@@ -6,11 +6,7 @@ import { type Subscription } from "@/lib/validations/schemas";
 import { AlertTriangle, Delete, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "./DataTableColumnHeader";
-import {
-  dateFormatter,
-  priceFormatter,
-  isDue,
-} from "@/lib/utils";
+import { dateFormatter, priceFormatter, isDue } from "@/lib/utils";
 import { useLocale, useTranslations } from "next-intl";
 import SubscriptionDialog from "../SubscriptionDialog";
 import SubscriptionForm from "../SubscriptionForm";
@@ -33,13 +29,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import {
-  deleteSubscription,
-  undoDeleteSubscription,
-} from "@/app/actions";
+import { deleteSubscription, undoDeleteSubscription } from "@/app/actions";
 import { SubIcon } from "./SubIcon";
 import { isWithinInterval, startOfDay, subDays } from "date-fns";
-import { RateLimitError } from "@/lib/security/rateLimit";
+import { RateLimitError } from "@/lib/security/rate_limits";
 
 export const useColumns = (): ColumnDef<Subscription>[] => {
   const tReusable = useTranslations("Reusable");
@@ -47,7 +40,6 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
   const locale = useLocale();
 
   return [
-
     {
       id: "mobile",
       header: () => null,
@@ -310,7 +302,8 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                 },
               });
             } catch (err) {
-              const message = err instanceof RateLimitError
+              const message =
+                err instanceof RateLimitError
                   ? t("delete_messages.rate_limited")
                   : t("delete_messages.error");
 

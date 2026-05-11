@@ -62,7 +62,6 @@ async function getBillingEventsData(userId: string) {
     )
     .orderBy(
       desc(subscriptionBillingEventsTable.chargedAt),
-      asc(subscriptionBillingEventsTable.id),
     );
 
   return rawData.map((event) => ({

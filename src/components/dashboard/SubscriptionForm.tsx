@@ -43,7 +43,7 @@ import { createSubscription, updateSubscription } from "@/app/actions";
 import { useLocale, useTranslations } from "next-intl";
 
 import { useDialogClose } from "@/context/subscription-dialog-context";
-import { RateLimitError } from "@/lib/security/rateLimit";
+import { RateLimitError } from "@/lib/security/rate_limits";
 
 // localizing zod errors
 type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
@@ -165,7 +165,7 @@ export default function SubscriptionForm({
       }
     },
   });
- 
+
   return (
     <form
       id="subscription-form"

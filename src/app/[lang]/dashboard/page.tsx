@@ -29,6 +29,7 @@ import { BillingEvent, Subscription } from "@/lib/validations/schemas";
 import { SpendingCard } from "@/components/dashboard/SpendingCard";
 import { getProcessDueRenewalsForUser } from "@/dal/subscriptions/mutations";
 import { startOfDay } from "date-fns";
+import { getSpendingDataForDateRange } from "@/lib/analytics/spending_for_date_ranges";
 
 export async function generateMetadata({
   params,
@@ -100,18 +101,19 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   await getProcessDueRenewalsForUser();
   const userSubscriptions = await getUserSubscriptions();
   const billingEvents = await getUserBillingEvents();
-  
+
   const { averageMonthly, projectedYearly } =
     calculateAverageSpending(userSubscriptions);
   const actualMonthlySpend = calculateActualMonthlySpending(billingEvents);
   const actualYearlySpend = calculateActualYearlySpending(billingEvents);
+
   const activeSubscriptions = userSubscriptions.filter(
     (s) => s.status === "Active",
   ).length;
-
-  const upcomingSubscriptions =
-    getSubscriptionsWithinTimeInterval(userSubscriptions, "upcoming-7-days");
-
+  const upcomingSubscriptions = getSubscriptionsWithinTimeInterval(
+    userSubscriptions,
+    "upcoming-7-days",
+  );
   const upcomingSubscriptionNames = upcomingSubscriptions.map((s) => s.name);
   const totalUpcomingAmount = upcomingSubscriptions.reduce(
     (sum, s) => sum + s.price,
@@ -133,6 +135,8 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             count: upcomingSubscriptionNames.length - 1,
           });
 
+  const { monthlySpendData, yearlySpendData } =
+    await getSpendingDataForDateRange(billingEvents);
   return (
     <main
       id="main-content"
@@ -219,6 +223,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             primaryValue={priceFormatter(actualMonthlySpend)}
             secondaryLabel={t("cards.monthly.secondary_label")}
             secondaryValue={priceFormatter(averageMonthly)}
+            spendData={monthlySpendData}
           />
 
           <SpendingCard
@@ -232,6 +237,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             primaryValue={priceFormatter(actualYearlySpend)}
             secondaryLabel={t("cards.yearly.secondary_label")}
             secondaryValue={priceFormatter(projectedYearly)}
+            spendData={yearlySpendData}
           />
         </div>
 

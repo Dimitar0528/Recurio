@@ -154,14 +154,14 @@ export function DataTable({ data }: DataTableProps) {
 
   return (
     <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">
-      <div className="p-[2.5] border-b border-border bg-primary dark:bg-primary/50 text-primary-foreground rounded-2xl">
-        <h2 className="font-bold uppercase tracking-[0.125em] text-center gap-2">
+      <div className="p-[2.5] border-2 border-primary bg-primary text-primary-foreground rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
+        <h2 className="font-extrabold uppercase italic tracking-[0.125em] text-center text-lg">
           {t("title")}
         </h2>
       </div>
 
       <div className="flex items-center justify-start py-4 flex-col md:flex-row gap-2">
-        <div className="flex flex-grow gap-4">
+        <div className="flex grow gap-4">
           <Input
             placeholder={t("filter_placeholder")}
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -372,14 +372,7 @@ export function DataTable({ data }: DataTableProps) {
         </Table>
       </div>
 
-      <div className="flex items-center justify-end py-4 flex-col md:flex-row gap-2">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {t("rows_selected", {
-            count: table.getFilteredSelectedRowModel().rows.length,
-            total: table.getFilteredRowModel().rows.length,
-          })}
-        </div>
-
+      <div className="flex items-center justify-center py-3 flex-col md:flex-row gap-2">
         <div className="flex items-center space-x-6 lg:space-x-8 flex-col md:flex-row gap-2">
           <div className="flex items-center space-x-2">
             <p className="text-sm font-medium">{t("rows_per_page")}</p>

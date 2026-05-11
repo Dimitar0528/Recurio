@@ -47,9 +47,9 @@ export function advanceDateWithClamp(
 
 export function getCurrentDateRange(
   date = new Date(),
-  period: "month" | "year",
+  date_range_period: "month" | "year",
 ) {
-  if (period === "month") {
+  if (date_range_period === "month") {
     const start = new Date(
       Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1),
     );

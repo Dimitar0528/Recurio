@@ -22,7 +22,7 @@ import {
   isManualGraceExpired,
 } from "@/lib/utils";
 import { startOfDay } from "date-fns";
-import { enforceRateLimit, rateLimiters } from "@/lib/security/rateLimit";
+import { enforceRateLimit, rateLimiters } from "@/lib/security/rate_limits";
 
 type RenewalDecisionStatus = "Paused" | "Cancelled";
 
@@ -43,7 +43,7 @@ async function getOwnedSubscriptionOrThrow(id: string, userId: string) {
       and(eq(subscriptionsTable.id, id), eq(subscriptionsTable.userId, userId)),
     )
     .limit(1);
-    
+
   if (!subscription) {
     throw new Error("Subscription not found");
   }
@@ -64,8 +64,8 @@ export async function insertUserSubscription(
 
   const result = subscriptionBaseSchema.safeParse(subscription);
   if (!result.success) throw new Error("Invalid subscription data shape!");
-  
-  const parsedSubscription = result.data
+
+  const parsedSubscription = result.data;
   const now = new Date();
   try {
     await db.transaction(async (tx) => {
@@ -85,7 +85,7 @@ export async function insertUserSubscription(
         .returning({
           id: subscriptionsTable.id,
         });
-  
+
       await tx.insert(subscriptionBillingEventsTable).values({
         subscriptionId: createdSubscription.id,
         userId,
@@ -116,7 +116,7 @@ export async function updateUserSubscription(
 
   const result = subscriptionBaseSchema.safeParse(subscription);
   if (!result.success) throw new Error("Invalid subscription data shape!");
-  
+
   const parsedSubscription = result.data;
   const now = new Date();
   const existingSubscription = await getOwnedSubscriptionOrThrow(id, userId);
@@ -160,9 +160,9 @@ export async function deleteUserSubscription(id: string) {
     )
     .returning({ id: subscriptionsTable.id });
 
-    if (result.length === 0) {
-      throw new Error("Subscription not found or already deleted");
-    }
+  if (result.length === 0) {
+    throw new Error("Subscription not found or already deleted");
+  }
   await invalidateSubscriptionDashboardCache(userId);
 }
 
@@ -183,9 +183,9 @@ export async function undoDeleteUserSubscription(id: string) {
     )
     .returning({ id: subscriptionsTable.id });
 
-    if (result.length === 0) {
-      throw new Error("Not found or not deleted");
-    }
+  if (result.length === 0) {
+    throw new Error("Not found or not deleted");
+  }
   await invalidateSubscriptionDashboardCache(userId);
 }
 
