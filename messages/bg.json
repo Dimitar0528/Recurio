@@ -209,7 +209,8 @@
                 "description": "Всички заплащания за годината спрямо вашия годишен темп",
                 "primary_label": "Общо за {year}",
                 "secondary_label": "Годишен темп"
-            }
+            },
+            "growth_rate": "{growth_rate}% спрямо миналия месец"
         },
         "audit": {
             "title": "Експорт на одит",

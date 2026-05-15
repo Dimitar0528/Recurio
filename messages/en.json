@@ -209,7 +209,8 @@
                 "description": "All charges for this year vs. your annual run rate",
                 "primary_label": "Total for {year}",
                 "secondary_label": "Annual Run Rate"
-            }
+            },
+            "growth_rate": "{growth_rate}% vs last month"
         },
         "audit": {
             "title": "Export Audit",

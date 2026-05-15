@@ -142,7 +142,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
       id="main-content"
       className="min-h-screen bg-background text-foreground pb-12">
       <div className="max-w-7xl mx-auto px-6 pt-22">
-        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 gap-2">
+        <section className="flex flex-col md:flex-row justify-between items-center md:items-end mb-8 gap-2">
           <div>
             <h1 className="text-3xl text-center md:text-left font-bold uppercase tracking-[0.125em] mb-1">
               {t("header.title")}
@@ -178,7 +178,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             cancelLabel={tReusable("dialog.cancel")}>
             <SubscriptionForm />
           </SubscriptionDialog>
-        </div>
+        </section>
 
         {upcomingSubscriptions.length > 0 && (
           <Link
@@ -213,7 +213,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           </Link>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <SpendingCard
             variant="light"
             title={t("cards.monthly.title")}
@@ -239,17 +239,19 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             secondaryValue={priceFormatter(projectedYearly)}
             spendData={yearlySpendData}
           />
-        </div>
+        </section>
 
-        <div className="grid lg:grid-cols-12 gap-6 items-center">
+        <section className="grid lg:grid-cols-12 gap-6 items-center">
           <div className="lg:col-span-8">
             <DataTable data={userSubscriptions} />
           </div>
-          <InsightsSidebar
-            data={userSubscriptions}
-            monthlySpend={averageMonthly}
-          />
-        </div>
+          <div className="lg:col-span-4">
+            <InsightsSidebar
+              data={userSubscriptions}
+              monthlySpend={averageMonthly}
+            />
+          </div>
+        </section>
 
         <div
           className="lg:w-3xl mx-auto bg-foreground/95 text-background rounded-2xl p-3 mt-6 relative overflow-hidden group shadow-2xl text-center"

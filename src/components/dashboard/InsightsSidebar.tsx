@@ -160,7 +160,6 @@ export default function InsightsSidebar({
   }));
 
   return (
-    <div className="lg:col-span-4 ">
       <div className="bg-card border border-border rounded-md overflow-hidden">
         {!isLoaded ? (
           <div className="p-3 space-y-3 animate-pulse">
@@ -295,7 +294,7 @@ export default function InsightsSidebar({
                         ratio > 10 ? "text-orange-500" : "text-primary",
                       )}>
                       {ratio.toFixed(2)}
-                      <span className="text-2xl font-bold text-muted-foreground/60">
+                      <span className="text-2xl font-bold text-muted-foreground/80">
                         &nbsp;%
                       </span>
                     </p>
@@ -393,7 +392,7 @@ export default function InsightsSidebar({
                     className="flex items-center gap-3 py-0.5 group">
                     <div
                       className={cn(
-                        "w-1.5 h-1.5 rounded-full flex-shrink-0 transition-transform duration-200 group-hover:scale-125",
+                        "w-1.5 h-1.5 rounded-full shrink-0 transition-transform duration-200 group-hover:scale-125",
                         colors.dot,
                       )}
                     />
@@ -421,6 +420,5 @@ export default function InsightsSidebar({
           )}
         </div>
       </div>
-    </div>
   );
 }

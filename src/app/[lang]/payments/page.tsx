@@ -8,6 +8,7 @@ import { startOfDay, differenceInDays } from "date-fns";
 import { getSubscriptionsWithinTimeInterval } from "@/lib/utils";
 import { TimelineSection } from "@/components/payments/TimeLineSection";
 import { getSpendingDataForDateRange } from "@/lib/analytics/spending_for_date_ranges";
+import { SpendingChart } from "@/components/payments/SpendingChart";
 
 export default async function Page({ params }: PageProps<"/[lang]">) {
   const locale = (await params).lang as Locale;
@@ -25,18 +26,21 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   const today = startOfDay(new Date());
 
   const billingEvents = await getUserBillingEvents();
-  // const { monthlySpendData, yearlySpendData } =
-  //   await getSpendingDataForDateRange(billingEvents);
+  const { monthlySpendData, yearlySpendData } =
+    await getSpendingDataForDateRange(billingEvents);
 
   return (
     <main
       id="main-content"
       className="min-h-screen bg-background text-foreground pb-12 overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-6 pt-16">
-        <section className="grid lg:grid-cols-12 gap-16 items-center relative py-8">
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 w-screen h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none" />
+        <section className="grid lg:grid-cols-12 gap-16 items-center relative py-10">
+          <div
+            className="absolute left-1/2 top-0 -translate-x-1/2 w-screen h-full 
+  bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff15_1px,transparent_1px),linear-gradient(to_bottom,#ffffff15_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none"
+          />
 
-          <div className="lg:col-span-4 space-y-7 relative z-10">
+          <div className="lg:col-span-4 space-y-7 relative z-10 mx-auto text-center">
             <div className="space-y-5">
               <h1 className="text-4xl md:text-5xl font-black tracking-[-0.06em] leading-[0.95]">
                 Transactional <br />
@@ -53,7 +57,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
               . Observe the transition as near-term liabilities move across the
               threshold into verified settlements.
             </p>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6 justify-center">
               <div>
                 <p className="text-2xl font-black tracking-tight">
                   {upcomingSubscriptions.length}
@@ -62,7 +66,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                   Upcoming
                 </p>
               </div>
-              <div className="w-px h-10 bg-border" />
+              <div className="w-1 h-10 bg-border" />
               <div>
                 <p className="text-2xl font-black tracking-tight">
                   {recentlyBilledSubscriptions.length}
@@ -143,6 +147,12 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
               />
             </div>
           </div>
+        </section>
+        <section className="pt-8">
+          <SpendingChart
+            monthlyData={monthlySpendData}
+            yearlyData={yearlySpendData}
+          />
         </section>
       </div>
     </main>

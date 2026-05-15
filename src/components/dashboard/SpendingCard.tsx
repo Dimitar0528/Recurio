@@ -8,6 +8,7 @@ import {
   compareCurrentVsPreviousSpend,
 } from "@/lib/analytics/spending_for_date_ranges";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type SpendingCardProps = {
   variant: "light" | "dark";
@@ -36,7 +37,7 @@ export function SpendingCard({
   
   const growthRate = compareCurrentVsPreviousSpend(spendData);
   const isIncrease = growthRate > 0;
-
+  const t = useTranslations("dashboard_page");
   return (
     <motion.div
       initial={{ opacity: 0.4, x: -20 }}
@@ -91,7 +92,7 @@ export function SpendingCard({
           </div>
         </div>
 
-        <div className="flex items-end gap-6 relative">
+        <div className="flex items-end gap-6 relative @container">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -142,17 +143,17 @@ export function SpendingCard({
           {growthRate != 0 && (
             <span
               className={cn(
-                "text-xs font-bold px-2  rounded-full flex items-center gap-1 absolute bottom-15 sm:bottom-16 lg:relative lg:bottom-0 ",
+                "text-xs font-bold px-2  rounded-full flex items-center gap-1 absolute bottom-15 @md:bottom-0 @md:relative ",
                 isIncrease
                   ? "text-red-500 bg-red-500/10"
                   : "text-emerald-500 bg-emerald-500/10",
               )}>
               {isIncrease ? (
-                <TrendingUp size={10} />
+                <TrendingUp size={16} />
               ) : (
-                <TrendingDown size={10} />
+                <TrendingDown size={16} />
               )}
-              {growthRate.toFixed(2)}% vs last month
+              {t("cards.growth_rate", { growth_rate: growthRate.toFixed(2) })}
             </span>
           )}
         </div>
