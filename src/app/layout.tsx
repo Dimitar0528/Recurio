@@ -17,18 +17,23 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={notoSans.variable} suppressHydrationWarning>
-    <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html
+      lang="en"
+      className={notoSans.variable}
+      suppressHydrationWarning
+      data-scroll-behavior="smooth">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Toaster position="top-center" richColors closeButton />
         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            enableColorScheme>
-            {children}
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          enableColorScheme>
+          {children}
         </ThemeProvider>
-    </body>
+      </body>
     </html>
   );
 }

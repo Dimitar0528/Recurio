@@ -82,10 +82,11 @@ export const subscriptionSchema = subscriptionBaseSchema.extend({
 
 export const billingEventSchema = z.object({
   id: z.uuid(),
-  subscriptionId: z.uuid(),
   amount: z.number().positive(),
   chargedAt: z.date(),
   source: z.enum(["initial", "auto", "manual"]),
+  subscriptionName: z.string().min(3).max(50),
+  subscriptionCategory: categoryEnum
 });
 
 export const netSalarySchema = z.object({

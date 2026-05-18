@@ -34,7 +34,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
       id="main-content"
       className="min-h-screen bg-background text-foreground pb-12 overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-6 pt-16">
-        <section className="grid lg:grid-cols-12 gap-16 items-center relative py-10">
+        <section className="grid lg:grid-cols-12 gap-16 items-center relative py-12">
           <div
             className="absolute left-1/2 top-0 -translate-x-1/2 w-screen h-full 
   bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff15_1px,transparent_1px),linear-gradient(to_bottom,#ffffff15_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none"
@@ -148,7 +148,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             </div>
           </div>
         </section>
-        <section className="pt-8">
+        <section className="pt-12">
           <SpendingChart
             monthlyData={monthlySpendData}
             yearlyData={yearlySpendData}

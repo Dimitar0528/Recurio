@@ -8,20 +8,26 @@ import {
   format,
 } from "date-fns";
 import { BillingEvent } from "../validations/schemas";
+import { Category } from "../validations/enums";
 
-export type SpendingDataForDateRange = {
+interface SpendingCategory {
+  name: Category;
+  amount: number;
+}
+
+export interface SpendingDataForDateRange {
   label: string;
   spend: number;
-};
+  categories: SpendingCategory[];
+}
 
 function generateSpendingDataForDateRange(
   billingEvents: BillingEvent[],
   date_range_period: "month" | "year",
-) {
+): SpendingDataForDateRange[] {
   if (billingEvents.length === 0) return [];
   const now = new Date();
   const firstBillingDate = billingEvents.at(-1)?.chargedAt ?? now;
-
   const isMonthly = date_range_period === "month";
   const activePeriods = isMonthly
     ? differenceInMonths(now, firstBillingDate)
@@ -39,25 +45,55 @@ function generateSpendingDataForDateRange(
         end: now,
       });
 
-  return intervals.map((intervalDate) => {
-    const total = billingEvents.reduce((acc, billingEvent) => {
-      const chargedAt = billingEvent.chargedAt;
+  // Create buckets
+  const buckets = new Map<
+    string,
+    {
+      label: string;
+      spend: number;
+      categories: Map<Category, number>;
+    }
+  >();
 
-      const matches = isMonthly
-        ? chargedAt.getMonth() === intervalDate.getMonth() &&
-          chargedAt.getFullYear() === intervalDate.getFullYear()
-        : chargedAt.getFullYear() === intervalDate.getFullYear();
+  intervals.forEach((intervalDate) => {
+    const key = isMonthly
+      ? format(intervalDate, "yyyy-MM")
+      : format(intervalDate, "yyyy");
 
-      if (!matches) return acc;
-
-      return acc + billingEvent.amount;
-    }, 0);
-
-    return {
+    buckets.set(key, {
       label: format(intervalDate, isMonthly ? "MMM" : "yyyy"),
-      spend: total,
-    };
+      spend: 0,
+      categories: new Map(),
+    });
   });
+
+  // Single pass through billing events
+  billingEvents.forEach((billingEvent) => {
+    const chargedAt = billingEvent.chargedAt;
+
+    const key = isMonthly
+      ? format(chargedAt, "yyyy-MM")
+      : format(chargedAt, "yyyy");
+    const bucket = buckets.get(key);
+    if (!bucket) return;
+    bucket.spend += billingEvent.amount;
+    const category = billingEvent.subscriptionCategory;
+    bucket.categories.set(
+      category,
+      (bucket.categories.get(category) || 0) + billingEvent.amount,
+    );
+  });
+  return Array.from(buckets.values()).map((bucket) => ({
+    label: bucket.label,
+    spend: bucket.spend,
+
+    categories: Array.from(bucket.categories.entries()).map(
+      ([name, amount]) => ({
+        name,
+        amount,
+      }),
+    ),
+  }));
 }
 
 export async function getSpendingDataForDateRange(

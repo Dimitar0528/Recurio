@@ -6,8 +6,9 @@ import {
   subscriptionBillingEventsTable,
   subscriptionsTable,
 } from "@/db/schema";
-import { asc, desc, getTableColumns, eq, and, isNull } from "drizzle-orm";
+import { asc, desc, getTableColumns, eq, and, isNull, gte } from "drizzle-orm";
 import { verifyUser } from "../users/verifyUser";
+import { subYears } from "date-fns";
 
 export async function getUserSubscriptions() {
   const userId = await verifyUser();
@@ -45,24 +46,29 @@ async function getBillingEventsData(userId: string) {
   "use cache";
   cacheTag(`billing-events-${userId}`);
   cacheLife("halfDay");
+  const threeYearsAgo = subYears(new Date(), 3);
   const rawData = await db
     .select({
+      id: subscriptionBillingEventsTable.id,
       amount: subscriptionBillingEventsTable.amount,
       chargedAt: subscriptionBillingEventsTable.chargedAt,
       source: subscriptionBillingEventsTable.source,
-      subscriptionId: subscriptionBillingEventsTable.subscriptionId,
-      id: subscriptionBillingEventsTable.id,
+      subscriptionName: subscriptionsTable.name,
+      subscriptionCategory: subscriptionsTable.category,
     })
     .from(subscriptionBillingEventsTable)
+    .innerJoin(
+      subscriptionsTable,
+      eq(subscriptionBillingEventsTable.subscriptionId, subscriptionsTable.id),
+    )
     .where(
       and(
         eq(subscriptionBillingEventsTable.userId, userId),
         isNull(subscriptionBillingEventsTable.deletedAt),
+        gte(subscriptionBillingEventsTable.chargedAt, threeYearsAgo),
       ),
     )
-    .orderBy(
-      desc(subscriptionBillingEventsTable.chargedAt),
-    );
+    .orderBy(desc(subscriptionBillingEventsTable.chargedAt));
 
   return rawData.map((event) => ({
     ...event,
