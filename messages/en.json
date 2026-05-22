@@ -275,7 +275,7 @@
                 "rate_limited": "Too many requests! Please try again in a minute."
             }
         },
-        "data_table_component": {
+        "subscription_table_component": {
             "title": "Your Subscriptions",
             "filter_placeholder": "Filter name...",
             "status_button_clear_text": "Clear",

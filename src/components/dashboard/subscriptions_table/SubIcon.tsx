@@ -18,7 +18,7 @@ export function SubIcon({ name, className }: SubIconProps) {
   return (
     <div
       className={cn(
-        "relative flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden border border-border bg-muted/50 font-mono text-xs font-bold",
+        "relative shrink-0 flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden border border-border bg-muted/50 font-mono text-xs font-bold",
         className,
       )}>
       {!error ? (

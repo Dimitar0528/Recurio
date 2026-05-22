@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { type Subscription } from "@/lib/validations/schemas";
 import { AlertTriangle, Delete, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DataTableColumnHeader } from "./DataTableColumnHeader";
+import { DataTableColumnHeader } from "../../shared/DataTableColumnHeader";
 import { dateFormatter, priceFormatter, isDue } from "@/lib/utils";
 import { useLocale, useTranslations } from "next-intl";
 import SubscriptionDialog from "../SubscriptionDialog";
@@ -36,7 +36,7 @@ import { RateLimitError } from "@/lib/security/rate_limits";
 
 export const useColumns = (): ColumnDef<Subscription>[] => {
   const tReusable = useTranslations("Reusable");
-  const t = useTranslations("dashboard_page.data_table_component");
+  const t = useTranslations("dashboard_page.subscription_table_component");
   const locale = useLocale();
 
   return [

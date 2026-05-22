@@ -9,6 +9,7 @@ import { getSubscriptionsWithinTimeInterval } from "@/lib/utils";
 import { TimelineSection } from "@/components/payments/TimeLineSection";
 import { getSpendingDataForDateRange } from "@/lib/analytics/spending_for_date_ranges";
 import { SpendingChart } from "@/components/payments/SpendingChart";
+import PaymentsTable from "@/components/payments/payments_table/PaymentsTable";
 
 export default async function Page({ params }: PageProps<"/[lang]">) {
   const locale = (await params).lang as Locale;
@@ -153,6 +154,10 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             monthlyData={monthlySpendData}
             yearlyData={yearlySpendData}
           />
+        </section>
+
+        <section className="pt-8">
+          <PaymentsTable billingEvents={billingEvents} />
         </section>
       </div>
     </main>

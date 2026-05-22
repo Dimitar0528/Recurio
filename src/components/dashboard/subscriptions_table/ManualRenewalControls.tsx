@@ -10,7 +10,9 @@ import { startOfDay } from "date-fns";
 
 type ManualRenewalControlsProps = {
   pendingRenewalSubscriptions: Subscription[];
-  t: ReturnType<typeof useTranslations<"dashboard_page.data_table_component">>;
+  t: ReturnType<
+    typeof useTranslations<"dashboard_page.subscription_table_component">
+  >;
   tReusable: ReturnType<typeof useTranslations<"Reusable">>;
 };
 

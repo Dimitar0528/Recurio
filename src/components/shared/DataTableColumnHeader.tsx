@@ -25,7 +25,9 @@ export function DataTableColumnHeader<TData, TValue>({
   title,
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
-  const t = useTranslations("dashboard_page.data_table_component.table.sorting");
+  const t = useTranslations(
+    "dashboard_page.subscription_table_component.table.sorting",
+  );
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>;
   }

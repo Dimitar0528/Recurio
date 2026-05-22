@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import {
   ArrowDown,
   Check,
+  ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
@@ -66,20 +67,20 @@ import {
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import DataTableSkeleton from "./DataTableSkeleton";
+import SubscriptionTableSkeleton from "./SubscriptionsTableSkeleton";
 import { useTranslations } from "next-intl";
 import { useColumns } from "./columns";
 import { Subscription } from "@/lib/validations/schemas";
 import { Status, STATUS_VALUES } from "@/lib/validations/enums";
 import { cn, isDue } from "@/lib/utils";
 import { ManualRenewalControls } from "./ManualRenewalControls";
-type DataTableProps = {
+type SubscriptionTableProps = {
   data: Subscription[];
 };
 
-export function DataTable({ data }: DataTableProps) {
+export function SubscriptionTable({ data }: SubscriptionTableProps) {
   const tReusable = useTranslations("Reusable");
-  const t = useTranslations("dashboard_page.data_table_component");
+  const t = useTranslations("dashboard_page.subscription_table_component");
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -144,16 +145,16 @@ export function DataTable({ data }: DataTableProps) {
   const selectedStatuses = new Set(column?.getFilterValue() as Status[]);
 
   if (!hasMounted) {
-    return <DataTableSkeleton />;
+    return <SubscriptionTableSkeleton />;
   }
 
   const pendingRenewalSubscriptions = data.filter(
     ({ autoRenew, status, nextBilling }) =>
-      !autoRenew && status === "Active" && isDue(nextBilling, new Date())
+      !autoRenew && status === "Active" && isDue(nextBilling, new Date()),
   );
 
   return (
-    <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">
+    <div className="max-w-4xl mx-auto overflow-hidden px-2">
       <div className="p-[2.5] border-2 border-primary bg-primary text-primary-foreground rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
         <h2 className="font-extrabold uppercase italic tracking-[0.125em] text-center text-lg">
           {t("title")}
@@ -325,57 +326,53 @@ export function DataTable({ data }: DataTableProps) {
         tReusable={tReusable}
       />
 
-      <div className="overflow-hidden rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center">
-                  {t("no_results")}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                {t("no_results")}
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
-      <div className="flex items-center justify-center py-3 flex-col md:flex-row gap-2">
-        <div className="flex items-center space-x-6 lg:space-x-8 flex-col md:flex-row gap-2">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">{t("rows_per_page")}</p>
+      <div className="border-t py-4">
+        <div className="flex flex-col gap-4 sm:grid sm:grid-cols-3 sm:items-center">
+          <div className="flex items-center justify-center sm:justify-start gap-3">
+            <p className="text-sm font-medium whitespace-nowrap text-muted-foreground">
+              {t("rows_per_page")}
+            </p>
+
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => table.setPageSize(Number(value))}>
@@ -384,6 +381,7 @@ export function DataTable({ data }: DataTableProps) {
                 className="w-[65px] scale-[0.90] cursor-pointer">
                 <SelectValue />
               </SelectTrigger>
+
               <SelectContent side="top">
                 {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                   <SelectItem key={pageSize} value={`${pageSize}`}>
@@ -394,49 +392,54 @@ export function DataTable({ data }: DataTableProps) {
             </Select>
           </div>
 
-          <div className="flex w-[120px] items-center justify-center text-sm font-medium">
-            {t("pagination_info", {
-              current: table.getState().pagination.pageIndex + 1,
-              total: table.getPageCount(),
-            })}
+          <div className="flex items-center justify-center order-first sm:order-0">
+            <div className="text-sm font-medium text-muted-foreground tabular-nums tracking-wide">
+              {t("pagination_info", {
+                current: table.getState().pagination.pageIndex + 1,
+                total: table.getPageCount(),
+              })}
+            </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-center sm:justify-end gap-2">
             <Button
               variant="outline"
               size="icon"
-              className="hidden size-8 lg:flex bg-primary/20"
+              className="size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}>
               <span className="sr-only">{t("sr.first_page")}</span>
-              <ChevronsLeft />
+              <ChevronsLeft className="size-4" />
             </Button>
+
             <Button
               variant="outline"
               size="icon"
-              className="size-8 bg-primary/20"
+              className="size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}>
               <span className="sr-only">{t("sr.previous_page")}</span>
-              <ChevronsLeft />
+              <ChevronLeft className="size-4" />
             </Button>
+
             <Button
               variant="outline"
               size="icon"
-              className="size-8 bg-primary/20"
+              className="size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}>
               <span className="sr-only">{t("sr.next_page")}</span>
-              <ChevronRight />
+              <ChevronRight className="size-4" />
             </Button>
+
             <Button
               variant="outline"
               size="icon"
-              className="hidden size-8 lg:flex bg-primary/20"
+              className="size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}>
               <span className="sr-only">{t("sr.last_page")}</span>
-              <ChevronsRight />
+              <ChevronsRight className="size-4" />
             </Button>
           </div>
         </div>

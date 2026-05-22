@@ -1,4 +1,4 @@
-import { DataTable } from "@/components/dashboard/data_table/DataTable";
+import { SubscriptionTable } from "@/components/dashboard/subscriptions_table/SubscriptionsTable";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
@@ -243,7 +243,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
 
         <section className="grid lg:grid-cols-12 gap-6 items-center">
           <div className="lg:col-span-8">
-            <DataTable data={userSubscriptions} />
+            <SubscriptionTable data={userSubscriptions} />
           </div>
           <div className="lg:col-span-4">
             <InsightsSidebar

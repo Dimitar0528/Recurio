@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table,TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 
-export default function DataTableSkeleton (){
+export default function SubscriptionTableSkeleton (){
     return (
         <div className="max-w-4xl mx-auto bg-card border border-border rounded-2xl shadow-sm overflow-hidden px-2">
                 <div className="p-3 px-4 border-b border-border bg-primary rounded-2xl">
