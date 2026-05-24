@@ -5,11 +5,15 @@
         },
         "landing_page": {
             "title": "Home Page - {brandName}",
-            "description": "A subscription management app that helps you track your expenses, avoid unnecessary fees, and have complete control over your monthly budget."
+            "description": "A subscription management app that helps you track your expenses, avoid unnecessary fees, and have complete control over your budget."
         },
         "dashboard_page": {
             "title": "Dashboard",
             "description": "A centralized dashboard for viewing your subscriptions, monthly and annual expenses, as well as summary data for better financial control."
+        },
+        "payments_page": {
+            "title": "Payments",
+            "description": "A financial ledger for exploring recurring charges, payment activity, billing timelines, and subscription spending patterns."
         }
     },
     "Validation": {
@@ -78,19 +82,20 @@
                 "dark": "Dark",
                 "system": "System"
             }
+        },
+        "data_table":{
+            "no_results": "No results available.",
+            "rows_per_page": "Rows per page",
+            "pagination_info": "Page {current} of {total}",
+            "sr": {
+                "first_page": "Go to first page",
+                "previous_page": "Go to previous page",
+                "next_page": "Go to next page",
+                "last_page": "Go to last page"
+            }
         }
     },
     "landing_page": {
-        "problem": {
-            "title": "The Problem",
-            "quote": "“We are living in an era of ‘Subscription Creep’. We trade long-term financial freedom for short-term digital convenience, 10 € at a time.”"
-        },
-        "cta": {
-            "title": "Take back the keys.",
-            "subtitle": "Recurio is free for up to 5 subscriptions. No credit card required.",
-            "primary": "Start Tracking Now",
-            "secondary": "Read our Privacy Policy"
-        },
         "hero_component": {
             "title": {
                 "part_1": "Subscriptions are",
@@ -109,6 +114,10 @@
                 "paused": "Paused"
             },
             "tip": "Tip: Click a subscription to see how it impacts your monthly / yearly burn."
+        },
+        "problem": {
+            "title": "The Problem",
+            "quote": "“We are living in an era of ‘Subscription Creep’. We trade long-term financial freedom for short-term digital convenience, 10 € at a time.”"
         },
         "features_component": {
             "heading": {
@@ -179,6 +188,19 @@
                 "hannah": "I recommend Recurio to anyone serious about controlling their finances.",
                 "noah": "The app is lightweight, fast, and the design is aesthetically pleasing.",
                 "maya": "I actually enjoy opening it daily to see my spending trends."
+            }
+        },
+        "cta_component": {
+            "title": "Never lose track of your subscriptions",
+            "subtitle": "Use Recurio for free up to 5 subscriptions and stay fully in control of your recurring expenses.",
+            "primary": "Start Tracking Now",
+            "secondary": "Read our Privacy Policy",
+            "card": {
+                "active_tracker": "Active Tracker",
+                "subscriptions": "SUBSCRIPTIONS",
+                "provider": "Provider",
+                "total_amount_tracked": "Total Amount Tracked",
+                "total_value": "420.69 €"
             }
         }
     },
@@ -277,20 +299,10 @@
         },
         "subscription_table_component": {
             "title": "Your Subscriptions",
-            "filter_placeholder": "Filter name...",
+            "filter_placeholder": "Filter subscriptions...",
             "status_button_clear_text": "Clear",
             "view_button": "View",
             "toggle_columns": "Toggle columns",
-            "no_results": "No results available.",
-            "rows_selected": "{count} of {total} rows selected.",
-            "rows_per_page": "Rows per page",
-            "pagination_info": "Page {current} of {total}",
-            "sr": {
-                "first_page": "Go to first page",
-                "previous_page": "Go to previous page",
-                "next_page": "Go to next page",
-                "last_page": "Go to last page"
-            },
             "table": {
                 "columns": {
                     "name": "Name",

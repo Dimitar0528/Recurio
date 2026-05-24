@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { deleteSubscription, undoDeleteSubscription } from "@/app/actions";
-import { SubIcon } from "./SubIcon";
+import { SubIcon } from "@/components/shared/SubIcon";
 import { isWithinInterval, startOfDay, subDays } from "date-fns";
 import { RateLimitError } from "@/lib/security/rate_limits";
 
@@ -122,6 +122,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         <DataTableColumnHeader
           column={column}
           title={t("table.columns.name")}
+          enableHiding
         />
       ),
       cell: ({ row }) => {
@@ -146,6 +147,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         <DataTableColumnHeader
           column={column}
           title={t("table.columns.price")}
+          enableHiding
         />
       ),
       cell: ({ row }) => {
@@ -178,6 +180,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         <DataTableColumnHeader
           column={column}
           title={t("table.columns.nextBilling")}
+          enableHiding
         />
       ),
       cell: ({ row }) => {
@@ -243,6 +246,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         <DataTableColumnHeader
           column={column}
           title={t("table.columns.status")}
+          enableHiding
         />
       ),
       filterFn: (row, columnId, value) => {

@@ -3,13 +3,29 @@ import {
   getUserSubscriptions,
 } from "@/dal/subscriptions/queries";
 import { Locale } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { startOfDay, differenceInDays } from "date-fns";
 import { getSubscriptionsWithinTimeInterval } from "@/lib/utils";
 import { TimelineSection } from "@/components/payments/TimeLineSection";
 import { getSpendingDataForDateRange } from "@/lib/analytics/spending_for_date_ranges";
 import { SpendingChart } from "@/components/payments/SpendingChart";
 import PaymentsTable from "@/components/payments/payments_table/PaymentsTable";
+import { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: LayoutProps<"/[lang]">): Promise<Metadata> {
+  const locale = (await params).lang as Locale;
+  const t = await getTranslations({
+    locale,
+    namespace: "Metadata.payments_page",
+  });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default async function Page({ params }: PageProps<"/[lang]">) {
   const locale = (await params).lang as Locale;
@@ -149,14 +165,13 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             </div>
           </div>
         </section>
-        <section className="pt-12">
+        <section className="mt-8">
           <SpendingChart
             monthlyData={monthlySpendData}
             yearlyData={yearlySpendData}
           />
         </section>
-
-        <section className="pt-8">
+        <section className="mt-8">
           <PaymentsTable billingEvents={billingEvents} />
         </section>
       </div>

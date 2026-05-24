@@ -14,6 +14,8 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart";
 
 import { categoryColors, cn, priceFormatter } from "@/lib/utils";
@@ -24,22 +26,16 @@ import {
 } from "@/lib/analytics/spending_for_date_ranges";
 
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { CATEGORY_VALUES } from "@/lib/validations/enums";
+import { Category, CATEGORY_VALUES } from "@/lib/validations/enums";
+import { useTranslations } from "next-intl";
 
-interface SpendChartProps {
+type SpendChartProps = {
   monthlyData: SpendingDataForDateRange[];
   yearlyData: SpendingDataForDateRange[];
 }
 
-const chartConfig = {
-  spend: {
-    label: "Spend",
-    color: "hsl(var(--primary))",
-  },
-} satisfies ChartConfig;
-
 function transformChartData(data: SpendingDataForDateRange[]) {
-  const transformedData = data.map((item) => {
+  const transformeChartdData = data.map((item) => {
     const row: Record<string, string | number> = {
       label: item.label,
       spend: item.spend,
@@ -51,20 +47,19 @@ function transformChartData(data: SpendingDataForDateRange[]) {
     });
     return row;
   });
-  return {
-    transformedData,
-    categories: CATEGORY_VALUES,
-  };
+  return transformeChartdData;
 }
 
 function CustomTooltip({
   active,
   payload,
   label,
+  tReusable,
 }: {
   active?: boolean;
   payload?: any[];
   label?: string;
+  tReusable: ReturnType<typeof useTranslations<"Reusable">>;
 }) {
   if (!active || !payload?.length) return null;
   const total = payload.reduce((acc, item) => acc + item.value, 0);
@@ -75,7 +70,9 @@ function CustomTooltip({
         {label}
       </p>
       <div className="space-y-2 mb-3">
-        {sortedPayload.map((item) => (
+        {sortedPayload.map((item) => {
+          const typedCategory = item.dataKey as Category;
+          return(
           <div
             key={item.dataKey}
             className="flex items-center justify-between gap-4">
@@ -91,14 +88,14 @@ function CustomTooltip({
                   "text-sm truncate",
                   categoryColors.find((c) => c.hex === item.color)?.text,
                 )}>
-                {item.dataKey}
+                {tReusable(`categories.${typedCategory}`)}
               </span>
             </div>
             <span className="font-mono text-sm font-medium">
               {priceFormatter(item.value)}
             </span>
           </div>
-        ))}
+        )})}
       </div>
       <div className="border-t border-border pt-3 flex items-center justify-between">
         <span className="text-xs uppercase tracking-[0.16em] text-muted-foreground font-bold">
@@ -113,14 +110,31 @@ function CustomTooltip({
 }
 
 export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
+  const tReusable = useTranslations("Reusable");
+  
   const [view, setView] = useState<"monthly" | "yearly">("monthly");
   const data = view === "monthly" ? monthlyData : yearlyData;
   const totalSpend = data.reduce((acc, spendData) => acc + spendData.spend, 0);
   const avgSpend = totalSpend > 0 ? totalSpend / data.length : 0;
   const growthRate = compareCurrentVsPreviousSpend(data);
   const hasGrowthRate = growthRate !== 0;
-  const { transformedData, categories } = transformChartData(data);
 
+  const transformeChartdData = transformChartData(data);
+  const activeCategories = CATEGORY_VALUES.filter((category) =>
+    transformeChartdData.some((item) => Number(item[category] ?? 0) > 0),
+  );
+
+  const chartConfig = {
+    ...Object.fromEntries(
+      activeCategories.map((category, index) => [
+        category,
+        {
+          label: tReusable(`categories.${category}`),
+          color: categoryColors[index % categoryColors.length].hex,
+        },
+      ]),
+    ),
+  } satisfies ChartConfig;
   return (
     <div className="w-full space-y-8 relative z-10">
       <div className="flex items-center gap-4 justify-center sm:justify-between pb-3 border-b border-border/40 flex-wrap mx-auto">
@@ -221,8 +235,8 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
       {data.length > 0 ? (
         <div className="h-[380px] w-full">
           <ChartContainer config={chartConfig} className="w-full h-full">
-            <BarChart
-              data={transformedData}
+            <BarChart accessibilityLayer 
+              data={transformeChartdData}
               margin={{
                 top: 20,
                 right: 0,
@@ -235,7 +249,6 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                 stroke="currentColor"
                 strokeOpacity={0.1}
               />
-
               <XAxis
                 dataKey="label"
                 tickLine={false}
@@ -248,7 +261,6 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                   fill: "currentColor",
                 }}
               />
-
               <YAxis
                 tickLine
                 axisLine
@@ -261,16 +273,15 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                 tickFormatter={(value: number) => priceFormatter(value)}
                 tickCount={6}
               />
-
               <ChartTooltip
                 cursor={{
                   fill: "hsl(var(--muted))",
                   opacity: 0.45,
                 }}
-                content={<CustomTooltip />}
+                content={<CustomTooltip tReusable={tReusable} />}
               />
-
-              {categories.map((category, index) => {
+              <ChartLegend content={<ChartLegendContent />} />
+              {activeCategories.map((category, index) => {
                 return (
                   <Bar
                     key={category}
@@ -286,16 +297,15 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                       content={(props) => {
                         const { x, y, width, value, index: dataIndex } = props;
                         if (dataIndex === undefined) return null;
-                        // Price label only renders on the top of the 
+                        // Price label only renders on the top of the
                         // visually top bar for a given row
                         const isVisualTop =
                           Number(value) > 0 &&
-                          categories
+                          activeCategories
                             .slice(index + 1)
-                            .every((cat) => !transformedData[dataIndex]?.[cat]);
+                            .every((cat) => !transformeChartdData[dataIndex]?.[cat]);
 
                         if (!isVisualTop) return null;
-
                         return (
                           <text
                             x={Number(x) + Number(width) / 2}
@@ -304,7 +314,9 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                             fontSize={12}
                             fontWeight={700}
                             fill="currentColor">
-                            {priceFormatter(Number(transformedData[dataIndex]?.spend))}
+                            {priceFormatter(
+                              Number(transformeChartdData[dataIndex]?.spend),
+                            )}
                           </text>
                         );
                       }}
@@ -316,7 +328,7 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
           </ChartContainer>
         </div>
       ) : (
-        <div className="border border-dashed border-border/60 rounded-2xl bg-muted/20 flex items-center justify-center py-4">
+        <div className="border border-dashed border-border/60 rounded-2xl bg-muted/45 flex items-center justify-center py-4">
           <div className="text-center space-y-3 max-w-sm px-6">
             <div className="mx-auto w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
               <div className="w-5 h-5 rounded-full bg-primary/70" />

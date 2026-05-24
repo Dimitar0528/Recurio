@@ -253,8 +253,9 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           </div>
         </section>
 
-        <div
+        <section
           className="lg:w-3xl mx-auto bg-foreground/95 text-background rounded-2xl p-3 mt-6 relative overflow-hidden group shadow-2xl text-center"
+          id="audit"
           style={{
             clipPath:
               "polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))",
@@ -285,7 +286,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
               {t("audit.button")}
             </button>
           </div>
-        </div>
+        </section>
       </div>
     </main>
   );

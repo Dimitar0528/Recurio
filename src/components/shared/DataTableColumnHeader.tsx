@@ -18,29 +18,30 @@ interface DataTableColumnHeaderProps<
 > extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
   title: string;
+  enableHiding?: boolean;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
-  className,
+  enableHiding = false,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   const t = useTranslations(
     "dashboard_page.subscription_table_component.table.sorting",
   );
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>;
+    return <div>{title}</div>;
   }
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={"flex items-center gap-2"}>
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
             <Button
               variant="ghost"
               size="sm"
-              className="data-[state=open]:bg-accent -ml-3 h-8 cursor-pointer hover:bg-primary/15">
+              className="data-[state=open]:bg-accent -ml-3 h-8 cursor-pointer hover:bg-primary/15 text-foreground/90">
               <span>{title}</span>
               {column.getIsSorted() === "desc" ? (
                 <ArrowDown />
@@ -64,13 +65,17 @@ export function DataTableColumnHeader<TData, TValue>({
             <ArrowDown className="group-hover:text-white" />
             {t("desc")}
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="group cursor-pointer"
-            onClick={() => column.toggleVisibility(false)}>
-            <EyeOff className="group-hover:text-white" />
-            {t("hide")}
-          </DropdownMenuItem>
+          {enableHiding && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="group cursor-pointer"
+                onClick={() => column.toggleVisibility(false)}>
+                <EyeOff className="group-hover:text-white" />
+                {t("hide")}
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

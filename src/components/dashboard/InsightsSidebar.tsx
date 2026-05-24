@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { cn, priceFormatter } from "@/lib/utils";
+import { categoryColors, cn, priceFormatter } from "@/lib/utils";
 import { Subscription } from "@/lib/validations/schemas";
 import { Button } from "../ui/button";
 import {
@@ -131,26 +131,13 @@ export default function InsightsSidebar({
     })
     .sort((a, b) => b.value - a.value);
 
-  const accentColors = [
-    { bar: "bg-violet-500", dot: "bg-violet-500", text: "text-violet-500" },
-    { bar: "bg-sky-500", dot: "bg-sky-500", text: "text-sky-500" },
-    { bar: "bg-emerald-500", dot: "bg-emerald-500", text: "text-emerald-500" },
-    { bar: "bg-amber-500", dot: "bg-amber-500", text: "text-amber-500" },
-    { bar: "bg-rose-500", dot: "bg-rose-500", text: "text-rose-500" },
-    { bar: "bg-cyan-500", dot: "bg-cyan-500", text: "text-cyan-500" },
-    { bar: "bg-fuchsia-500", dot: "bg-fuchsia-500", text: "text-fuchsia-500" },
-    { bar: "bg-lime-500", dot: "bg-lime-500", text: "text-lime-500" },
-    { bar: "bg-orange-500", dot: "bg-orange-500", text: "text-orange-500" },
-    { bar: "bg-teal-500", dot: "bg-teal-500", text: "text-teal-500" },
-  ];
-
-  const categoryColorMap: Record<Category, (typeof accentColors)[0]> =
+  const categoryColorMap: Record<Category, (typeof categoryColors)[0]> =
     CATEGORY_VALUES.reduce(
       (acc, category, i) => {
-        acc[category] = accentColors[i % accentColors.length];
+        acc[category] = categoryColors[i % categoryColors.length];
         return acc;
       },
-      {} as Record<Category, (typeof accentColors)[0]>,
+      {} as Record<Category, (typeof categoryColors)[0]>,
     );
 
   // Stacked bar segments
@@ -160,7 +147,7 @@ export default function InsightsSidebar({
   }));
 
   return (
-      <div className="bg-card border border-border rounded-md overflow-hidden">
+      <div className="max-lg:border-t lg:border-l">
         {!isLoaded ? (
           <div className="p-3 space-y-3 animate-pulse">
             <Skeleton className="h-3 w-24 rounded" />
@@ -377,7 +364,7 @@ export default function InsightsSidebar({
                     key={seg.key}
                     className={cn(
                       "h-full transition-all duration-700",
-                      seg.color.bar,
+                      seg.color.dot,
                     )}
                     style={{ width: `${seg.value}%` }}
                     title={`${seg.label}: ${seg.value}%`}
