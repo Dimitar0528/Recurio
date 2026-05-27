@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "sonner";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -9,10 +7,9 @@ import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Suspense } from "react";
 import { bgBG, enGB } from "@clerk/localizations";
 import { shadcn } from "@clerk/themes";
-import { ViewTransition } from 'react'
+import { Suspense, ViewTransition } from "react";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata.root_layout");
   return {
@@ -43,30 +40,22 @@ export default async function RootLayout({
   const messages = await getMessages({ locale: lang });
   return (
     <ViewTransition>
-      <Suspense>
-        <NextIntlClientProvider locale={lang} messages={messages}>
-          <ClerkProvider
-            localization={lang === "bg" ? bgBG : enGB}
-            appearance={{
-              theme: [shadcn],
-              layout: {
-                socialButtonsVariant: "blockButton",
-              },
-            }}>
-            <Toaster position="top-center" richColors closeButton />
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-              enableColorScheme>
-              <Navigation />
-              {children}
-              <Footer />
-            </ThemeProvider>
-          </ClerkProvider>
-        </NextIntlClientProvider>
-      </Suspense>
+      <ClerkProvider
+        localization={lang === "bg" ? bgBG : enGB}
+        appearance={{
+          theme: [shadcn],
+          layout: {
+            socialButtonsVariant: "blockButton",
+          },
+        }}>
+        <Suspense>
+          <NextIntlClientProvider locale={lang} messages={messages}>
+            <Navigation />
+            {children}
+            <Footer />
+          </NextIntlClientProvider>
+        </Suspense>
+      </ClerkProvider>
     </ViewTransition>
   );
 }

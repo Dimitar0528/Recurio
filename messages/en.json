@@ -7,6 +7,10 @@
             "title": "Home Page - {brandName}",
             "description": "A subscription management app that helps you track your expenses, avoid unnecessary fees, and have complete control over your budget."
         },
+        "sign_in_page": {
+            "title": "Sign in page",
+            "description": "Login in your profile to view your subscriptions data."
+        },
         "dashboard_page": {
             "title": "Dashboard",
             "description": "A centralized dashboard for viewing your subscriptions, monthly and annual expenses, as well as summary data for better financial control."
@@ -71,6 +75,7 @@
             "cancel": "Cancel"
         },
         "navigation_component": {
+            "skip_link": "Skip to main content",
             "dashboard_link": "Dashboard",
             "insights_link": "Insights",
             "payments_link": "Payments",
@@ -83,7 +88,12 @@
                 "system": "System"
             }
         },
-        "data_table":{
+        "data_table": {
+            "sorting": {
+                "asc": "Asc",
+                "desc": "Desc",
+                "hide": "Hide"
+            },
             "no_results": "No results available.",
             "rows_per_page": "Rows per page",
             "pagination_info": "Page {current} of {total}",
@@ -315,11 +325,6 @@
                     "subscription": "Subscription",
                     "mobile": "Mobile"
                 },
-                "sorting": {
-                    "asc": "Asc",
-                    "desc": "Desc",
-                    "hide": "Hide"
-                },
                 "badges": {
                     "auto": "Auto",
                     "manual": "Manual",
@@ -369,6 +374,72 @@
                     "paused": "Subscription set to paused.",
                     "cancelled": "Subscription set to cancelled.",
                     "error": "Something went wrong."
+                }
+            }
+        }
+    },
+    "payments_page": {
+        "hero": {
+            "title_part_1": "Transactional",
+            "title_part_2": "Trajectory.",
+            "description_before": "A high-fidelity view of your ",
+            "description_highlight": "14-day fiscal window",
+            "description_after": ". Observe the transition as near-term liabilities move across the threshold into verified settlements."
+        },
+        "stats": {
+            "upcoming": "Upcoming",
+            "settled": "Settled"
+        },
+        "timeline_component": {
+            "upcoming_title": "Upcoming Payments",
+            "upcoming_empty": "Clear Horizon. No imminent charges.",
+            "recent_title": "Recent Payments",
+            "recent_empty": "No recent settlements.",
+            "today": "Today",
+            "done_label": "Done",
+            "days_short": "{days}d",
+            "renews_in": "{days, plural, one {Renews in # day} other {Renews in # days}}",
+            "paid_today": "Paid today",
+            "paid_yesterday": "Paid yesterday",
+            "paid_days_ago": "{days, plural, one {Paid # day ago} other {Paid # days ago}}"
+        },
+        "spending_chart_component": {
+            "title": "Spending Insights",
+            "view": {
+                "monthly": "Monthly",
+                "yearly": "Yearly"
+            },
+            "stats": {
+                "total_spend": "Total Spend",
+                "growth_rate": "Growth rate",
+                "average": "Average",
+                "window": "Window",
+                "window_monthly": "6 Months",
+                "window_yearly": "3 Years"
+            },
+            "tooltip": {
+                "total": "Total"
+            },
+            "empty": {
+                "title": "No spending history yet",
+                "description": "Add your first subscription to start tracking recurring expenses and billing activity."
+            }
+        },
+        "payments_table_component": {
+            "title": "Payment History",
+            "limit_notice": "Showing only the 30 most recent payments. For more information, download the financial <audit>audit</audit> from the <dashboard>here</dashboard>.",
+            "filter_placeholder": "Filter payments...",
+            "table": {
+                "columns": {
+                    "charged_on": "Charged On",
+                    "subscription": "Subscription",
+                    "type": "Renewal Type",
+                    "amount": "Amount"
+                },
+                "source": {
+                    "initial": "Initial",
+                    "auto": "Auto",
+                    "manual": "Manual"
                 }
             }
         }

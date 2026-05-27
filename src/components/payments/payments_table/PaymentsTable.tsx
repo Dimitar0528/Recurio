@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useLocale, useTranslations } from "next-intl";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { dateFormatter } from "@/lib/utils";
 
 export default function PaymentsTable({
@@ -47,12 +47,12 @@ export default function PaymentsTable({
   billingEvents: BillingEvent[];
 }) {
   const tReusable = useTranslations("Reusable");
-  const t = useTranslations("dashboard_page.subscription_table_component");
+  const t = useTranslations("payments_page.payments_table_component");
   const locale = useLocale();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [globalFilter, setGlobalFilter] = useState<string>("");  
+  const [globalFilter, setGlobalFilter] = useState<string>("");
 
   const columns = useColumns();
 
@@ -74,8 +74,10 @@ export default function PaymentsTable({
 
       const nameMatch =
         subscriptionName?.toLowerCase().includes(search) ?? false;
-      const categoryMatch = tReusable(`categories.${subscriptionCategory}`)
-      ?.toLowerCase().includes(search) ?? false;
+      const categoryMatch =
+        tReusable(`categories.${subscriptionCategory}`)
+          ?.toLowerCase()
+          .includes(search) ?? false;
       const sourceMatch = source?.toLowerCase().includes(search) ?? false;
       const formattedDate = chargedAt ? dateFormatter(chargedAt, locale) : "";
       const dateMatch = formattedDate.toLowerCase().includes(search);
@@ -91,23 +93,26 @@ export default function PaymentsTable({
 
   return (
     <div className="relative overflow-hidden bg-linear-to-b from-card to-card/95 border border-border/80 rounded-2xl shadow-md p-3 md:p-4 backdrop-blur-sm">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4 px-2 pt-2">
         <div className="space-y-2">
           <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-foreground/80">
-            Payment History
+            {t("title")}
           </h2>
           <div className="rounded-lg border border-primary/10 bg-primary/10 py-1 px-2 text-xs text-foreground/70 leading-relaxed">
-            Showing only the 30 most recent payments. For more information,
-            download the financial{" "}
-            <span className="font-semibold text-foreground/90">audit</span> from
-            the{" "}
-            <Link
-              href="/dashboard#audit"
-              className="underline underline-offset-2 hover:text-foreground transition-colors">
-              dashboard page
-            </Link>
-            .
+            {t.rich("limit_notice", {
+              audit: (chunks) => (
+                <span className="font-semibold text-foreground/90">
+                  {chunks}
+                </span>
+              ),
+              dashboard: (chunks) => (
+                <Link
+                  href="/dashboard#audit"
+                  className="underline underline-offset-3 hover:text-foreground transition-colors">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </div>
         </div>
 
@@ -118,7 +123,7 @@ export default function PaymentsTable({
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors duration-200"
             />
             <Input
-              placeholder={"Filter payments..."}
+              placeholder={t("filter_placeholder")}
               value={globalFilter}
               onChange={(event) => setGlobalFilter(event.target.value)}
               className="w-full pl-9 pr-4 py-1.5 bg-muted/20 border border-border/50 hover:border-border/80 focus-visible:ring-1 focus-visible:ring-primary/20 rounded-full text-xs transition-all duration-300"
@@ -139,7 +144,7 @@ export default function PaymentsTable({
                   return (
                     <TableHead
                       key={header.id}
-                      className={`text-xs font-semibold tracking-wider text-muted-foreground/80 py-1 px-4 first:rounded-l-xl last:rounded-r-xl ${metaClass}`}>
+                      className={`text-xs font-semibold tracking-wider text-muted-foreground py-1 px-4 first:rounded-l-xl last:rounded-r-xl ${metaClass}`}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(

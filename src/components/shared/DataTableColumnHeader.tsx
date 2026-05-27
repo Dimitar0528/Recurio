@@ -1,7 +1,6 @@
 import { type Column } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,9 +25,7 @@ export function DataTableColumnHeader<TData, TValue>({
   title,
   enableHiding = false,
 }: DataTableColumnHeaderProps<TData, TValue>) {
-  const t = useTranslations(
-    "dashboard_page.subscription_table_component.table.sorting",
-  );
+  const tReusable = useTranslations("Reusable");
   if (!column.getCanSort()) {
     return <div>{title}</div>;
   }
@@ -57,13 +54,13 @@ export function DataTableColumnHeader<TData, TValue>({
             className="group cursor-pointer"
             onClick={() => column.toggleSorting(false)}>
             <ArrowUp className="group-hover:text-white" />
-            {t("asc")}
+            {tReusable("data_table.sorting.asc")}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="group cursor-pointer"
             onClick={() => column.toggleSorting(true)}>
             <ArrowDown className="group-hover:text-white" />
-            {t("desc")}
+            {tReusable("data_table.sorting.desc")}
           </DropdownMenuItem>
           {enableHiding && (
             <>
@@ -72,7 +69,7 @@ export function DataTableColumnHeader<TData, TValue>({
                 className="group cursor-pointer"
                 onClick={() => column.toggleVisibility(false)}>
                 <EyeOff className="group-hover:text-white" />
-                {t("hide")}
+                {tReusable("data_table.sorting.hide")}
               </DropdownMenuItem>
             </>
           )}

@@ -46,7 +46,7 @@ export async function generateMetadata({
   };
 }
 
-function calculateAverageSpending(subscriptions: Subscription[]) {
+function calculateAverageSpendings(subscriptions: Subscription[]) {
   const activeSubscriptions = subscriptions.filter(
     (subscription) => subscription.status === "Active",
   );
@@ -76,20 +76,18 @@ function calculateActualChargesInRange(
   }, 0);
 }
 
-function calculateActualMonthlySpending(
+function calculateActualSpendings(
   billingEvents: BillingEvent[],
   today = new Date(),
 ) {
-  const { start, end } = getCurrentDateRange(today, "month");
-  return calculateActualChargesInRange(billingEvents, start, end);
-}
-
-function calculateActualYearlySpending(
-  billingEvents: BillingEvent[],
-  today = new Date(),
-) {
-  const { start, end } = getCurrentDateRange(today, "year");
-  return calculateActualChargesInRange(billingEvents, start, end);
+  const { start: startMonth, end: endMonth } = getCurrentDateRange(today, "month");
+  const { start: startYear, end: endYear } = getCurrentDateRange(today, "year");
+  const actualMonthlySpend = calculateActualChargesInRange(billingEvents, startMonth, endMonth);
+  const actualYearlySpend = calculateActualChargesInRange(billingEvents, startYear, endYear);
+  return {
+    actualMonthlySpend,
+    actualYearlySpend
+  }
 }
 
 export default async function Page({ params }: PageProps<"/[lang]">) {
@@ -103,9 +101,8 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   const billingEvents = await getUserBillingEvents();
 
   const { averageMonthly, projectedYearly } =
-    calculateAverageSpending(userSubscriptions);
-  const actualMonthlySpend = calculateActualMonthlySpending(billingEvents);
-  const actualYearlySpend = calculateActualYearlySpending(billingEvents);
+    calculateAverageSpendings(userSubscriptions);
+  const { actualMonthlySpend, actualYearlySpend } = calculateActualSpendings(billingEvents)
 
   const activeSubscriptions = userSubscriptions.filter(
     (s) => s.status === "Active",

@@ -68,11 +68,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import SubscriptionTableSkeleton from "./SubscriptionsTableSkeleton";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useColumns } from "./columns";
 import { Subscription } from "@/lib/validations/schemas";
 import { Status, STATUS_VALUES } from "@/lib/validations/enums";
-import { cn, isDue } from "@/lib/utils";
+import { cn, dateFormatter, isDue } from "@/lib/utils";
 import { ManualRenewalControls } from "./ManualRenewalControls";
 type SubscriptionTableProps = {
   data: Subscription[];
@@ -81,9 +81,11 @@ type SubscriptionTableProps = {
 export function SubscriptionTable({ data }: SubscriptionTableProps) {
   const tReusable = useTranslations("Reusable");
   const t = useTranslations("dashboard_page.subscription_table_component");
+  const locale = useLocale();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = useState<string>("");  
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useColumns();
 
@@ -99,10 +101,31 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, _, filterValue) => {
+      const search = filterValue.toLowerCase().trim();
+      if (!search) return true;
+      const { name, category, billingCycle, nextBilling } =
+        row.original;
+
+      const nameMatch = name?.toLowerCase().includes(search) ?? false;
+      const categoryMatch =
+        tReusable(`categories.${category}`)?.toLowerCase().includes(search) ??
+        false;
+      const billingCycleMatch =
+        tReusable(`billingCycle.${billingCycle}`)
+          ?.toLowerCase()
+          .includes(search) ?? false;
+      const formattedDate = nextBilling ? dateFormatter(nextBilling, locale) : "";
+      const dateMatch = formattedDate.toLowerCase().includes(search);
+
+      return nameMatch || categoryMatch || billingCycleMatch || dateMatch;
+    },
     state: {
       sorting,
       columnFilters,
       columnVisibility,
+      globalFilter
     },
   });
 
@@ -165,10 +188,8 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
         <div className="flex grow gap-4">
           <Input
             placeholder={t("filter_placeholder")}
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
-            }
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-md"
           />
           <Popover>
@@ -219,7 +240,9 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
                   className="h-9 font-sans"
                 />
                 <CommandList>
-                  <CommandEmpty>{t("no_results")}</CommandEmpty>
+                  <CommandEmpty>
+                    {tReusable("data_table.no_results")}
+                  </CommandEmpty>
                   <CommandGroup>
                     {STATUS_VALUES.map((status) => {
                       const isSelected = selectedStatuses.has(status);
@@ -344,7 +367,7 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {table.getRowModel().rows?.length > 0 ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -359,7 +382,9 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                {t("no_results")}
+                <span className="text-sm font-semibold text-foreground/75">
+                  {tReusable("data_table.no_results")}
+                </span>
               </TableCell>
             </TableRow>
           )}
@@ -370,7 +395,7 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
         <div className="flex flex-col gap-4 sm:grid sm:grid-cols-3 sm:items-center">
           <div className="flex items-center justify-center sm:justify-start gap-3">
             <p className="text-sm font-medium whitespace-nowrap text-muted-foreground">
-              {t("rows_per_page")}
+              {tReusable("data_table.rows_per_page")}
             </p>
 
             <Select
@@ -383,7 +408,7 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
               </SelectTrigger>
 
               <SelectContent side="top">
-                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                {[5, 10, 15, 20, 30].map((pageSize) => (
                   <SelectItem key={pageSize} value={`${pageSize}`}>
                     {pageSize}
                   </SelectItem>
@@ -394,8 +419,11 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
 
           <div className="flex items-center justify-center order-first sm:order-0">
             <div className="text-sm font-medium text-muted-foreground tabular-nums tracking-wide">
-              {t("pagination_info", {
-                current: table.getState().pagination.pageIndex + 1,
+              {tReusable("data_table.pagination_info", {
+                current:
+                  table.getRowModel().rows?.length > 0
+                    ? table.getState().pagination.pageIndex + 1
+                    : 0,
                 total: table.getPageCount(),
               })}
             </div>
@@ -405,40 +433,48 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
             <Button
               variant="outline"
               size="icon"
-              className="size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
+              className="cursor-pointer size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}>
-              <span className="sr-only">{t("sr.first_page")}</span>
+              <span className="sr-only">
+                {tReusable("data_table.sr.first_page")}
+              </span>
               <ChevronsLeft className="size-4" />
             </Button>
 
             <Button
               variant="outline"
               size="icon"
-              className="size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
+              className="cursor-pointer size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}>
-              <span className="sr-only">{t("sr.previous_page")}</span>
+              <span className="sr-only">
+                {tReusable("data_table.sr.previous_page")}
+              </span>
               <ChevronLeft className="size-4" />
             </Button>
 
             <Button
               variant="outline"
               size="icon"
-              className="size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
+              className="cursor-pointer size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}>
-              <span className="sr-only">{t("sr.next_page")}</span>
+              <span className="sr-only">
+                {tReusable("data_table.sr.next_page")}
+              </span>
               <ChevronRight className="size-4" />
             </Button>
 
             <Button
               variant="outline"
               size="icon"
-              className="size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
+              className="cursor-pointer size-8 bg-primary/10 hover:bg-primary/20 transition-colors"
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}>
-              <span className="sr-only">{t("sr.last_page")}</span>
+              <span className="sr-only">
+                {tReusable("data_table.sr.last_page")}
+              </span>
               <ChevronsRight className="size-4" />
             </Button>
           </div>

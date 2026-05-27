@@ -32,7 +32,7 @@ import { useTranslations } from "next-intl";
 type SpendChartProps = {
   monthlyData: SpendingDataForDateRange[];
   yearlyData: SpendingDataForDateRange[];
-}
+};
 
 function transformChartData(data: SpendingDataForDateRange[]) {
   const transformeChartdData = data.map((item) => {
@@ -55,13 +55,17 @@ function CustomTooltip({
   payload,
   label,
   tReusable,
+  t,
 }: {
   active?: boolean;
   payload?: any[];
   label?: string;
   tReusable: ReturnType<typeof useTranslations<"Reusable">>;
+  t: ReturnType<
+    typeof useTranslations<"payments_page.spending_chart_component">
+  >;
 }) {
-  if (!active || !payload?.length) return null;
+  if (!active || !payload?.length || !label) return null;
   const total = payload.reduce((acc, item) => acc + item.value, 0);
   const sortedPayload = [...payload].sort((a, b) => b.value - a.value);
   return (
@@ -72,34 +76,35 @@ function CustomTooltip({
       <div className="space-y-2 mb-3">
         {sortedPayload.map((item) => {
           const typedCategory = item.dataKey as Category;
-          return(
-          <div
-            key={item.dataKey}
-            className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2 min-w-0">
-              <div
-                className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{
-                  background: item.color,
-                }}
-              />
-              <span
-                className={cn(
-                  "text-sm truncate",
-                  categoryColors.find((c) => c.hex === item.color)?.text,
-                )}>
-                {tReusable(`categories.${typedCategory}`)}
+          return (
+            <div
+              key={item.dataKey}
+              className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 min-w-0">
+                <div
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{
+                    background: item.color,
+                  }}
+                />
+                <span
+                  className={cn(
+                    "text-sm truncate",
+                    categoryColors.find((c) => c.hex === item.color)?.text,
+                  )}>
+                  {tReusable(`categories.${typedCategory}`)}
+                </span>
+              </div>
+              <span className="font-mono text-sm font-medium">
+                {priceFormatter(item.value)}
               </span>
             </div>
-            <span className="font-mono text-sm font-medium">
-              {priceFormatter(item.value)}
-            </span>
-          </div>
-        )})}
+          );
+        })}
       </div>
       <div className="border-t border-border pt-3 flex items-center justify-between">
         <span className="text-xs uppercase tracking-[0.16em] text-muted-foreground font-bold">
-          Total
+          {t("tooltip.total")}
         </span>
         <span className="text-lg font-black tracking-tight">
           {priceFormatter(total)}
@@ -111,7 +116,8 @@ function CustomTooltip({
 
 export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
   const tReusable = useTranslations("Reusable");
-  
+  const t = useTranslations("payments_page.spending_chart_component");
+
   const [view, setView] = useState<"monthly" | "yearly">("monthly");
   const data = view === "monthly" ? monthlyData : yearlyData;
   const totalSpend = data.reduce((acc, spendData) => acc + spendData.spend, 0);
@@ -140,22 +146,22 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
       <div className="flex items-center gap-4 justify-center sm:justify-between pb-3 border-b border-border/40 flex-wrap mx-auto">
         <div>
           <h2 className="text-2xl md:text-3xl tracking-[0.06em] font-bold leading-[0.95]">
-            Spending Insights
+            {t("title")}
           </h2>
         </div>
 
         <div className="flex items-center justify-center p-1 bg-muted/50 rounded-lg border border-border/50">
-          {["monthly", "yearly"].map((item) => (
+          {(["monthly", "yearly"] as const).map((item) => (
             <button
               key={item}
-              onClick={() => setView(item as "monthly" | "yearly")}
+              onClick={() => setView(item)}
               className={cn(
                 "px-4 py-1.25 text-xs font-bold uppercase tracking-wider rounded-md transition-all cursor-pointer duration-200",
                 view === item
                   ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground hover:bg-primary/20",
               )}>
-              {item}
+              {t(`view.${item}`)}
             </button>
           ))}
         </div>
@@ -174,7 +180,7 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
             hasGrowthRate ? "col-span-1" : "col-span-2 sm:col-span-1",
           )}>
           <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground font-medium mb-2">
-            Total Spend
+            {t("stats.total_spend")}
           </p>
 
           <p className="font-mono text-2xl sm:text-3xl font-medium leading-none tracking-tight text-primary">
@@ -188,7 +194,7 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
           <>
             <div className="sm:px-6">
               <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground font-medium">
-                Momentum
+                {t("stats.growth_rate")}
               </p>
 
               <div
@@ -204,16 +210,14 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                 {growthRate.toFixed(2)}%
               </div>
             </div>
-
             <div className="hidden sm:block w-px bg-border/40 self-stretch" />
           </>
         )}
 
         <div className="sm:px-6">
           <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground font-medium mb-2">
-            Average
+            {t("stats.average")}
           </p>
-
           <p className="font-mono text-lg font-medium leading-none">
             {priceFormatter(avgSpend)}
           </p>
@@ -223,11 +227,13 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
 
         <div className="sm:pl-6">
           <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground font-medium mb-2">
-            Window
+            {t("stats.window")}
           </p>
 
           <p className="font-mono text-lg font-medium leading-none">
-            {view === "monthly" ? "6 Months" : "3 Years"}
+            {view === "monthly"
+              ? t("stats.window_monthly")
+              : t("stats.window_yearly")}
           </p>
         </div>
       </div>
@@ -235,7 +241,8 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
       {data.length > 0 ? (
         <div className="h-[380px] w-full">
           <ChartContainer config={chartConfig} className="w-full h-full">
-            <BarChart accessibilityLayer 
+            <BarChart
+              accessibilityLayer
               data={transformeChartdData}
               margin={{
                 top: 20,
@@ -278,7 +285,7 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                   fill: "hsl(var(--muted))",
                   opacity: 0.45,
                 }}
-                content={<CustomTooltip tReusable={tReusable} />}
+                content={<CustomTooltip tReusable={tReusable} t={t} />}
               />
               <ChartLegend content={<ChartLegendContent />} />
               {activeCategories.map((category, index) => {
@@ -303,7 +310,9 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                           Number(value) > 0 &&
                           activeCategories
                             .slice(index + 1)
-                            .every((cat) => !transformeChartdData[dataIndex]?.[cat]);
+                            .every(
+                              (cat) => !transformeChartdData[dataIndex]?.[cat],
+                            );
 
                         if (!isVisualTop) return null;
                         return (
@@ -336,12 +345,11 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
 
             <div className="space-y-1">
               <h3 className="text-lg font-black tracking-tight">
-                No spending history yet
+                {t("empty.title")}
               </h3>
 
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Add your first subscription to start tracking recurring expenses
-                and billing activity.
+                {t("empty.description")}
               </p>
             </div>
           </div>

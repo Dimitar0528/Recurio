@@ -6,22 +6,22 @@ import { useLocale, useTranslations } from "next-intl";
 
 export const useColumns = (): ColumnDef<BillingEvent>[] => {
   const tReusable = useTranslations("Reusable");
+  const t = useTranslations("payments_page.payments_table_component");
   const locale = useLocale();
 
   return [
     {
       accessorKey: "chargedAt",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={"Charged On"} />
+        <DataTableColumnHeader
+          column={column}
+          title={t("table.columns.charged_on")}
+        />
       ),
       cell: ({ row }) => {
         const { chargedAt } = row.original;
         const chargedAtDate = dateFormatter(chargedAt, locale);
-        return (
-          <span className="text-xs font-mono">
-            {chargedAtDate}
-          </span>
-        );
+        return <span className="text-xs font-mono">{chargedAtDate}</span>;
       },
       meta: {
         className: "hidden md:table-cell",
@@ -30,7 +30,10 @@ export const useColumns = (): ColumnDef<BillingEvent>[] => {
     {
       accessorKey: "subscriptionName",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={"Subscription"} />
+        <DataTableColumnHeader
+          column={column}
+          title={t("table.columns.subscription")}
+        />
       ),
       cell: ({ row }) => {
         const { subscriptionName, subscriptionCategory, chargedAt, source } =
@@ -48,7 +51,7 @@ export const useColumns = (): ColumnDef<BillingEvent>[] => {
 
             <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground md:hidden">
               <span className="font-mono">{chargedAtDate}</span>
-              <span className="capitalize">({source})</span>
+              <span>({t(`table.source.${source}`)})</span>
             </div>
           </div>
         );
@@ -56,14 +59,10 @@ export const useColumns = (): ColumnDef<BillingEvent>[] => {
     },
     {
       accessorKey: "source",
-      header: "Type",
+      header: t("table.columns.type"),
       cell: ({ row }) => {
         const { source } = row.original;
-        return (
-          <span className="text-xs capitalize">
-            {source}
-          </span>
-        );
+        return <span className="text-xs">{t(`table.source.${source}`)}</span>;
       },
       meta: {
         className: "hidden md:table-cell",
@@ -72,7 +71,10 @@ export const useColumns = (): ColumnDef<BillingEvent>[] => {
     {
       accessorKey: "amount",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={"Amount"} />
+        <DataTableColumnHeader
+          column={column}
+          title={t("table.columns.amount")}
+        />
       ),
       cell: ({ row }) => {
         const { amount } = row.original;

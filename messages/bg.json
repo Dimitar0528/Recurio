@@ -7,6 +7,10 @@
             "title": "Начална страница - {brandName}",
             "description": "Recurio е приложение за управление на абонаменти, което ви помага да следите разходите си, да избегнете ненужни плащания и да имате пълен контрол над своя бюджет."
         },
+        "sign_in_page": {
+            "title": "Страница за вход",
+            "description": "Влезте в профила си, за да видите данните за абонаментите си."
+        },
         "dashboard_page": {
             "title": "Табло за управление",
             "description": "Централизирано табло за преглед на вашите абонаменти, месечни и годишни разходи, както и обобщени данни за по-добър финансов контрол."
@@ -71,6 +75,7 @@
             "cancel": "Отмени"
         },
         "navigation_component": {
+            "skip_link": "Премини към основното съдържание",
             "dashboard_link": "Табло",
             "insights_link": "Преглед",
             "payments_link": "Плащания",
@@ -84,6 +89,11 @@
             }
         },
         "data_table": {
+            "sorting": {
+                "asc": "Възходящо",
+                "desc": "Низходящо",
+                "hide": "Скрий"
+            },
             "no_results": "Няма налични резултати.",
             "rows_per_page": "Редове на страница",
             "pagination_info": "Страница {current} от {total}",
@@ -271,7 +281,7 @@
         "subscription_form_component": {
             "fields": {
                 "name": "Име",
-                "name_placeholder": "Netflix, Gym, и т.н.",
+                "name_placeholder": "Netflix, Фитнес, и т.н.",
                 "category": "Категория",
                 "price": "Цена (€)",
                 "price_placeholder": "9.99 €",
@@ -314,11 +324,6 @@
                     "actions": "Действия",
                     "subscription": "Абонамент",
                     "mobile": "Мобилен изглед"
-                },
-                "sorting": {
-                    "asc": "Възходящо",
-                    "desc": "Низходящо",
-                    "hide": "Скрий"
                 },
                 "badges": {
                     "auto": "Авто",
@@ -368,6 +373,72 @@
                     "paused": "Абонаментът е паузиран.",
                     "cancelled": "Абонаментът е отменен.",
                     "error": "Възникна проблем."
+                }
+            }
+        }
+    },
+    "payments_page": {
+        "hero": {
+            "title_part_1": "Транзакционна",
+            "title_part_2": "траектория.",
+            "description_before": "Преглед на вашия ",
+            "description_highlight": "14-дневен финансов прозорец",
+            "description_after": ". Наблюдавайте как краткосрочните задължения преминават прага към потвърдени плащания."
+        },
+        "stats": {
+            "upcoming": "Предстоящи",
+            "settled": "Уредени"
+        },
+        "timeline_component": {
+            "upcoming_title": "Предстоящи плащания",
+            "upcoming_empty": "Ясен хоризонт. Няма предстоящи такси.",
+            "recent_title": "Скорошни плащания",
+            "recent_empty": "Няма скорошни плащания.",
+            "today": "Днес",
+            "done_label": "Готово",
+            "days_short": "{days}д",
+            "renews_in": "{days, plural, one {Подновява се след # ден} other {Подновява се след # дни}}",
+            "paid_today": "Платено днес",
+            "paid_yesterday": "Платено вчера",
+            "paid_days_ago": "{days, plural, one {Платено преди # ден} other {Платено преди # дни}}"
+        },
+        "spending_chart_component": {
+            "title": "Анализ на разходите",
+            "view": {
+                "monthly": "Месечно",
+                "yearly": "Годишно"
+            },
+            "stats": {
+                "total_spend": "Общо разходи",
+                "growth_rate": "Темп на растеж",
+                "average": "Средно",
+                "window": "Период",
+                "window_monthly": "6 месеца",
+                "window_yearly": "3 години"
+            },
+            "tooltip": {
+                "total": "Общо"
+            },
+            "empty": {
+                "title": "Все още няма история на разходите",
+                "description": "Добавете първия си абонамент, за да започнете да проследявате повтарящи се разходи и платежна активност."
+            }
+        },
+        "payments_table_component": {
+            "title": "История на плащанията",
+            "limit_notice": "Показват се само 30-те най-скорошни плащания. За повече информация изтеглете финансовия <audit>одит</audit> от <dashboard>тук</dashboard>.",
+            "filter_placeholder": "Филтрирай плащания...",
+            "table": {
+                "columns": {
+                    "charged_on": "Дата на таксуване",
+                    "subscription": "Абонамент",
+                    "type": "Тип подновяване",
+                    "amount": "Сума"
+                },
+                "source": {
+                    "initial": "Първоначално",
+                    "auto": "Автоматично",
+                    "manual": "Ръчно"
                 }
             }
         }

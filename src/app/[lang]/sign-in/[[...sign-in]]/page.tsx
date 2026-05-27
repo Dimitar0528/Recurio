@@ -2,11 +2,23 @@ import { SignIn } from "@clerk/nextjs";
 import { ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
 import { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Sign in ",
-  description:
-    "Login in your profile to view your subscription data.",
-};
+import { Locale } from "next-intl";
+import { getTranslations } from "next-intl/server";
+
+export async function generateMetadata({
+  params,
+}: LayoutProps<"/[lang]">): Promise<Metadata> {
+  const locale = (await params).lang as Locale;
+  const t = await getTranslations({
+    locale,
+    namespace: "Metadata.sign_in_page",
+  });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default function Page() {
   return (

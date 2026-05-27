@@ -30,6 +30,7 @@ export async function generateMetadata({
 export default async function Page({ params }: PageProps<"/[lang]">) {
   const locale = (await params).lang as Locale;
   setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "payments_page" });
 
   const userSubscriptions = await getUserSubscriptions();
   const upcomingSubscriptions = getSubscriptionsWithinTimeInterval(
@@ -43,6 +44,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   const today = startOfDay(new Date());
 
   const billingEvents = await getUserBillingEvents();
+  const recentBillingEvents = billingEvents.slice(0, 30)
   const { monthlySpendData, yearlySpendData } =
     await getSpendingDataForDateRange(billingEvents);
 
@@ -60,19 +62,18 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           <div className="lg:col-span-4 space-y-7 relative z-10 mx-auto text-center">
             <div className="space-y-5">
               <h1 className="text-4xl md:text-5xl font-black tracking-[-0.06em] leading-[0.95]">
-                Transactional <br />
+                {t("hero.title_part_1")} <br />
                 <span className="text-muted-foreground italic font-medium">
-                  Trajectory.
+                  {t("hero.title_part_2")}
                 </span>
               </h1>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
-              A high-fidelity view of your{" "}
+              {t("hero.description_before")}
               <span className="text-foreground font-bold">
-                14-day fiscal window
+                {t("hero.description_highlight")}
               </span>
-              . Observe the transition as near-term liabilities move across the
-              threshold into verified settlements.
+              {t("hero.description_after")}
             </p>
             <div className="flex items-center gap-6 justify-center">
               <div>
@@ -80,7 +81,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                   {upcomingSubscriptions.length}
                 </p>
                 <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
-                  Upcoming
+                  {t("stats.upcoming")}
                 </p>
               </div>
               <div className="w-1 h-10 bg-border" />
@@ -89,7 +90,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                   {recentlyBilledSubscriptions.length}
                 </p>
                 <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
-                  Settled
+                  {t("stats.settled")}
                 </p>
               </div>
             </div>
@@ -101,19 +102,18 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
               <div className="absolute inset-0 bg-linear-to-b from-amber-500/70 via-primary/60 to-emerald-500/70" />
               <div className="absolute inset-0 blur-sm bg-linear-to-b from-amber-500/40 via-primary/30 to-emerald-500/40" />
             </div>
-
             <div className="space-y-10 relative">
               <TimelineSection
-                title={`Upcoming Payments`}
+                title={t("timeline_component.upcoming_title")}
                 items={upcomingSubscriptions}
                 theme_color="amber"
-                emptyMessage="Clear Horizon. No imminent charges."
+                emptyMessage={t("timeline_component.upcoming_empty")}
                 getLabel={(subscription) => {
                   const daysLeft = differenceInDays(
                     subscription.nextBilling,
                     today,
                   );
-                  return `${daysLeft}d`;
+                  return t("timeline_component.days_short", { days: daysLeft });
                 }}
                 getTitle={(subscription) => subscription.name}
                 getSubtitle={(subscription) => {
@@ -121,7 +121,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                     subscription.nextBilling,
                     today,
                   );
-                  return `Renews in ${daysLeft} days`;
+                  return t("timeline_component.renews_in", { days: daysLeft });
                 }}
                 getPrice={(subscription) => subscription.price}
               />
@@ -138,41 +138,46 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                     className="absolute -top-3 left-0 bg-background pr-5
                      text-[10px] font-black uppercase
                      tracking-[0.3em] text-primary">
-                    Today
+                    {t("timeline_component.today")}
                   </span>
                 </div>
               </div>
-
               <TimelineSection
-                title={`Recent Payments`}
+                title={t("timeline_component.recent_title")}
                 items={[...recentlyBilledSubscriptions].reverse()}
                 theme_color="emerald"
                 crossed
-                emptyMessage="No recent settlements."
-                getLabel={() => "Done"}
+                emptyMessage={t("timeline_component.recent_empty")}
+                getLabel={() => t("timeline_component.done_label")}
                 getTitle={(subscription) => subscription.name}
                 getSubtitle={(subscription) => {
                   const daysPassed = differenceInDays(
                     today,
                     subscription.lastRenewedAt,
                   );
-                  if (daysPassed === 0) return "Paid today";
-                  if (daysPassed === 1) return "Paid yesterday";
-                  return `Paid ${daysPassed} days ago`;
+                  if (daysPassed === 0)
+                    return t("timeline_component.paid_today");
+                  if (daysPassed === 1)
+                    return t("timeline_component.paid_yesterday");
+                  return t("timeline_component.paid_days_ago", {
+                    days: daysPassed,
+                  });
                 }}
                 getPrice={(subscription) => subscription.price}
               />
             </div>
           </div>
         </section>
+
         <section className="mt-8">
           <SpendingChart
             monthlyData={monthlySpendData}
             yearlyData={yearlySpendData}
           />
         </section>
+
         <section className="mt-8">
-          <PaymentsTable billingEvents={billingEvents} />
+          <PaymentsTable billingEvents={recentBillingEvents} />
         </section>
       </div>
     </main>

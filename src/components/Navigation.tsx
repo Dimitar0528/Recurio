@@ -34,6 +34,7 @@ import {
   Show
 } from "@clerk/nextjs";
 import { useLocale, useTranslations } from "next-intl";
+import { motion } from "framer-motion";
 
 export default function Navigation() {
   const { isSignedIn, isLoaded } = useUser();
@@ -88,9 +89,9 @@ export default function Navigation() {
         <a
           suppressHydrationWarning
           href="#main-content"
-          className="absolute left-2 -top-1 -translate-y-full focus:translate-y-4 z-[100] px-4 py-2 bg-foreground text-background text-xs font-mono font-black uppercase tracking-widest rounded-lg shadow-2xl shadow-primary/40 transition-transform duration-300 ease-out outline-none ring-2 ring-primary ring-offset-2
+          className="absolute left-2 -top-1 -translate-y-full focus:translate-y-4 z-100 px-4 py-2 bg-foreground text-background text-xs font-mono font-black uppercase tracking-widest rounded-lg shadow-2xl shadow-primary/40 transition-transform duration-300 ease-out outline-none ring-2 ring-primary ring-offset-2
         ">
-          Skip to main content
+          {tReusable("skip_link")}
         </a>
 
         <div className="flex items-center gap-2">
@@ -106,20 +107,27 @@ export default function Navigation() {
           </Link>
         </div>
 
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+        <div className="hidden md:flex items-center gap-2 text-sm font-medium">
           {navLinks.map(({ name, label, href, Icon }) => {
             const isActive = pathname.split("/")[2] === name.toLowerCase();
             return (
               <Link
                 key={name}
                 href={href as Route}
-                className={`flex items-center gap-2 hover:text-foreground transition-colors ${
-                  isActive
-                    ? "underline underline-offset-6 decoration-primary decoration-2 text-foreground"
-                    : ""
-                }`}>
-                <Icon size={16} className="text-primary" />
-                <span>{label}</span>
+                className="relative flex items-center gap-2 px-3 py-1 rounded-xl text-muted-foreground hover:text-foreground transition-all hover:underline hover:underline-offset-4 hover:decoration-primary decoration-2">
+                {isActive && (
+                  <motion.div
+                    layoutId="active-nav-pill"
+                    transition={{
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 30,
+                    }}
+                    className="absolute inset-0 bg-primary/10 dark:bg-primary/20 border border-primary/20 rounded-xl"
+                  />
+                )}
+                <Icon size={16} className="relative z-10 text-primary" />
+                <span className="relative z-10">{label}</span>
               </Link>
             );
           })}
