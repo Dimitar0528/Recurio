@@ -30,6 +30,7 @@ import { SpendingCard } from "@/components/dashboard/SpendingCard";
 import { getProcessDueRenewalsForUser } from "@/dal/subscriptions/mutations";
 import { startOfDay } from "date-fns";
 import { getSpendingDataForDateRange } from "@/lib/analytics/spending_for_date_ranges";
+import DownloadAuditButton from "@/components/dashboard/audit_pdf_gen/DownloadAuditButton";
 
 export async function generateMetadata({
   params,
@@ -273,15 +274,10 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                 {t("audit.description")}
               </p>
             </div>
-            <button
-              className="shrink-0 bg-background text-foreground px-8 py-3 font-mono font-bold text-xs uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3 shadow-xl shadow-black/30 cursor-pointer"
-              style={{
-                clipPath:
-                  "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%)",
-              }}>
-              <Download size={14} />
-              {t("audit.button")}
-            </button>
+            <DownloadAuditButton
+              subscriptions={userSubscriptions}
+              billingEvents={billingEvents}
+              label={t("audit.button")}/>
           </div>
         </section>
       </div>

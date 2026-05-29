@@ -64,14 +64,6 @@ export function getCurrentDateRange(
   return { start, end };
 }
 
-export function priceFormatter(price: number) {
-  const formattedPrice = new Intl.NumberFormat("bg-BG", {
-    style: "currency",
-    currency: "EUR",
-  }).format(price);
-  return formattedPrice;
-}
-
 // renewal rules
 const MANUAL_RENEWAL_GRACE_DAYS = 7;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -102,6 +94,14 @@ export function getManualRenewalGraceDate(nextBilling: Date) {
 
 export function isManualGraceExpired(graceUntil: Date, now = new Date()) {
   return startOfDay(new Date(graceUntil)) < startOfDay(new Date(now));
+}
+// others
+export function priceFormatter(price: number) {
+  const formattedPrice = new Intl.NumberFormat("bg-BG", {
+    style: "currency",
+    currency: "EUR",
+  }).format(price);
+  return formattedPrice;
 }
 
 export function getSubscriptionsWithinTimeInterval(
