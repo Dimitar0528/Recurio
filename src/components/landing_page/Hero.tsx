@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Check, Minus } from "lucide-react";
+import { ArrowDownCircle, ArrowRight, Check, Minus } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
-import { motion, AnimatePresence, easeOut } from "framer-motion";
+import { motion, easeOut } from "framer-motion";
 import { dateFormatter } from "@/lib/utils";
 
 type Subscription = {
@@ -60,7 +60,6 @@ function SubscriptionItem({
               : "oklch(var(--muted-foreground))",
           }}
           className="flex items-center justify-center w-5 h-5 rounded-md border transition-colors">
-          <AnimatePresence mode="wait">
             <motion.div
               key={active ? "check" : "minus"}
               initial={{ scale: 0.5, opacity: 0 }}
@@ -73,7 +72,6 @@ function SubscriptionItem({
                 <Minus className="text-muted-foreground w-3.5 h-3.5" />
               )}
             </motion.div>
-          </AnimatePresence>
         </motion.div>
         <div className={`w-2 h-2 rounded-full ${color}`} />
         <div className="text-left">
@@ -163,7 +161,7 @@ export default function HeroSection() {
   const yearlyImpact = monthlyBurn * 12;
 
   return (
-    <section className="pt-32 pb-20 px-6 overflow-hidden">
+    <section className="pt-32 pb-20 px-6 overflow-hidden relative ">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
         {/* Left Side: Text Content */}
         <motion.div
@@ -213,9 +211,9 @@ export default function HeroSection() {
           <div className="relative bg-card border border-border rounded-2xl shadow-2xl overflow-hidden transform transition-transform duration-500 group-hover:scale-[1.01]">
             <div className="border-b border-border p-4 flex items-center justify-between bg-muted/30">
               <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-border bg-red-500" />
-                <div className="w-3 h-3 rounded-full bg-border bg-yellow-500" />
-                <div className="w-3 h-3 rounded-full bg-border bg-emerald-500" />
+                <div className="w-3 h-3 rounded-full bg-red-500" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500" />
               </div>
             </div>
 
@@ -270,6 +268,29 @@ export default function HeroSection() {
           </div>
         </motion.div>
       </div>
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 1,
+          duration: 0.8,
+          ease: easeOut,
+        }}
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-muted-foreground">
+        <div className="w-6 h-10 rounded-full border border-border flex justify-center p-1">
+          <motion.div
+            animate={{
+              y: [0, 10, 0],
+            }}
+            transition={{
+              duration: 1.6,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}>
+              <ArrowDownCircle /> 
+          </motion.div>
+        </div>
+      </motion.div>
     </section>
   );
 }

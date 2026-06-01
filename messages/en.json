@@ -376,6 +376,14 @@
                     "error": "Something went wrong."
                 }
             }
+        },
+        "audit_pdf_component":{
+            "download":{
+                "success": "Audit PDF downloaded successfully!",
+                "error": "Failed to create financial audit. Please try again.",
+                "loading": "Creating PDF..."
+            }
+
         }
     },
     "payments_page": {

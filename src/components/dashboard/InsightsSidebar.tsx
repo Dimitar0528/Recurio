@@ -249,7 +249,7 @@ export default function InsightsSidebar({
                     type="submit"
                     form="net-salary-form"
                     size="sm"
-                    className="flex-1 h-7 text-xs font-bold cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="flex-1 h-7 text-xs font-bold cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all dark:bg-primary/50"
                     disabled={!form.state.canSubmit || form.state.isSubmitting}>
                     {form.state.isSubmitting
                       ? t("income_ratio.form.saving")

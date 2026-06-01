@@ -20,7 +20,7 @@ export const useColumns = (): ColumnDef<BillingEvent>[] => {
       ),
       cell: ({ row }) => {
         const { chargedAt } = row.original;
-        const chargedAtDate = dateFormatter(chargedAt, locale);
+        const chargedAtDate = dateFormatter(chargedAt, locale, "2-digit");
         return <span className="text-xs font-mono">{chargedAtDate}</span>;
       },
       meta: {

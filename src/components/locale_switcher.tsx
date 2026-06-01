@@ -50,7 +50,7 @@ export default function LocaleSwitcher() {
         align="end"
         className="min-w-[110px] p-1.5 bg-background/95 backdrop-blur-xl border-border rounded-xl shadow-2xl">
         <div className="py-1.5 mb-1">
-          <p className="text-[8px] font-black uppercase tracking-[0.1em] text-muted-foreground/60 text-center">
+          <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 text-center">
             {currentLocale === "bg" ? "Избери език" : "Select Language"}
           </p>
         </div>

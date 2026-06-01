@@ -78,8 +78,9 @@ export default function PaymentsTable({
         tReusable(`categories.${subscriptionCategory}`)
           ?.toLowerCase()
           .includes(search) ?? false;
-      const sourceMatch = source?.toLowerCase().includes(search) ?? false;
-      const formattedDate = chargedAt ? dateFormatter(chargedAt, locale) : "";
+      const sourceMatch =
+        t(`table.source.${source}`)?.toLowerCase().includes(search) ?? false;
+      const formattedDate = chargedAt ? dateFormatter(chargedAt, locale, "2-digit") : "";
       const dateMatch = formattedDate.toLowerCase().includes(search);
 
       return nameMatch || categoryMatch || sourceMatch || dateMatch;

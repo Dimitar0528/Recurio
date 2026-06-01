@@ -7,7 +7,7 @@ import {
 import type { useTranslations } from "next-intl";
 import { startOfDay } from "date-fns";
 
-export type TFunction = ReturnType<typeof useTranslations<"Validation">>;
+export type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
 
 export const subscriptionErrorCodes = {
   NAME_TOO_SHORT: "NAME_TOO_SHORT",

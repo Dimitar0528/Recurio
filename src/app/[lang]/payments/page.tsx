@@ -46,7 +46,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   const billingEvents = await getUserBillingEvents();
   const recentBillingEvents = billingEvents.slice(0, 30)
   const { monthlySpendData, yearlySpendData } =
-    await getSpendingDataForDateRange(billingEvents);
+    await getSpendingDataForDateRange(billingEvents, locale);
 
   return (
     <main

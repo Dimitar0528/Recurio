@@ -6,9 +6,13 @@ import {
   eachYearOfInterval,
   subYears,
   format,
+  startOfMonth,
+  startOfYear,
 } from "date-fns";
 import { BillingEvent } from "../validations/schemas";
 import { Category } from "../validations/enums";
+import { bg, enUS } from "date-fns/locale";
+import { Locale } from "next-intl";
 
 interface SpendingCategory {
   name: Category;
@@ -24,14 +28,15 @@ export interface SpendingDataForDateRange {
 function generateSpendingDataForDateRange(
   billingEvents: BillingEvent[],
   date_range_period: "month" | "year",
+  locale?: Locale
 ): SpendingDataForDateRange[] {
   if (billingEvents.length === 0) return [];
   const now = new Date();
   const firstBillingDate = billingEvents.at(-1)?.chargedAt ?? now;
   const isMonthly = date_range_period === "month";
   const activePeriods = isMonthly
-    ? differenceInMonths(now, firstBillingDate)
-    : differenceInYears(now, firstBillingDate);
+    ? differenceInMonths(now, startOfMonth(firstBillingDate))
+    : differenceInYears(now, startOfYear(firstBillingDate));
   const maxViewWindow = isMonthly ? 6 : 3;
   const visiblePeriods =
     activePeriods < maxViewWindow ? activePeriods : maxViewWindow - 1;
@@ -59,14 +64,14 @@ function generateSpendingDataForDateRange(
     const key = isMonthly
       ? format(intervalDate, "yyyy-MM")
       : format(intervalDate, "yyyy");
-
     buckets.set(key, {
-      label: format(intervalDate, isMonthly ? "MMM" : "yyyy"),
+      label: format(intervalDate, isMonthly ? "MMM" : "yyyy", {
+        locale: locale ? (locale === "bg" ? bg : enUS) : undefined,
+      }),
       spend: 0,
       categories: new Map(),
     });
   });
-
   // Single pass through billing events
   billingEvents.forEach((billingEvent) => {
     const chargedAt = billingEvent.chargedAt;
@@ -98,14 +103,17 @@ function generateSpendingDataForDateRange(
 
 export async function getSpendingDataForDateRange(
   billingEvents: BillingEvent[],
+  locale?: Locale
 ) {
   const monthlySpendData = generateSpendingDataForDateRange(
     billingEvents,
     "month",
+    locale
   );
   const yearlySpendData = generateSpendingDataForDateRange(
     billingEvents,
     "year",
+    locale
   );
   return {
     monthlySpendData,

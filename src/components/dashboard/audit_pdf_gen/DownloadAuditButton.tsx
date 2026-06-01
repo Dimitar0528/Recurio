@@ -5,6 +5,7 @@ import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { Subscription, BillingEvent } from "@/lib/validations/schemas";
 import { Button } from "@base-ui/react";
+import { useTranslations } from "use-intl";
 
 type DownloadAuditButtonProps = {
   subscriptions: Subscription[];
@@ -18,7 +19,7 @@ export default function DownloadAuditButton({
   label,
 }: DownloadAuditButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-
+  const t = useTranslations("dashboard_page.audit_pdf_component.download");
   const handleDownload = async () => {
     try {
       setIsGenerating(true);
@@ -45,10 +46,10 @@ export default function DownloadAuditButton({
       
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast.success("Audit PDF downloaded successfully.");
+      toast.success(t("success"));
     } catch (error) {
-      console.error("Failed to generate PDF audit:", error);
-      toast.error("Failed to compile financial audit. Please try again.");
+      console.error(t("error"), error);
+      toast.error(t("error"));
     } finally {
       setIsGenerating(false);
     }
@@ -64,7 +65,7 @@ export default function DownloadAuditButton({
           "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%)",
       }}>
       <Download size={14} className={isGenerating ? "animate-pulse" : ""} />
-      {isGenerating ? "Compiling PDF..." : label}
+      {isGenerating ? t("loading") : label}
     </Button>
   );
 }

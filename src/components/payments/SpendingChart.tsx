@@ -28,6 +28,7 @@ import {
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { Category, CATEGORY_VALUES } from "@/lib/validations/enums";
 import { useTranslations } from "next-intl";
+import { Button } from "@base-ui/react";
 
 type SpendChartProps = {
   monthlyData: SpendingDataForDateRange[];
@@ -130,17 +131,26 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
     transformeChartdData.some((item) => Number(item[category] ?? 0) > 0),
   );
 
-  const chartConfig = {
-    ...Object.fromEntries(
-      activeCategories.map((category, index) => [
-        category,
-        {
-          label: tReusable(`categories.${category}`),
-          color: categoryColors[index % categoryColors.length].hex,
-        },
-      ]),
-    ),
-  } satisfies ChartConfig;
+   const chartConfig = {
+     ...Object.fromEntries(
+       activeCategories.map((category) => {
+         // Sync color mapping globally by checking the category index within CATEGORY_VALUES
+         const globalIndex = CATEGORY_VALUES.indexOf(category);
+         const resolvedColor =
+           categoryColors[
+             globalIndex !== -1 ? globalIndex % categoryColors.length : 0
+           ];
+         return [
+           category,
+           {
+             label: tReusable(`categories.${category}`),
+             color: resolvedColor.hex,
+           },
+         ];
+       }),
+     ),
+   } satisfies ChartConfig;
+
   return (
     <div className="w-full space-y-8 relative z-10">
       <div className="flex items-center gap-4 justify-center sm:justify-between pb-3 border-b border-border/40 flex-wrap mx-auto">
@@ -152,7 +162,7 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
 
         <div className="flex items-center justify-center p-1 bg-muted/50 rounded-lg border border-border/50">
           {(["monthly", "yearly"] as const).map((item) => (
-            <button
+            <Button
               key={item}
               onClick={() => setView(item)}
               className={cn(
@@ -162,7 +172,7 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                   : "text-muted-foreground hover:text-foreground hover:bg-primary/20",
               )}>
               {t(`view.${item}`)}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -267,6 +277,12 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
                   letterSpacing: "0.15em",
                   fill: "currentColor",
                 }}
+                tickFormatter={(value) =>
+                  typeof value === "string"
+                    ? value.charAt(0).toUpperCase() +
+                      value.slice(1).toLowerCase()
+                    : value
+                }
               />
               <YAxis
                 tickLine
@@ -289,12 +305,17 @@ export function SpendingChart({ monthlyData, yearlyData }: SpendChartProps) {
               />
               <ChartLegend content={<ChartLegendContent />} />
               {activeCategories.map((category, index) => {
+                const globalIndex = CATEGORY_VALUES.indexOf(category);
+                const resolvedColor =
+                  categoryColors[
+                    globalIndex !== -1 ? globalIndex % categoryColors.length : 0
+                  ];
                 return (
                   <Bar
                     key={category}
                     dataKey={category}
                     stackId="spend"
-                    fill={categoryColors[index % categoryColors.length].hex}
+                    fill={resolvedColor.hex}
                     maxBarSize={100}
                     animationDuration={600}>
                     <LabelList

@@ -44,9 +44,8 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { useDialogClose } from "@/context/subscription-dialog-context";
 import { RateLimitError } from "@/lib/security/rate_limits";
-
+import { ValidationTFunction } from "@/lib/validations/schemas";
 // localizing zod errors
-type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
 
 function localizeFieldErrors(errors: unknown[], t: ValidationTFunction) {
   const messages = {
@@ -300,7 +299,7 @@ export default function SubscriptionForm({
                     name={field.name}
                     value={field.state.value}
                     onValueChange={(value) => {
-                      if (!value) return;
+                      if (!value || value === field.state.value) return;
                       field.handleChange(value);
                       const options =
                         value === "Annual"

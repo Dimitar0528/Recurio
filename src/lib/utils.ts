@@ -21,12 +21,12 @@ export function cn(...inputs: ClassValue[]) {
 export function dateFormatter(
   date: Date | number,
   locale: Locale,
-  yearFormat?: "numeric",
+  yearFormat?: "numeric" | "2-digit" | undefined
 ) {
   const formattedDate = new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
-    year: yearFormat ? yearFormat : undefined,
+    year: yearFormat && yearFormat
   }).format(date);
   return formattedDate;
 }

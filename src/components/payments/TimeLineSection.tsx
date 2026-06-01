@@ -40,7 +40,7 @@ export function TimelineSection({
       hoverGlow: "group-hover:shadow-[0_0_16px_var(--color-amber-500)]",
       gradient:
         "bg-linear-to-r from-amber-500/[0.1] to-transparent",
-      amountHover: "group-hover:text-amber-300",
+      amountHover: "group-hover:text-amber-500",
       line: "bg-linear-to-r from-amber-500/40 to-transparent",
     },
 
@@ -52,7 +52,7 @@ export function TimelineSection({
       hoverGlow: "group-hover:shadow-[0_0_16px_var(--color-emerald-500)]",
       gradient:
         "bg-linear-to-r from-emerald-500/[0.1]  to-transparent",
-      amountHover: "group-hover:text-emerald-300",
+      amountHover: "group-hover:text-emerald-500",
       line: "bg-linear-to-r from-emerald-500/40 to-transparent",
     },
   };
@@ -61,7 +61,7 @@ export function TimelineSection({
 
   return (
     <div className="space-y-6">
-      <div className="pl-16 relative">
+      <div className="pl-5 sm:pl-16 relative">
         <div
           className={cn(
             "absolute left-[18px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full",
@@ -84,8 +84,8 @@ export function TimelineSection({
         </div>
       </div>
       {items.length === 0 ? (
-        <div className="group relative pl-16 flex items-center h-12 opacity-70">
-          <div className="absolute left-[19px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border border-muted-foreground" />
+        <div className="group relative pl-16 flex items-center h-12 opacity-90">
+          <div className="absolute left-[19.5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border border-muted-foreground" />
           <div className="text-xs font-mono text-muted-foreground uppercase tracking-widest italic">
             {emptyMessage}
           </div>
@@ -105,7 +105,7 @@ export function TimelineSection({
             {/* Dot */}
             <div
               className={cn(
-                "absolute left-[18px] top-1/2 -translate-y-1/2",
+                "absolute left-[18.5px] top-1/2 -translate-y-1/2",
                 "w-3 h-3 rounded-full border-2 border-background",
                 "transition-all duration-300",
                 "shadow-[0_0_0px_transparent]",
