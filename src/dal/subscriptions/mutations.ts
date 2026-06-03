@@ -23,6 +23,7 @@ import {
 } from "@/lib/utils";
 import { startOfDay } from "date-fns";
 import { enforceRateLimit, rateLimiters } from "@/lib/security/rate_limits";
+import { billingEntryModeEnum } from "@/lib/validations/enums";
 
 type RenewalDecisionStatus = "Paused" | "Cancelled";
 
@@ -50,7 +51,7 @@ async function getOwnedSubscriptionOrThrow(id: string, userId: string) {
   return subscription;
 }
 
-async function invalidateSubscriptionDashboardCache(userId: string) {
+async function invalidateUserSubscriptionCacheData(userId: string) {
   revalidatePath("/dashboard");
   updateTag(`subscriptions-${userId}`);
   updateTag(`billing-events-${userId}`);
@@ -78,23 +79,31 @@ export async function insertUserSubscription(
           nextBilling: parsedSubscription.nextBilling,
           category: parsedSubscription.category,
           status: parsedSubscription.status,
+          billingEntryMode: parsedSubscription.billingEntryMode,
           statusChangedAt: now,
           lastRenewedAt: now,
           userId: userId,
         })
         .returning({
           id: subscriptionsTable.id,
+          billingEntryMode: subscriptionsTable.billingEntryMode
         });
 
-      await tx.insert(subscriptionBillingEventsTable).values({
-        subscriptionId: createdSubscription.id,
-        userId,
-        amount: parsedSubscription.price.toFixed(2),
-        chargedAt: now,
-        source: "initial",
-      });
+      const shouldCreateInitialBillingEvent =
+          createdSubscription.billingEntryMode ===
+          billingEntryModeEnum.options[0];
+      if (shouldCreateInitialBillingEvent) {
+        await tx.insert(subscriptionBillingEventsTable).values({
+          subscriptionId: createdSubscription.id,
+          userId,
+          amount: parsedSubscription.price.toFixed(2),
+          chargedAt: now,
+          source: "initial",
+        });
+      }
     });
-    await invalidateSubscriptionDashboardCache(userId);
+
+    await invalidateUserSubscriptionCacheData(userId);
   } catch (err) {
     if (
       err instanceof DrizzleQueryError &&
@@ -140,7 +149,7 @@ export async function updateUserSubscription(
       and(eq(subscriptionsTable.userId, userId), eq(subscriptionsTable.id, id)),
     );
 
-  await invalidateSubscriptionDashboardCache(userId);
+  await invalidateUserSubscriptionCacheData(userId);
 }
 
 export async function deleteUserSubscription(id: string) {
@@ -163,7 +172,7 @@ export async function deleteUserSubscription(id: string) {
   if (result.length === 0) {
     throw new Error("Subscription not found or already deleted");
   }
-  await invalidateSubscriptionDashboardCache(userId);
+  await invalidateUserSubscriptionCacheData(userId);
 }
 
 export async function undoDeleteUserSubscription(id: string) {
@@ -186,7 +195,7 @@ export async function undoDeleteUserSubscription(id: string) {
   if (result.length === 0) {
     throw new Error("Not found or not deleted");
   }
-  await invalidateSubscriptionDashboardCache(userId);
+  await invalidateUserSubscriptionCacheData(userId);
 }
 
 export async function getProcessDueRenewalsForUser() {
@@ -378,7 +387,7 @@ export async function confirmManualRenewalForUser(id: string) {
     }
   });
 
-  await invalidateSubscriptionDashboardCache(userId);
+  await invalidateUserSubscriptionCacheData(userId);
 }
 
 export async function declineManualRenewalForUser(
@@ -404,5 +413,5 @@ export async function declineManualRenewalForUser(
   if (result.length === 0) {
     throw new Error("Update failed");
   }
-  await invalidateSubscriptionDashboardCache(userId);
+  await invalidateUserSubscriptionCacheData(userId);
 }

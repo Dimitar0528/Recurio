@@ -35,7 +35,7 @@ export default function SubscriptionDialog({
     <DialogCloseContext.Provider value={() => setOpen(false)}>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger render={trigger} />
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-[475px]">
           <DialogHeader>
             <DialogTitle className="font-bold text-lg">{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>

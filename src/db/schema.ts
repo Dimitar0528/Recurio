@@ -14,12 +14,17 @@ import {
   CATEGORY_VALUES,
   BILLING_CYCLE_VALUES,
   STATUS_VALUES,
+  BILLING_ENTRY_MODE_VALUES,
 } from "@/lib/validations/enums";
 import { sql } from "drizzle-orm";
 
 export const dbCategoryEnum = pgEnum("category", CATEGORY_VALUES);
 export const dbBillingCycleEnum = pgEnum("billing_cycle", BILLING_CYCLE_VALUES);
 export const dbStatusEnum = pgEnum("status", STATUS_VALUES);
+export const dbBillingEntryModeEnum = pgEnum(
+  "billing_entry_mode",
+  BILLING_ENTRY_MODE_VALUES,
+);
 
 const timestamps = {
   updatedAt: timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
@@ -38,6 +43,7 @@ export const subscriptionsTable = pgTable(
     nextBilling: timestamp({ withTimezone: true }).notNull(),
     autoRenew: boolean().notNull().default(true),
     status: dbStatusEnum().notNull(),
+    billingEntryMode: dbBillingEntryModeEnum().notNull(),
     statusChangedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     lastRenewedAt: timestamp({ withTimezone: true }).notNull(),
     manualRenewalGraceUntil: timestamp({ withTimezone: true }),

@@ -221,7 +221,7 @@
         },
         "upcoming_alert": {
             "title": "Upcoming charges detected",
-            "description": "<bold>{names}</bold> will charge <bold>{amount}</bold> in the next 7 days.",
+            "description": "<bold>{names}</bold> will charge you in the next 7 days.",
             "cta": "Review Schedule",
             "names_format": {
                 "one": "{name}",
@@ -288,9 +288,18 @@
                 "billing_cycle": "Billing Cycle",
                 "next_billing": "Next Billing",
                 "date_placeholder": "Pick a date",
-                "auto_renew": "Auto Renew",
-                "auto_renew_description": "{value, select, true {Disable auto renewing.} false {Enable auto renewing.} other {Неизвестно}}",
-                "status": "Status"
+                "auto_renew": {
+                    "name": "Auto Renew",
+                    "description": "{value, select, true {Disable auto renewing.} false {Enable auto renewing.} other {Unknown}}"
+                },
+                "status": "Status",
+                "billingEntryMode": {
+                    "name": "Start tracking from",
+                    "options" :{
+                        "today": "Today",
+                        "next_cycle": "Next Cycle"
+                    }
+                }
             },
             "messages": {
                 "create": {

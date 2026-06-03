@@ -3,6 +3,7 @@ import {
   categoryEnum,
   billingCycleEnum,
   statusEnum,
+  billingEntryModeEnum,
 } from "@/lib/validations/enums";
 import type { useTranslations } from "next-intl";
 import { startOfDay } from "date-fns";
@@ -41,6 +42,7 @@ export const subscriptionBaseSchema = z.object({
   nextBilling: z.date(),
   autoRenew: z.boolean(),
   status: statusEnum,
+  billingEntryMode: billingEntryModeEnum,
 });
 
 export const subscriptionFormSchema = subscriptionBaseSchema.extend({

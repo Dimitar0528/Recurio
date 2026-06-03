@@ -334,7 +334,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                 action: locale === "bg" ? "Редактирай" : "Edit",
               })}
               cancelLabel={tReusable("dialog.cancel")}>
-              <SubscriptionForm initialValues={subscription} />
+              <SubscriptionForm initialValues={subscription} shouldHideTrackingField/>
             </SubscriptionDialog>
 
             <Dialog>

@@ -24,6 +24,7 @@ import {
 } from "@/lib/validations/schemas";
 import {
   billingCycleEnum,
+  billingEntryModeEnum,
   CATEGORY_VALUES,
   statusEnum,
   type Category,
@@ -79,10 +80,12 @@ function localizeFieldErrors(errors: unknown[], t: ValidationTFunction) {
 
 type SubscriptionFormProps = {
   initialValues?: Subscription;
+  shouldHideTrackingField?: boolean
 };
 
 export default function SubscriptionForm({
   initialValues,
+  shouldHideTrackingField,
 }: SubscriptionFormProps) {
   const closeDialog = useDialogClose();
 
@@ -110,6 +113,7 @@ export default function SubscriptionForm({
         .split("T")[0],
       autoRenew: true,
       status: statusEnum.options[0],
+      billingEntryMode: billingEntryModeEnum.options[0],
     },
     validators: {
       onSubmit: subscriptionFormSchema,
@@ -407,10 +411,10 @@ export default function SubscriptionForm({
                 <FieldContent className="flex flex-row items-center gap-4">
                   <div className="flex flex-col">
                     <FieldLabel htmlFor="switch-auto-renew">
-                      {t("fields.auto_renew")}
+                      {t("fields.auto_renew.name")}
                     </FieldLabel>
                     <FieldDescription>
-                      {t("fields.auto_renew_description", {
+                      {t("fields.auto_renew.description", {
                         value: String(field.state.value),
                       })}
                     </FieldDescription>
@@ -434,47 +438,103 @@ export default function SubscriptionForm({
             )}
           </form.Field>
         </div>
-        <form.Field name="status">
-          {(field) => (
-            <Field orientation="responsive">
-              <FieldLabel className="mb-1.5" htmlFor="select-status">
-                {t("fields.status")}
-              </FieldLabel>
-              <FieldContent>
-                <Select
-                  name={field.name}
-                  value={field.state.value}
-                  onValueChange={(value) => {
-                    if (value) field.handleChange(value);
-                  }}>
-                  <SelectTrigger
-                    id="select-status"
-                    className="w-full"
-                    aria-describedby="statusError">
-                    <SelectValue>
-                      {tReusable(`status.${field.state.value}`)}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusEnum.options.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {tReusable(`status.${status}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FieldError
-                  id="statusError"
-                  errors={localizeFieldErrors(
-                    field.state.meta.errors,
-                    tValidation,
-                  )}
-                  aria-live="polite"
-                />
-              </FieldContent>
-            </Field>
+        <div
+          className={` ${!shouldHideTrackingField ? "grid grid-cols-1 sm:grid-cols-2 gap-6 items-start" : ""}`}>
+          <form.Field name="status">
+            {(field) => (
+              <Field>
+                <FieldLabel className="mb-2" htmlFor="select-status">
+                  {t("fields.status")}
+                </FieldLabel>
+                <FieldContent>
+                  <Select
+                    name={field.name}
+                    value={field.state.value}
+                    onValueChange={(value) => {
+                      if (value) field.handleChange(value);
+                    }}>
+                    <SelectTrigger
+                      id="select-status"
+                      className="w-full h-11 rounded-lg"
+                      aria-describedby="statusError">
+                      <SelectValue>
+                        {tReusable(`status.${field.state.value}`)}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="rounded-lg">
+                      {statusEnum.options.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {tReusable(`status.${status}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldError
+                    id="statusError"
+                    errors={localizeFieldErrors(
+                      field.state.meta.errors,
+                      tValidation,
+                    )}
+                    aria-live="polite"
+                  />
+                </FieldContent>
+              </Field>
+            )}
+          </form.Field>
+          {!shouldHideTrackingField && (
+            <form.Field name="billingEntryMode">
+              {(field) => {
+                const trackingOptions = [
+                  {
+                    value: billingEntryModeEnum.options[0],
+                    label: t("fields.billingEntryMode.options.today"),
+                  },
+                  {
+                    value: billingEntryModeEnum.options[1],
+                    label: t("fields.billingEntryMode.options.next_cycle"),
+                  },
+                ] as const;
+                return (
+                  <Field>
+                    <FieldContent>
+                      <FieldLabel className="mb-2">
+                        {t("fields.billingEntryMode.name")}
+                      </FieldLabel>
+                      <div
+                        role="radiogroup"
+                        aria-label="Start tracking from"
+                        className="grid grid-cols-2 gap-2 p-1 rounded-lg border bg-background">
+                        {trackingOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            role="radio"
+                            aria-checked={field.state.value === option.value}
+                            onClick={() => field.handleChange(option.value)}
+                            className={`w-full sm:w-auto px-2 py-1 rounded-md text-sm transition text-left sm:text-center cursor-pointer ${
+                              field.state.value === option.value
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "hover:bg-muted"
+                            }`}>
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                      <FieldError
+                        id="billingEntryModeError"
+                        errors={localizeFieldErrors(
+                          field.state.meta.errors,
+                          tValidation,
+                        )}
+                        aria-live="polite"
+                      />
+                    </FieldContent>
+                  </Field>
+                );
+              }}
+            </form.Field>
           )}
-        </form.Field>
+        </div>
       </FieldGroup>
     </form>
   );

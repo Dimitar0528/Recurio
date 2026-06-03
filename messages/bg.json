@@ -221,7 +221,7 @@
         },
         "upcoming_alert": {
             "title": "Засечени предстоящи плащания",
-            "description": "<bold>{names}</bold> ще ви таксуват <bold>{amount}</bold> в следващите 7 дни.",
+            "description": "<bold>{names}</bold> ще ви таксуват в следващите 7 дни.",
             "cta": "Преглед на графика",
             "names_format": {
                 "one": "{name}",
@@ -288,9 +288,18 @@
                 "billing_cycle": "Платежен цикъл",
                 "next_billing": "Следващо плащане",
                 "date_placeholder": "Изберете дата",
-                "auto_renew": "Авто подновяване",
-                "auto_renew_description": "{value, select, true {Деактивирай} false {Активирай} other {Неизвестно}}",
-                "status": "Статус"
+                "auto_renew": {
+                    "name": "Авто подновяване",
+                    "description": "{value, select, true {Деактивирай} false {Активирай} other {Неизвестно}}"
+                },
+                "status": "Статус",
+                "billingEntryMode": {
+                    "name": "Започнете проследяването от",
+                    "options": {
+                        "today": "Днес",
+                        "next_cycle": "Следващия цикъл"
+                    }
+                }
             },
             "messages": {
                 "create": {
