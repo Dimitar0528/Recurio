@@ -377,13 +377,154 @@
                 }
             }
         },
-        "audit_pdf_component":{
-            "download":{
+        "audit_pdf_component": {
+            "download": {
                 "success": "Audit PDF downloaded successfully!",
                 "error": "Failed to create financial audit. Please try again.",
                 "loading": "Creating PDF..."
+            },
+            "cover": {
+                "subtitle": "System Scan Audit",
+                "title": "RECURIO FINANCIAL LEDGER AUDIT",
+                "systemCheck": "System Check: Verified & Confirmed",
+                "generationTimestamp": "Generation Timestamp: {timestamp}"
+            },
+            "sections": {
+                "executiveSummary": "I. Executive Summary",
+                "financialHealth": "II. Financial Health Indicators & Projections",
+                "categoryAnalysis": "III. Spending & Category Analysis",
+                "behavioralInsights": "IV. Behavioral Insights",
+                "topCostCenters": "V. Top Cost Centers & High-Cost Services",
+                "anomaliesRisks": "VI. Anomalies, Hidden Waste & Renewal Risks",
+                "lifecycleDiagnostics": "VII. Lifecycle & Consistency Diagnostics",
+                "appendixRegistry": "Appendix A: Your Subscriptions Registry",
+                "appendixHistory": "Appendix B: Historical Ledger History"
+            },
+            "financialHealth": {
+                "currentBurnRate": "Current Burn Rate",
+                "projectedYearlyCost": "PROJECTED YEARLY COST",
+                "lifetimeAggregatedSpend": "Lifetime Aggregated Spend",
+                "perMonth": "/ mo",
+                "perYear": "/ yr"
+            },
+            "categoryDescriptions": {
+                "Entertainment": "Streaming platforms (Netflix, Spotify), gaming, and recreational content subscriptions.",
+                "Software": "Desktop licenses, digital design tools, general productivity suites, and software keys.",
+                "Utilities": "Core operational overhead such as internet access, mobile plans, and recurring utility bills.",
+                "Productivity": "Task managers, note-taking apps, collaborative digital whiteboards, and organizational tools.",
+                "Cloud & Infrastructure": "Hosting platforms (AWS, Vercel), web databases, domain names, and developer API lines.",
+                "Finance": "Accounting tools, personal budgeting software, premium bank memberships, and taxation plans.",
+                "Health & Fitness": "Gym access, wellness trackers, running/cycling applications, and wellness subscriptions.",
+                "Education": "E-learning platforms, language training portals, academic resources, and educational courseware.",
+                "News & Media": "Newspaper portals, specialized newsletters, online publications, and trade magazines.",
+                "Other": "Miscellaneous recurring spend, hardware leases, and other hybrid digital subscriptions."
+            },
+            "categories": {
+                "diversificationIndex": "Category Diversification Index",
+                "primaryCostCenterPrefix": "The diagnostic metrics locate your primary cost center within the ",
+                "primaryCostCenterMiddle": " sector, responsible for ",
+                "primaryCostCenterSuffix": " of your active tool overhead."
+            },
+            "behavioral": {
+                "transactionAutonomyLabel": "Transaction Autonomy:",
+                "transactionAutonomy": "Out of {totalEvents} payment operations processed, {autoEventsCount} ({autoEventRatio}%) were initialized on fully autonomous API lines, while the remaining represent manual renewal adjustments."
+            },
+            "topCostCenters": {
+                "costliestAccounts": "Costliest Active Subscriptions:",
+                "upcomingRenewalTimeline": "Upcoming Renewal Timeline:",
+                "noActiveSubscriptions": "No active subscriptions found.",
+                "noUpcomingRenewals": "No upcoming renewals scheduled.",
+                "dueLine": "Due: {amount} ({billingCycle})"
+            },
+            "anomalies": {
+                "passiveWasteTitle": "Passive Waste & Leakage Indicators:",
+                "inactiveAccountDrift": "Inactive account drift: Ghost accounts quietly drawing capital.",
+                "uncappedUtilityChecks": "Uncapped utility checks: Automated warnings identifying high-cost unmapped software items.",
+                "pausedServiceLeakage": "Paused service leakage: Automated system scans to ensure paused subscriptions stop executing transactions.",
+                "secureWaste": "Secure: No post-cancel charges or uncategorized leak vectors detected.",
+                "renewalRiskTitle": "Active Renewal Risk Indicators:",
+                "lumpSumRenewals": "Lump-sum renewals: Visual highlights identifying upcoming large-value annual platform renewals.",
+                "gracePeriodExpirations": "Grace period expirations: System safeguards to prevent manual payment plans from unexpected shutdowns.",
+                "secureRenewal": "Secure: All monitored services mapped to active, automatic renewal pipelines."
+            },
+            "lifecycle": {
+                "legacyScans": "Legacy Scans:",
+                "planPricingConsistency": "Plan Pricing Consistency:"
+            },
+            "appendix": {
+                "registry": {
+                    "columns": {
+                        "name": "Name",
+                        "category": "Category",
+                        "billingCycle": "Billing Cycle",
+                        "amount": "Amount",
+                        "nextBilling": "Next Billing",
+                        "status": "Status"
+                    },
+                    "empty": "No subscription data recorded. Build your registry inside the dashboard to initialize tracking tables."
+                },
+                "history": {
+                    "columns": {
+                        "chargedAt": "Charged On",
+                        "subscription": "Subscription",
+                        "category": "Category",
+                        "renewalType": "Renewal Type",
+                        "amount": "Amount"
+                    },
+                    "empty": "No transaction history logged. Charges will populate as recurring billing processes.",
+                    "eventSource": {
+                        "initial": "Initial",
+                        "auto": "Auto",
+                        "manual": "Manual"
+                    }
+                }
+            },
+            "footer": {
+                "brand": "Recurio Financial Audit",
+                "page": "Page {pageNumber} of {totalPages}"
+            },
+            "analytics": {
+                "portfolioDiversity": {
+                    "highlyDiversified": "Your portfolio is highly diversified across {count} distinct categories, which minimizes localized dependency but increases vendor overhead.",
+                    "moderatelyBalanced": "Your spending footprint is moderately balanced across {count} focus categories, indicating a stable, highly specialized tech stack.",
+                    "highlyConcentrated": "Your expenses are highly concentrated in only {count} categories. This indicates targeted software utility but makes your cash flow vulnerable to pricing changes in these specific markets."
+                },
+                "executiveSummary": {
+                    "noSubs": "Our diagnostic scan shows that you currently have zero active subscriptions logged in your ledger. If you are using digital tools, registering them inside Recurio will unlock critical metrics like projected burn-rates, auto-renew buffers, and potential expense waste alerts.",
+                    "heavyLeakage": "Recurio's audit engines have flagged a heavy leakage profile in your portfolio. You currently maintain {activeCount} active subscriptions costing {monthlyBurn}/mo, but our scan identified {warningCount} critical warnings. These include potentially active charges on paused services, and pending lump-sum renewals. Optimizing these entries in Section VI is highly recommended to protect cash flow.",
+                    "highSpend": "Your digital software investment footprint is high but structurally sound. With an average item cost of {avgCost}, you maintain healthy baseline control. Recurio detected {warningCount} moderate operational risk factors. The ledger has high automated maintenance, meaning passive subscription creep remains your main financial threat vector.",
+                    "optimized": "Your active services profile is highly optimized, demonstrating strong fiscal discipline. You hold a tight stack of {activeCount} active subscriptions with a monthly burn rate of {monthlyBurn}. Only {warningCount} low-priority warning flags were raised, confirming that your recurring overhead is well-protected from leakage."
+                },
+                "financialHealth": {
+                    "noSubs": "When subscriptions are registered in Recurio, this section evaluates your monthly recurring drain and projects your yearly cost. This baseline calculation tracks the balance of flexible monthly agreements alongside discounted annual plans to help you allocate cash buffers.",
+                    "annualHeavy": "A prominent concentration of Annual billing cycles ({annualRatio}% of your subscriptions) points to deep long-term savings but exposes your capital to sudden, massive 'lump-sum' depletions. We recommend retaining a cash reserve equivalent to your top annual obligations.",
+                    "monthlyHeavy": "Your recurring ledger is dominated by Monthly cycles. This provides you with excellent agility and low cancelation overhead, but exposes you to 'death by a thousand cuts'. These small, creeping monthly hits are easy to lose track of over time.",
+                    "balanced": "You are maintaining a balanced hybrid strategy. By mixing flexible monthly agreements with discounted annual plans, you keep immediate cash flow liquid while capitalizing on long-term platform savings where appropriate."
+                },
+                "behavioral": {
+                    "noSubs": "This diagnostic panel evaluates platform automation behaviors when active subscriptions are recorded. Recurio measures your automation dependency—calculating set-and-forget billing loops against manual payment controls—to prevent passive payment drift.",
+                    "highAutomation": "Your automation dependency is exceptionally high ({autoRenewRatio}%). This set-and-forget approach minimizes cognitive load but drastically increases exposure to 'ghost billing'—where deprecated features or unused user accounts quietly drain resources for months.",
+                    "lowAutomation": "Your automation dependency is very low ({autoRenewRatio}%). Most of your plans require manual intervention. While this ensures perfect control over your payments, it heavily increases your administrative overhead and creates high disruption risk if a manual billing window is missed.",
+                    "balanced": "Your balanced auto-renew profile ({autoRenewRatio}% automatic) represents the optimal security sweet-spot. Core utilities remain continuously automated, while peripheral project accounts are kept on manual leashes, blocking surprise charges."
+                },
+                "lifecycle": {
+                    "noSubs": "Our tracking engine evaluates transactional pricing stability across your history once logged. Recurio monitors consistency over successive cycles to automatically flag unannounced vendor hikes or usage-based tier shifts.",
+                    "variablePricing": "We identified {count} service plans that exhibit price volatility (variable pricing models). These variable structures usually point to consumption-based fees. We recommend auditing these plans inside your payment methods to avoid unexpected cash-draw shocks.",
+                    "stablePricing": "Our metrics show a perfectly stable fixed-rate structure across your entire logged history. No variable charge deviations were found, making your recurring monthly spending highly predictable and easy to model."
+                },
+                "oldestSub": {
+                    "withSub": "Your oldest monitored legacy subscription is \"{name}\", which has been tracked on your ledger since {date}",
+                    "none": "No legacy subscription history is currently recorded."
+                },
+                "waste": {
+                    "postPause": "Active leakage: Recurio detected a post-pause transaction on \"{name}\".",
+                    "poorCategorization": "Poor categorization: \"{name}\" ({price}) has a high cost but lacks specialized taxonomy."
+                },
+                "risk": {
+                    "manualRenewal": "Abrupt interruption risk: \"{name}\" must be renewed manually before {date}",
+                    "lumpSum": "Liquidity threat: Upcoming lump-sum payment of {price} due for \"{name}\" on {date}"
+                }
             }
-
         }
     },
     "payments_page": {

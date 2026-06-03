@@ -1,15 +1,16 @@
 import { Subscription, BillingEvent } from "@/lib/validations/schemas";
-import { priceFormatter } from "@/lib/utils";
-import { formatDate } from "./audit-styles";
-
+import { dateFormatter, priceFormatter } from "@/lib/utils";
+import { Locale } from "next-intl";
+import type { AuditPdfT } from "./audit-pdf-i18n";
 export function generateAuditData(
   subscriptions: Subscription[],
   billingEvents: BillingEvent[],
+  locale: Locale,
+  t: AuditPdfT,
 ) {
   const activeSubs = subscriptions.filter((s) => s.status === "Active");
   const pausedSubs = subscriptions.filter((s) => s.status === "Paused");
   const hasNoSubs = subscriptions.length === 0;
-
   const monthlyBurn = activeSubs.reduce(
     (sum, s) => sum + (s.billingCycle === "Annual" ? s.price / 12 : s.price),
     0,
@@ -48,14 +49,16 @@ export function generateAuditData(
         new Date(e.chargedAt) > new Date(sub.statusChangedAt),
     );
     if (hasRecentCharge)
-      wasteList.push(
-        `Active leakage: Recurio detected a post-pause transaction on "${sub.name}".`,
-      );
+      wasteList.push(t("analytics.waste.postPause", { name: sub.name }));
   });
   activeSubs.forEach((sub) => {
     if (sub.category === "Other" && sub.price > 15) {
       wasteList.push(
-        `Poor categorization: "${sub.name}" (${priceFormatter(sub.price)}) has a high cost but lacks specialized taxonomy.`,
+        t("analytics.waste.poorCategorization", {
+          name: sub.name,
+
+          price: priceFormatter(sub.price),
+        }),
       );
     }
   });
@@ -63,11 +66,19 @@ export function generateAuditData(
   activeSubs.forEach((s) => {
     if (!s.autoRenew)
       riskList.push(
-        `Abrupt interruption risk: "${s.name}" must be renewed manually before ${formatDate(s.nextBilling)}.`,
+        t("analytics.risk.manualRenewal", {
+          name: s.name,
+
+          date: dateFormatter(s.nextBilling, locale, "numeric"),
+        }),
       );
     if (s.billingCycle === "Annual" && s.price > 100)
       riskList.push(
-        `Liquidity threat: Upcoming lump-sum payment of ${priceFormatter(s.price)} due for "${s.name}" on ${formatDate(s.nextBilling)}.`,
+        t("analytics.risk.lumpSum", {
+          name: s.name,
+          price: priceFormatter(s.price),
+          date: dateFormatter(s.nextBilling, locale, "numeric"),
+        }),
       );
   });
 
@@ -101,21 +112,38 @@ export function generateAuditData(
         : "highly concentrated";
   const categoryDiversityText =
     portfolioDiversity === "highly diversified"
-      ? `Your portfolio is highly diversified across ${uniqueCategoriesUsed} distinct categories, which minimizes localized dependency but increases vendor overhead.`
+      ? t("analytics.portfolioDiversity.highlyDiversified", {
+          count: uniqueCategoriesUsed,
+        })
       : portfolioDiversity === "moderately balanced"
-        ? `Your spending footprint is moderately balanced across ${uniqueCategoriesUsed} focus categories, indicating a stable, highly specialized tech stack.`
-        : `Your expenses are highly concentrated in only ${uniqueCategoriesUsed} categories. This indicates targeted software utility but makes your cash flow vulnerable to pricing changes in these specific markets.`;
+        ? t("analytics.portfolioDiversity.moderatelyBalanced", {
+            count: uniqueCategoriesUsed,
+          })
+        : t("analytics.portfolioDiversity.highlyConcentrated", {
+            count: uniqueCategoriesUsed,
+          });
 
   const totalWarnings = wasteList.length + riskList.length;
   let executiveSummaryText = "";
   if (hasNoSubs) {
-    executiveSummaryText = `Our diagnostic scan shows that you currently have zero active subscriptions logged in your ledger. If you are using digital tools, registering them inside Recurio will unlock critical metrics like projected burn-rates, auto-renew buffers, and potential expense waste alerts.`;
+    executiveSummaryText = t("analytics.executiveSummary.noSubs");
   } else if (totalWarnings > 3 && monthlyBurn > 150) {
-    executiveSummaryText = `Recurio’s audit engines have flagged a heavy leakage profile in your portfolio. You currently maintain ${activeSubs.length} active subscriptions costing ${priceFormatter(monthlyBurn)}/mo, but our scan identified ${totalWarnings} critical warnings. These include potentially active charges on paused services, unclassified high-cost rows, and pending lump-sum renewals. Optimizing these entries in Section VI is highly recommended to protect cash flow.`;
+    executiveSummaryText = t("analytics.executiveSummary.heavyLeakage", {
+      activeCount: activeSubs.length,
+      monthlyBurn: priceFormatter(monthlyBurn),
+      warningCount: totalWarnings,
+    });
   } else if (monthlyBurn > 100) {
-    executiveSummaryText = `Your digital software investment footprint is high but structurally sound. With an average item cost of ${priceFormatter(avgSubscriptionCost)}, you maintain healthy baseline control. Recurio detected ${totalWarnings} moderate operational risk factors. The ledger has high automated maintenance, meaning passive subscription creep remains your main financial threat vector.`;
+    executiveSummaryText = t("analytics.executiveSummary.highSpend", {
+      avgCost: priceFormatter(avgSubscriptionCost),
+      warningCount: totalWarnings,
+    });
   } else {
-    executiveSummaryText = `Your active services profile is highly optimized, demonstrating strong fiscal discipline. You hold a tight stack of ${activeSubs.length} active subscriptions with a monthly burn rate of ${priceFormatter(monthlyBurn)}. Only ${totalWarnings} low-priority warning flags were raised, confirming that your recurring overhead is well-protected from leakage.`;
+    executiveSummaryText = t("analytics.executiveSummary.optimized", {
+      activeCount: activeSubs.length,
+      monthlyBurn: priceFormatter(monthlyBurn),
+      warningCount: totalWarnings,
+    });
   }
 
   const annualBillingCount = activeSubs.filter(
@@ -125,13 +153,15 @@ export function generateAuditData(
     activeSubs.length > 0 ? annualBillingCount / activeSubs.length : 0;
   let financialHealthText = "";
   if (hasNoSubs) {
-    financialHealthText = `When subscriptions are registered in Recurio, this section evaluates your monthly recurring drain and projects your yearly cost. This baseline calculation tracks the balance of flexible monthly agreements alongside discounted annual plans to help you allocate cash buffers.`;
+    financialHealthText = t("analytics.financialHealth.noSubs");
   } else if (annualRatio > 0.6) {
-    financialHealthText = `A prominent concentration of Annual billing cycles (${(annualRatio * 100).toFixed(0)}% of your tools) points to deep long-term savings but exposes your capital to sudden, massive 'lump-sum' depletions. We recommend retaining a cash reserve equivalent to your top annual obligations.`;
+    financialHealthText = t("analytics.financialHealth.annualHeavy", {
+      annualRatio: (annualRatio * 100).toFixed(0),
+    });
   } else if (annualRatio < 0.25) {
-    financialHealthText = `Your recurring ledger is dominated by Monthly cycles. This provides you with excellent agility and low cancelation overhead, but exposes you to 'death by a thousand cuts'. These small, creeping monthly hits are easy to lose track of over time.`;
+    financialHealthText = t("analytics.financialHealth.monthlyHeavy");
   } else {
-    financialHealthText = `You are maintaining a balanced hybrid strategy. By mixing flexible monthly agreements with discounted annual plans, you keep immediate cash flow liquid while capitalizing on long-term platform savings where appropriate.`;
+    financialHealthText = t("analytics.financialHealth.balanced");
   }
 
   const activeAutoRenewCount = activeSubs.filter((s) => s.autoRenew).length;
@@ -141,13 +171,19 @@ export function generateAuditData(
       : 0;
   let behavioralAutomationText = "";
   if (hasNoSubs) {
-    behavioralAutomationText = `This diagnostic panel evaluates platform automation behaviors when active subscriptions are recorded. Recurio measures your automation dependency—calculating set-and-forget billing loops against manual payment controls—to prevent passive payment drift.`;
+    behavioralAutomationText = t("analytics.behavioral.noSubs");
   } else if (autoRenewRatio > 85) {
-    behavioralAutomationText = `Your automation dependency is exceptionally high (${autoRenewRatio.toFixed(0)}%). This set-and-forget approach minimizes cognitive load but drastically increases exposure to 'ghost billing'—where deprecated features or unused user accounts quietly drain resources for months.`;
+    behavioralAutomationText = t("analytics.behavioral.highAutomation", {
+      autoRenewRatio: autoRenewRatio.toFixed(0),
+    });
   } else if (autoRenewRatio < 35) {
-    behavioralAutomationText = `Your automation dependency is very low (${autoRenewRatio.toFixed(0)}%). Most of your plans require manual intervention. While this ensures perfect control over your payments, it heavily increases your administrative overhead and creates high disruption risk if a manual billing window is missed.`;
+    behavioralAutomationText = t("analytics.behavioral.lowAutomation", {
+      autoRenewRatio: autoRenewRatio.toFixed(0),
+    });
   } else {
-    behavioralAutomationText = `Your balanced auto-renew profile (${autoRenewRatio.toFixed(0)}% automatic) represents the optimal security sweet-spot. Core utilities remain continuously automated, while peripheral project accounts are kept on manual leashes, blocking surprise charges.`;
+    behavioralAutomationText = t("analytics.behavioral.balanced", {
+      autoRenewRatio: autoRenewRatio.toFixed(0),
+    });
   }
 
   const autoEventsCount = billingEvents.filter(
@@ -158,20 +194,24 @@ export function generateAuditData(
     totalEvents > 0 ? (autoEventsCount / totalEvents) * 100 : 0;
   let lifecycleDiagnosticsText = "";
   if (hasNoSubs) {
-    lifecycleDiagnosticsText = `Our tracking engine evaluates transactional pricing stability across your history once logged. Recurio monitors consistency over successive cycles to automatically flag unannounced vendor hikes or usage-based tier shifts.`;
+    lifecycleDiagnosticsText = t("analytics.lifecycle.noSubs");
   } else if (variablePricingCount > 0) {
-    lifecycleDiagnosticsText = `We identified ${variablePricingCount} service plans that exhibit price volatility (variable pricing models). These variable structures usually point to consumption-based fees or hidden tiered upgrades. We recommend auditing these plans inside your payment methods to avoid unexpected cash-draw shocks.`;
+    lifecycleDiagnosticsText = t("analytics.lifecycle.variablePricing", {
+      count: variablePricingCount,
+    });
   } else {
-    lifecycleDiagnosticsText = `Our metrics show a perfectly stable fixed-rate structure across your entire logged history. No variable charge deviations were found, making your recurring monthly spending highly predictable and easy to model.`;
+    lifecycleDiagnosticsText = t("analytics.lifecycle.stablePricing");
   }
 
   const oldestSub = [...subscriptions].sort(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   )[0];
   const oldestSubText = oldestSub
-    ? `Your oldest monitored legacy account is "${oldestSub.name}", which has been tracked on your ledger since ${formatDate(oldestSub.createdAt)}.`
-    : `No legacy subscription history is currently recorded.`;
-
+    ? t("analytics.oldestSub.withSub", {
+        name: oldestSub.name,
+        date: dateFormatter(oldestSub.createdAt, locale, "numeric"),
+      })
+    : t("analytics.oldestSub.none");
   const costliestActive = [...activeSubs]
     .sort((a, b) => b.price - a.price)
     .slice(0, 3);
@@ -180,8 +220,7 @@ export function generateAuditData(
       (a, b) =>
         new Date(a.nextBilling).getTime() - new Date(b.nextBilling).getTime(),
     )
-    .slice(0, 5);
-
+    .slice(0, 3);
   return {
     hasNoSubs,
     monthlyBurn,

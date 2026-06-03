@@ -17,39 +17,55 @@ import {
   AppendixHistory,
   Footer,
 } from "./AuditSections";
+import { Locale } from "next-intl";
+import type { AuditPdfLabels, AuditPdfT } from "./audit-pdf-i18n";
 
 type AuditPdfProps = {
   subscriptions: Subscription[];
   billingEvents: BillingEvent[];
+  locale: Locale;
+  labels: AuditPdfLabels;
+  t: AuditPdfT;
 };
 
 export function AuditPdfDocument({
   subscriptions,
   billingEvents,
+  locale,
+  labels,
+  t,
 }: AuditPdfProps) {
-  const data = generateAuditData(subscriptions, billingEvents);
-
+  const data = generateAuditData(subscriptions, billingEvents, locale, t);
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <CoverHeader />
-        <ExecutiveSummary text={data.executiveSummaryText} />
-        <FinancialHealth data={data} />
-        <CategoryAnalysis data={data} />
-        <BehavioralInsights data={data} />
-        <TopCostCenters data={data} />
-        <Footer />
+        <CoverHeader locale={locale} labels={labels} />
+        <ExecutiveSummary text={data.executiveSummaryText} labels={labels} />
+        <FinancialHealth data={data} labels={labels} />
+        <CategoryAnalysis data={data} labels={labels} />
+        <BehavioralInsights data={data} labels={labels} />
+        <TopCostCenters data={data} locale={locale} labels={labels} />
+        <Footer labels={labels} />
       </Page>
 
       <Page size="A4" style={styles.page}>
-        <AnomaliesRisks data={data} />
+        <AnomaliesRisks data={data} labels={labels} />
         <LifecycleDiagnostics
           text={data.lifecycleDiagnosticsText}
           oldest={data.oldestSubText}
+          labels={labels}
         />
-        <AppendixRegistry subscriptions={subscriptions} />
-        <AppendixHistory billingEvents={billingEvents} />
-        <Footer />
+        <AppendixRegistry
+          subscriptions={subscriptions}
+          locale={locale}
+          labels={labels}
+        />
+        <AppendixHistory
+          billingEvents={billingEvents}
+          locale={locale}
+          labels={labels}
+        />
+        <Footer labels={labels} />
       </Page>
     </Document>
   );

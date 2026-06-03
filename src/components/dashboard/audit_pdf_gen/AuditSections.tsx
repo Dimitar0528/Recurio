@@ -1,14 +1,12 @@
 import React from "react";
 import { Text, View } from "@react-pdf/renderer";
-import { priceFormatter } from "@/lib/utils";
+import { dateFormatter, priceFormatter } from "@/lib/utils";
 import { Subscription, BillingEvent } from "@/lib/validations/schemas";
-import {
-  styles,
-  categoryColorsMap,
-  formatDate,
-} from "./audit-styles";
+import { styles, categoryColorsMap } from "./audit-styles";
 import { CATEGORY_VALUES } from "@/lib/validations/enums";
 import { AuditAnalyticsData } from "./audit-analytics";
+import { Locale } from "next-intl";
+import type { AuditPdfLabels } from "./audit-pdf-i18n";
 
 type SectionCardProps = {
   title: string;
@@ -24,40 +22,68 @@ export function SectionCard({ title, children }: SectionCardProps) {
   );
 }
 
-export const CoverHeader = () => (
+export const CoverHeader = ({
+  locale,
+  labels,
+}: {
+  locale: Locale;
+  labels: AuditPdfLabels;
+}) => (
   <View style={styles.coverContainer}>
-    <Text style={styles.coverSubtitle}>System Scan Intelligence Audit</Text>
-    <Text style={styles.coverTitle}>RECURIO FINANCIAL LEDGER AUDIT</Text>
+    <Text style={styles.coverSubtitle}>{labels.cover.subtitle}</Text>
+    <Text style={styles.coverTitle}>{labels.cover.title}</Text>
     <View style={styles.coverMeta}>
-      <Text>System Check: Verified & Confirmed</Text>
-      <Text>Generation Timestamp: {formatDate(new Date())}</Text>
+      <Text>{labels.cover.systemCheck}</Text>
+      <Text>
+        {labels.cover.generationTimestamp(
+          dateFormatter(new Date(), locale, "numeric"),
+        )}
+      </Text>
     </View>
   </View>
 );
 
-export const ExecutiveSummary = ({ text }: { text: string }) => (
-  <SectionCard title="I. Executive Summary">
+export const ExecutiveSummary = ({
+  text,
+  labels,
+}: {
+  text: string;
+  labels: AuditPdfLabels;
+}) => (
+  <SectionCard title={labels.sections.executiveSummary}>
     <Text style={styles.bodyText}>{text}</Text>
   </SectionCard>
 );
 
-export const FinancialHealth = ({ data }: { data: AuditAnalyticsData }) => (
-  <SectionCard title="II. Financial Health Indicators & Projections">
+export const FinancialHealth = ({
+  data,
+  labels,
+}: {
+  data: AuditAnalyticsData;
+  labels: AuditPdfLabels;
+}) => (
+  <SectionCard title={labels.sections.financialHealth}>
     <View style={styles.kpiGrid}>
       <View style={styles.kpiCard}>
-        <Text style={styles.kpiLabel}>Current Burn Rate</Text>
+        <Text style={styles.kpiLabel}>
+          {labels.financialHealth.currentBurnRate}
+        </Text>
         <Text style={styles.kpiValue}>
-          {priceFormatter(data.monthlyBurn)} / mo
+          {priceFormatter(data.monthlyBurn)} {labels.financialHealth.perMonth}
         </Text>
       </View>
       <View style={styles.kpiCard}>
-        <Text style={styles.kpiLabel}>PROJECTED YEARLY COST</Text>
+        <Text style={styles.kpiLabel}>
+          {labels.financialHealth.projectedYearlyCost}
+        </Text>
         <Text style={styles.kpiValue}>
-          {priceFormatter(data.annualBurn)} / yr
+          {priceFormatter(data.annualBurn)} {labels.financialHealth.perYear}
         </Text>
       </View>
       <View style={styles.kpiCard}>
-        <Text style={styles.kpiLabel}>Lifetime Aggregated Spend</Text>
+        <Text style={styles.kpiLabel}>
+          {labels.financialHealth.lifetimeAggregatedSpend}
+        </Text>
         <Text style={styles.kpiValue}>
           {priceFormatter(data.lifetimeSpend)}
         </Text>
@@ -69,32 +95,14 @@ export const FinancialHealth = ({ data }: { data: AuditAnalyticsData }) => (
   </SectionCard>
 );
 
-export const CategoryAnalysis = ({ data }: { data: AuditAnalyticsData }) => {
-  const categoryDescriptionsMap: Record<string, string> = {
-    Entertainment:
-        "Streaming platforms (Netflix, Spotify), gaming, and recreational content subscriptions.",
-    Software:
-        "Desktop licenses, digital design tools, general productivity suites, and software keys.",
-    Utilities:
-        "Core operational overhead such as internet access, mobile plans, and recurring utility bills.",
-    Productivity:
-        "Task managers, note-taking apps, collaborative digital whiteboards, and organizational tools.",
-    "Cloud & Infrastructure":
-        "Hosting platforms (AWS, Vercel), web databases, domain names, and developer API lines.",
-    Finance:
-        "Accounting tools, personal budgeting software, premium bank memberships, and taxation plans.",
-    "Health & Fitness":
-        "Gym access, wellness trackers, running/cycling applications, and wellness subscriptions.",
-    Education:
-        "E-learning platforms, language training portals, academic resources, and educational courseware.",
-    "News & Media":
-        "Newspaper portals, specialized newsletters, online publications, and trade magazines.",
-    Other:
-        "Miscellaneous recurring spend, hardware leases, and other hybrid digital subscriptions.",
-    };
-
-return(
-  <SectionCard title="III. Spending & Category Analysis">
+export const CategoryAnalysis = ({
+  data,
+  labels,
+}: {
+  data: AuditAnalyticsData;
+  labels: AuditPdfLabels;
+}) => (
+  <SectionCard title={labels.sections.categoryAnalysis}>
     {data.hasNoSubs ? (
       <View style={styles.splitGrid}>
         <View style={styles.splitCol}>
@@ -118,19 +126,19 @@ return(
                     fontFamily: "NotoSans",
                     fontWeight: "bold",
                   }}>
-                  {category}
+                  {labels.formatCategory(category)}
                 </Text>
               </View>
               <Text
                 style={{ fontSize: 6.5, color: "#64748B", lineHeight: 1.2 }}>
-                {categoryDescriptionsMap[category]}
+                {labels.categoryDescriptions[category]}
               </Text>
             </View>
           ))}
         </View>
         <View style={styles.splitCol}>
           {CATEGORY_VALUES.map((category) => (
-            <View key={category} style={{ marginBottom: 6 }}>
+            <View key={`${category}-b`} style={{ marginBottom: 6 }}>
               <View
                 style={{
                   flexDirection: "row",
@@ -149,12 +157,12 @@ return(
                     fontFamily: "NotoSans",
                     fontWeight: "bold",
                   }}>
-                  {category}
+                  {labels.formatCategory(category)}
                 </Text>
               </View>
               <Text
                 style={{ fontSize: 6.5, color: "#64748B", lineHeight: 1.2 }}>
-                {categoryDescriptionsMap[category]}
+                {labels.categoryDescriptions[category]}
               </Text>
             </View>
           ))}
@@ -172,7 +180,7 @@ return(
                     fontFamily: "NotoSans",
                     fontWeight: "bold",
                   }}>
-                  {category}
+                  {labels.formatCategory(category)}
                 </Text>
                 <Text style={{ fontSize: 7, color: "#64748B" }}>
                   {priceFormatter(total)} ({percentage.toFixed(2)}%)
@@ -203,22 +211,22 @@ return(
                 marginBottom: 4,
               },
             ]}>
-            Category Diversification Index
+            {labels.categories.diversificationIndex}
           </Text>
           <Text style={styles.bodyText}>
             {data.categoryDiversityText}
             {data.categoryList.length > 0 && (
               <Text>
-                {"\n\n"}The diagnostic metrics locate your primary cost center
-                within the{" "}
+                {"\n\n"}
+                {labels.categories.primaryCostCenterPrefix}
                 <Text style={styles.boldText}>
-                  {data.categoryList[0].category}
-                </Text>{" "}
-                sector, responsible for{" "}
+                  {labels.formatCategory(data.categoryList[0].category)}
+                </Text>
+                {labels.categories.primaryCostCenterMiddle}
                 <Text style={styles.boldText}>
                   {data.categoryList[0].percentage.toFixed(2)}%
-                </Text>{" "}
-                of your active tool overhead.
+                </Text>
+                {labels.categories.primaryCostCenterSuffix}
               </Text>
             )}
           </Text>
@@ -226,40 +234,61 @@ return(
       </View>
     )}
   </SectionCard>
-)};
+);
 
-export const BehavioralInsights = ({ data }: { data: AuditAnalyticsData }) => (
-  <SectionCard title="IV. Behavioral Insights">
+export const BehavioralInsights = ({
+  data,
+  labels,
+}: {
+  data: AuditAnalyticsData;
+  labels: AuditPdfLabels;
+}) => (
+  <SectionCard title={labels.sections.behavioralInsights}>
     <Text style={styles.bodyText}>
       {data.behavioralAutomationText}
       {data.totalEvents > 0 && !data.hasNoSubs && (
         <Text>
           {"\n\n"}&bull;{" "}
-          <Text style={styles.boldText}>Transaction Autonomy:</Text> Out of{" "}
-          {data.totalEvents} payment operations processed,{" "}
-          {data.autoEventsCount} ({data.autoEventRatio.toFixed(0)}%) were
-          initialized on fully autonomous API lines, while the remaining
-          represent manual renewal adjustments.
+          <Text style={styles.boldText}>
+            {labels.behavioral.transactionAutonomyLabel}
+          </Text>{" "}
+          {labels.behavioral.transactionAutonomy({
+            totalEvents: data.totalEvents,
+            autoEventsCount: data.autoEventsCount,
+            autoEventRatio: data.autoEventRatio.toFixed(0),
+          })}
         </Text>
       )}
     </Text>
   </SectionCard>
 );
 
-export const TopCostCenters = ({ data }: { data: AuditAnalyticsData }) => (
-  <SectionCard title="V. Top Cost Centers & High-Cost Services">
+export const TopCostCenters = ({
+  data,
+  locale,
+  labels,
+}: {
+  data: AuditAnalyticsData;
+  locale: Locale;
+  labels: AuditPdfLabels;
+}) => (
+  <SectionCard title={labels.sections.topCostCenters}>
     <View style={styles.splitGrid}>
       <View
         style={[
           styles.splitCol,
-          { borderRightWidth: 1, borderRightColor: "#F1F5F9", paddingRight: 6 },
+          {
+            borderRightWidth: 1,
+            borderRightColor: "#F1F5F9",
+            paddingRight: 6,
+          },
         ]}>
         <Text
           style={[
             styles.bodyText,
             { fontFamily: "NotoSans", fontWeight: "bold", marginBottom: 4 },
           ]}>
-          Costliest Active Accounts:
+          {labels.topCostCenters.costliestAccounts}
         </Text>
         {data.costliestActive.length > 0 ? (
           data.costliestActive.map((sub, idx) => (
@@ -268,11 +297,13 @@ export const TopCostCenters = ({ data }: { data: AuditAnalyticsData }) => (
               style={[styles.bodyText, { fontSize: 7.5, marginBottom: 2 }]}>
               {idx + 1}. {sub.name} &bull;{" "}
               <Text style={styles.boldText}>{priceFormatter(sub.price)}</Text> (
-              {sub.billingCycle})
+              {labels.formatBillingCycle(sub.billingCycle)})
             </Text>
           ))
         ) : (
-          <Text style={styles.bodyText}>No active subscriptions found.</Text>
+          <Text style={styles.bodyText}>
+            {labels.topCostCenters.noActiveSubscriptions}
+          </Text>
         )}
       </View>
       <View style={styles.splitCol}>
@@ -281,7 +312,7 @@ export const TopCostCenters = ({ data }: { data: AuditAnalyticsData }) => (
             styles.bodyText,
             { fontFamily: "NotoSans", fontWeight: "bold", marginBottom: 4 },
           ]}>
-          Upcoming Renewal Timeline:
+          {labels.topCostCenters.upcomingRenewalTimeline}
         </Text>
         {data.upcomingObligations.length > 0 ? (
           data.upcomingObligations.map((s) => (
@@ -289,24 +320,36 @@ export const TopCostCenters = ({ data }: { data: AuditAnalyticsData }) => (
               <View style={styles.timelineDot} />
               <View>
                 <Text style={styles.timelineMeta}>
-                  {formatDate(s.nextBilling)} &bull; {s.name}
+                  {dateFormatter(s.nextBilling, locale, "numeric")} &bull;{" "}
+                  {s.name}
                 </Text>
                 <Text style={{ fontSize: 6.5, color: "#64748B" }}>
-                  Due: {priceFormatter(s.price)} ({s.billingCycle})
+                  {labels.topCostCenters.dueLine(
+                    priceFormatter(s.price),
+                    labels.formatBillingCycle(s.billingCycle),
+                  )}
                 </Text>
               </View>
             </View>
           ))
         ) : (
-          <Text style={styles.bodyText}>No upcoming renewals scheduled.</Text>
+          <Text style={styles.bodyText}>
+            {labels.topCostCenters.noUpcomingRenewals}
+          </Text>
         )}
       </View>
     </View>
   </SectionCard>
 );
 
-export const AnomaliesRisks = ({ data }: { data: AuditAnalyticsData }) => (
-  <SectionCard title="VI. Anomalies, Hidden Waste & Renewal Risks">
+export const AnomaliesRisks = ({
+  data,
+  labels,
+}: {
+  data: AuditAnalyticsData;
+  labels: AuditPdfLabels;
+}) => (
+  <SectionCard title={labels.sections.anomaliesRisks}>
     <Text
       style={[
         styles.bodyText,
@@ -317,7 +360,7 @@ export const AnomaliesRisks = ({ data }: { data: AuditAnalyticsData }) => (
           marginBottom: 4,
         },
       ]}>
-      Passive Waste & Leakage Indicators:
+      {labels.anomalies.passiveWasteTitle}
     </Text>
     {data.hasNoSubs ? (
       <View style={{ marginBottom: 4 }}>
@@ -326,20 +369,17 @@ export const AnomaliesRisks = ({ data }: { data: AuditAnalyticsData }) => (
             styles.bodyText,
             { fontSize: 7.5, marginBottom: 2, color: "#64748B" },
           ]}>
-          &bull; Inactive account drift: Ghost accounts quietly drawing capital
-          after team departures.
+          &bull; {labels.anomalies.inactiveAccountDrift}
         </Text>
         <Text
           style={[
             styles.bodyText,
             { fontSize: 7.5, marginBottom: 2, color: "#64748B" },
           ]}>
-          &bull; Uncapped utility checks: Automated warnings identifying
-          high-cost unmapped software items.
+          &bull; {labels.anomalies.uncappedUtilityChecks}
         </Text>
         <Text style={[styles.bodyText, { fontSize: 7.5, color: "#64748B" }]}>
-          &bull; Paused service leakage: Automated system scans to ensure paused
-          subscriptions stop executing transactions.
+          &bull; {labels.anomalies.pausedServiceLeakage}
         </Text>
       </View>
     ) : data.wasteList.length > 0 ? (
@@ -355,11 +395,9 @@ export const AnomaliesRisks = ({ data }: { data: AuditAnalyticsData }) => (
       ))
     ) : (
       <Text style={[styles.bodyText, { fontSize: 7.5, color: "#059669" }]}>
-        &bull; Secure: No post-cancel charges or uncategorized leak vectors
-        detected.
+        &bull; {labels.anomalies.secureWaste}
       </Text>
     )}
-
     <Text
       style={[
         styles.bodyText,
@@ -371,7 +409,7 @@ export const AnomaliesRisks = ({ data }: { data: AuditAnalyticsData }) => (
           marginBottom: 4,
         },
       ]}>
-      Active Renewal Risk Indicators:
+      {labels.anomalies.renewalRiskTitle}
     </Text>
     {data.hasNoSubs ? (
       <View>
@@ -380,12 +418,10 @@ export const AnomaliesRisks = ({ data }: { data: AuditAnalyticsData }) => (
             styles.bodyText,
             { fontSize: 7.5, marginBottom: 2, color: "#64748B" },
           ]}>
-          &bull; Lump-sum renewals: Visual highlights identifying upcoming
-          large-value annual platform renewals.
+          &bull; {labels.anomalies.lumpSumRenewals}
         </Text>
         <Text style={[styles.bodyText, { fontSize: 7.5, color: "#64748B" }]}>
-          &bull; Grace period expirations: System safeguards to prevent manual
-          payment plans from unexpected shutdowns.
+          &bull; {labels.anomalies.gracePeriodExpirations}
         </Text>
       </View>
     ) : data.riskList.length > 0 ? (
@@ -401,8 +437,7 @@ export const AnomaliesRisks = ({ data }: { data: AuditAnalyticsData }) => (
       ))
     ) : (
       <Text style={[styles.bodyText, { fontSize: 7.5, color: "#059669" }]}>
-        &bull; Secure: All monitored services mapped to active, automatic
-        renewal pipelines.
+        &bull; {labels.anomalies.secureRenewal}
       </Text>
     )}
   </SectionCard>
@@ -411,32 +446,54 @@ export const AnomaliesRisks = ({ data }: { data: AuditAnalyticsData }) => (
 export const LifecycleDiagnostics = ({
   text,
   oldest,
+  labels,
 }: {
   text: string;
   oldest: string;
+  labels: AuditPdfLabels;
 }) => (
-  <SectionCard title="VII. Lifecycle & Consistency Diagnostics">
+  <SectionCard title={labels.sections.lifecycleDiagnostics}>
     <Text style={styles.bodyText}>
-      &bull; <Text style={styles.boldText}>Legacy Scans:</Text> {oldest}
+      &bull; <Text style={styles.boldText}>{labels.lifecycle.legacyScans}</Text>{" "}
+      {oldest}
       {"\n"}&bull;{" "}
-      <Text style={styles.boldText}>Plan Pricing Consistency:</Text> {text}
+      <Text style={styles.boldText}>
+        {labels.lifecycle.planPricingConsistency}
+      </Text>{" "}
+      {text}
     </Text>
   </SectionCard>
 );
 
 export const AppendixRegistry = ({
   subscriptions,
+  locale,
+  labels,
 }: {
   subscriptions: Subscription[];
+  locale: Locale;
+  labels: AuditPdfLabels;
 }) => (
-  <SectionCard title="Appendix A: Your Subscriptions Registry">
+  <SectionCard title={labels.sections.appendixRegistry}>
     <View style={styles.tableHeader}>
-      <Text style={styles.colName}>Name</Text>
-      <Text style={styles.colCategory}>Category</Text>
-      <Text style={styles.colCycle}>Billing Cycle</Text>
-      <Text style={styles.colPrice}>Amount</Text>
-      <Text style={styles.colStatus}>Next Billing</Text>
-      <Text style={styles.colStatus}>Status</Text>
+      <Text style={styles.colName}>
+        {labels.appendix.registry.columns.name}
+      </Text>
+      <Text style={styles.colCategory}>
+        {labels.appendix.registry.columns.category}
+      </Text>
+      <Text style={styles.colCycle}>
+        {labels.appendix.registry.columns.billingCycle}
+      </Text>
+      <Text style={styles.colPrice}>
+        {labels.appendix.registry.columns.amount}
+      </Text>
+      <Text style={styles.colStatus}>
+        {labels.appendix.registry.columns.nextBilling}
+      </Text>
+      <Text style={styles.colStatus}>
+        {labels.appendix.registry.columns.status}
+      </Text>
     </View>
     {subscriptions.length > 0 ? (
       subscriptions.map((sub, idx) => (
@@ -458,11 +515,19 @@ export const AppendixRegistry = ({
               {sub.name}
             </Text>
           </View>
-          <Text style={styles.colCategory}>{sub.category}</Text>
-          <Text style={styles.colCycle}>{sub.billingCycle}</Text>
+          <Text style={styles.colCategory}>
+            {labels.formatCategory(sub.category)}
+          </Text>
+          <Text style={styles.colCycle}>
+            {labels.formatBillingCycle(sub.billingCycle)}
+          </Text>
           <Text style={styles.colPrice}>{priceFormatter(sub.price)}</Text>
-          <Text style={styles.colStatus}>{formatDate(sub.nextBilling)}</Text>
-          <Text style={styles.colStatus}>{sub.status}</Text>
+          <Text style={styles.colStatus}>
+            {dateFormatter(sub.nextBilling, locale, "numeric")}
+          </Text>
+          <Text style={styles.colStatus}>
+            {labels.formatStatus(sub.status)}
+          </Text>
         </View>
       ))
     ) : (
@@ -474,8 +539,7 @@ export const AppendixRegistry = ({
             color: "#64748B",
             fontSize: 7,
           }}>
-          No subscription data recorded. Build your registry inside the
-          dashboard to initialize tracking tables.
+          {labels.appendix.registry.empty}
         </Text>
       </View>
     )}
@@ -484,16 +548,30 @@ export const AppendixRegistry = ({
 
 export const AppendixHistory = ({
   billingEvents,
+  locale,
+  labels,
 }: {
   billingEvents: BillingEvent[];
+  locale: Locale;
+  labels: AuditPdfLabels;
 }) => (
-  <SectionCard title="Appendix B: Historical Ledger History">
+  <SectionCard title={labels.sections.appendixHistory}>
     <View style={styles.tableHeader}>
-      <Text style={styles.colEventDate}>Charged At</Text>
-      <Text style={styles.colEventName}>Subscription</Text>
-      <Text style={styles.colEventCategory}>Category</Text>
-      <Text style={styles.colEventSource}>Renewal Type</Text>
-      <Text style={styles.colEventAmount}>Amount</Text>
+      <Text style={styles.colEventDate}>
+        {labels.appendix.history.columns.chargedAt}
+      </Text>
+      <Text style={styles.colEventName}>
+        {labels.appendix.history.columns.subscription}
+      </Text>
+      <Text style={styles.colEventCategory}>
+        {labels.appendix.history.columns.category}
+      </Text>
+      <Text style={styles.colEventSource}>
+        {labels.appendix.history.columns.renewalType}
+      </Text>
+      <Text style={styles.colEventAmount}>
+        {labels.appendix.history.columns.amount}
+      </Text>
     </View>
     {billingEvents.length > 0 ? (
       billingEvents.map((event, idx) => (
@@ -504,7 +582,9 @@ export const AppendixHistory = ({
             idx % 2 === 1 ? styles.tableRowAlternate : {},
           ]}
           wrap={false}>
-          <Text style={styles.colEventDate}>{formatDate(event.chargedAt)}</Text>
+          <Text style={styles.colEventDate}>
+            {dateFormatter(event.chargedAt, locale, "numeric")}
+          </Text>
           <View style={styles.colEventName}>
             <View
               style={[
@@ -520,9 +600,11 @@ export const AppendixHistory = ({
             </Text>
           </View>
           <Text style={styles.colEventCategory}>
-            {event.subscriptionCategory}
+            {labels.formatCategory(event.subscriptionCategory)}
           </Text>
-          <Text style={styles.colEventSource}>{event.source}</Text>
+          <Text style={styles.colEventSource}>
+            {labels.formatEventSource(event.source)}
+          </Text>
           <Text style={styles.colEventAmount}>
             {priceFormatter(event.amount)}
           </Text>
@@ -537,20 +619,19 @@ export const AppendixHistory = ({
             color: "#64748B",
             fontSize: 7,
           }}>
-          No transaction history logged. Charges will populate as recurring
-          billing processes.
+          {labels.appendix.history.empty}
         </Text>
       </View>
     )}
   </SectionCard>
 );
 
-export const Footer = () => (
+export const Footer = ({ labels }: { labels: AuditPdfLabels }) => (
   <View style={styles.footer}>
-    <Text>Recurio Financial Audit</Text>
+    <Text>{labels.footer.brand}</Text>
     <Text
       render={({ pageNumber, totalPages }) =>
-        `Page ${pageNumber} of ${totalPages}`
+        labels.footer.page(pageNumber, totalPages)
       }
     />
   </View>

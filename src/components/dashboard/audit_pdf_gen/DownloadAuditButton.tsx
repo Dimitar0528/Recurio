@@ -5,7 +5,8 @@ import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { Subscription, BillingEvent } from "@/lib/validations/schemas";
 import { Button } from "@base-ui/react";
-import { useTranslations } from "use-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { buildAuditPdfLabels } from "./audit-pdf-i18n";
 
 type DownloadAuditButtonProps = {
   subscriptions: Subscription[];
@@ -19,37 +20,41 @@ export default function DownloadAuditButton({
   label,
 }: DownloadAuditButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const t = useTranslations("dashboard_page.audit_pdf_component.download");
+  const locale = useLocale();
+  const t = useTranslations("dashboard_page.audit_pdf_component");
+  const tReusable = useTranslations("Reusable");
+  const labels = buildAuditPdfLabels(t, tReusable)
   const handleDownload = async () => {
     try {
       setIsGenerating(true);
       const { pdf } = await import("@react-pdf/renderer");
       const { AuditPdfDocument } = await import("./AuditPdfDocument");
-      // Compile document to PDF blob
       const doc = (
         <AuditPdfDocument
           subscriptions={subscriptions}
           billingEvents={billingEvents}
+          locale={locale}
+          labels={labels}
+          t={t}
         />
       );
       const blob = await pdf(doc).toBlob();
-
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute(
         "download",
-        `Recurio_Financial_Audit_${new Date().getFullYear()}.pdf`,
+        `Recurio_Financial_Audit_${new Date().toISOString().split("T")[0]}.pdf`,
       );
       document.body.appendChild(link);
       link.click();
       
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast.success(t("success"));
+      toast.success(t("download.success"));
     } catch (error) {
-      console.error(t("error"), error);
-      toast.error(t("error"));
+      console.error(t("download.error"), error);
+      toast.error(t("download.error"));
     } finally {
       setIsGenerating(false);
     }
@@ -65,7 +70,7 @@ export default function DownloadAuditButton({
           "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%)",
       }}>
       <Download size={14} className={isGenerating ? "animate-pulse" : ""} />
-      {isGenerating ? t("loading") : label}
+      {isGenerating ? t("download.loading") : label}
     </Button>
   );
 }
