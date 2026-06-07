@@ -9,6 +9,7 @@ import {
   undoDeleteUserSubscription,
   updateUserSubscription,
 } from "@/dal/subscriptions/mutations";
+import { updateUserNotificationsMetadata } from "@/dal/users/mutateMetadata";
 
 export async function createSubscription(subscription: SubscriptionFormValues) {
   await insertUserSubscription(subscription);
@@ -38,4 +39,12 @@ export async function declineManualRenewal(
   status: "Paused" | "Cancelled",
 ) {
   await declineManualRenewalForUser(id, status);
+}
+
+export async function updateNotificationSettings(data: {
+  renewalRemindersEnabled: boolean;
+  deliveryMode: "clerk" | "custom";
+  customEmail?: string;
+}) {
+  await updateUserNotificationsMetadata(data)
 }

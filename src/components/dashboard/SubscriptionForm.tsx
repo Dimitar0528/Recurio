@@ -39,44 +39,12 @@ import { ChevronDownIcon } from "lucide-react";
 import { format } from "date-fns";
 import { bg, enUS } from "react-day-picker/locale";
 
-import { advanceDateWithClamp } from "@/lib/utils";
+import { advanceDateWithClamp, localizeFieldErrors } from "@/lib/utils";
 import { createSubscription, updateSubscription } from "@/app/actions";
 import { useLocale, useTranslations } from "next-intl";
 
 import { useDialogClose } from "@/context/subscription-dialog-context";
 import { RateLimitError } from "@/lib/security/rate_limits";
-import { ValidationTFunction } from "@/lib/validations/schemas";
-// localizing zod errors
-
-function localizeFieldErrors(errors: unknown[], t: ValidationTFunction) {
-  const messages = {
-    NAME_TOO_SHORT: t("subscription.name.min", { min: 3 }),
-    NAME_TOO_LONG: t("subscription.name.max", { max: 50 }),
-
-    PRICE_REQUIRED: t("subscription.price.required"),
-    PRICE_NOT_POSITIVE: t("subscription.price.positive"),
-    PRICE_DECIMALS: t("subscription.price.decimal_count"),
-
-    NEXT_BILLING_REQUIRED: t("subscription.nextBilling.required"),
-    NEXT_BILLING_INVALID: t("subscription.nextBilling.invalid"),
-    NEXT_BILLING_PAST: t("subscription.nextBilling.cannot_be_in_the_past"),
-
-    CATEGORY_INVALID: t("subscription.category.invalid"),
-  };
-  return errors.map((error) => {
-    const code =
-      typeof error === "string"
-        ? error
-        : typeof error === "object" &&
-            error !== null &&
-            "message" in error &&
-            typeof error.message === "string"
-          ? error.message
-          : String(error ?? "");
-    const message = messages[code as keyof typeof messages] ?? code;
-    return { message };
-  });
-}
 
 type SubscriptionFormProps = {
   initialValues?: Subscription;
@@ -93,6 +61,22 @@ export default function SubscriptionForm({
   const tReusable = useTranslations("Reusable");
   const tValidation = useTranslations("Validation");
   const t = useTranslations("dashboard_page.subscription_form_component");
+
+  const LOCALIZED_ERROR_MESSAGES = {
+    NAME_TOO_SHORT: tValidation("subscription.name.min", { min: 3 }),
+    NAME_TOO_LONG: tValidation("subscription.name.max", { max: 50 }),
+
+    PRICE_REQUIRED: tValidation("subscription.price.required"),
+    PRICE_NOT_POSITIVE: tValidation("subscription.price.positive"),
+    PRICE_DECIMALS: tValidation("subscription.price.decimal_count"),
+
+    NEXT_BILLING_REQUIRED: tValidation("subscription.nextBilling.required"),
+    NEXT_BILLING_INVALID: tValidation("subscription.nextBilling.invalid"),
+    NEXT_BILLING_PAST: tValidation(
+      "subscription.nextBilling.cannot_be_in_the_past",
+    ),
+    CATEGORY_INVALID: tValidation("subscription.category.invalid"),
+  };
 
   const dateLocale = locale === "bg" ? bg : enUS;
 
@@ -202,7 +186,7 @@ export default function SubscriptionForm({
                   id="nameError"
                   errors={localizeFieldErrors(
                     field.state.meta.errors,
-                    tValidation,
+                    LOCALIZED_ERROR_MESSAGES,
                   )}
                   aria-live="polite"
                 />
@@ -246,7 +230,7 @@ export default function SubscriptionForm({
                       id="categoryError"
                       errors={localizeFieldErrors(
                         field.state.meta.errors,
-                        tValidation,
+                        LOCALIZED_ERROR_MESSAGES,
                       )}
                       aria-live="polite"
                     />
@@ -284,7 +268,7 @@ export default function SubscriptionForm({
                   id="priceError"
                   errors={localizeFieldErrors(
                     field.state.meta.errors,
-                    tValidation,
+                    LOCALIZED_ERROR_MESSAGES,
                   )}
                   aria-live="polite"
                 />
@@ -335,7 +319,7 @@ export default function SubscriptionForm({
                     id="billingCycleError"
                     errors={localizeFieldErrors(
                       field.state.meta.errors,
-                      tValidation,
+                      LOCALIZED_ERROR_MESSAGES,
                     )}
                     aria-live="polite"
                   />
@@ -397,7 +381,7 @@ export default function SubscriptionForm({
                     id="nextBillingError"
                     errors={localizeFieldErrors(
                       field.state.meta.errors,
-                      tValidation,
+                      LOCALIZED_ERROR_MESSAGES,
                     )}
                     aria-live="polite"
                   />
@@ -429,7 +413,7 @@ export default function SubscriptionForm({
                     id="autoRenewError"
                     errors={localizeFieldErrors(
                       field.state.meta.errors,
-                      tValidation,
+                      LOCALIZED_ERROR_MESSAGES,
                     )}
                     aria-live="polite"
                   />
@@ -473,7 +457,7 @@ export default function SubscriptionForm({
                     id="statusError"
                     errors={localizeFieldErrors(
                       field.state.meta.errors,
-                      tValidation,
+                      LOCALIZED_ERROR_MESSAGES,
                     )}
                     aria-live="polite"
                   />
@@ -524,7 +508,7 @@ export default function SubscriptionForm({
                         id="billingEntryModeError"
                         errors={localizeFieldErrors(
                           field.state.meta.errors,
-                          tValidation,
+                          LOCALIZED_ERROR_MESSAGES,
                         )}
                         aria-live="polite"
                       />

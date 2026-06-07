@@ -14,6 +14,7 @@ import {
   CreditCard,
   MessageSquareQuote,
   Tag,
+  Bell,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -27,19 +28,16 @@ import {
 import { Button } from "@/components/ui/button";
 import LocaleSwitcher from "./locale_switcher";
 import { Route } from "next";
-import {
-  SignInButton,
-  UserButton,
-  useUser,
-  Show
-} from "@clerk/nextjs";
+import { SignInButton, UserButton, useUser, Show } from "@clerk/nextjs";
 import { useLocale, useTranslations } from "next-intl";
 import { motion } from "framer-motion";
+import NotificationSettings from "./clerk/NotificationSettings";
 
 export default function Navigation() {
   const { isSignedIn, isLoaded } = useUser();
   const locale = useLocale();
   const tReusable = useTranslations("Reusable.navigation_component");
+  const t = useTranslations("custom_clerk_components.menu_items");
   const { setTheme, theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -187,10 +185,24 @@ export default function Navigation() {
               appearance={{
                 elements: {
                   userButtonTrigger:
-                    "focus-visible:border-ring focus-visible:ring-ring/60 focus-visible:ring-[3.5px] ",
+                    "focus-visible:border-ring focus-visible:ring-ring/60 focus-visible:ring-[3.5px]",
                 },
-              }}
-            />
+              }}>
+              <UserButton.MenuItems>
+                <UserButton.Action
+                  label={t("name")}
+                  labelIcon={<Bell className="h-4 w-4" />}
+                  open="notifications"
+                />
+              </UserButton.MenuItems>
+
+              <UserButton.UserProfilePage
+                label={t("name")}
+                url="notifications"
+                labelIcon={<Bell className="h-4 w-4" />}>
+                <NotificationSettings />
+              </UserButton.UserProfilePage>
+            </UserButton>
           </Show>
 
           <Button

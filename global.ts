@@ -14,3 +14,13 @@ declare module "@tanstack/react-table" {
     className?: string;
   }
 }
+
+declare global {
+  interface UserPublicMetadata {
+      notificationSettings?: {
+        renewalRemindersEnabled: boolean;
+        deliveryMode: "clerk" | "custom";
+        customEmail: string | null;
+    };
+  }
+}

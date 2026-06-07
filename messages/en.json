@@ -44,6 +44,9 @@
             "min": "Net salary is required.",
             "positive": "Net salary must be a positive number.",
             "decimal_count": "Net salary can have at most 2 decimal places."
+        },
+        "customNotificationEmail": {
+            "min": "The custom email is required"
         }
     },
     "Reusable": {
@@ -599,6 +602,33 @@
                     "auto": "Auto",
                     "manual": "Manual"
                 }
+            }
+        }
+    },
+    "custom_clerk_components":{
+        "menu_items":{
+            "name": "Notifications"
+        },
+        "notification_settings_component":{
+            "get_notifications":{
+                "title": "Renewal Reminder Notifications",
+                "description": "Get notified 7 days before your subscription renews."
+            },
+            "delivery_mail": {
+                "title": "Delivery Email",
+                "description": "Choose where reminder emails should be sent.",
+                "account_mail_option": "Account Email",
+                "custom_mail_option": {
+                    "title": "Custom Email",
+                    "description": "Use a separate email for reminders"
+                },
+                "change_text": "You can change these preferences anytime.",
+                "save_changes": "Save Changes"
+            },
+            "update_metadata_messages":{
+                "loading": "Updating preferences...",
+                "success": "Preferences updated successfully!",
+                "error": "Failed to update preferences."
             }
         }
     }

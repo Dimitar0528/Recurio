@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { categoryColors, cn, priceFormatter } from "@/lib/utils";
+import { categoryColors, cn, localizeFieldErrors, priceFormatter } from "@/lib/utils";
 import { Subscription } from "@/lib/validations/schemas";
 import { Button } from "../ui/button";
 import {
@@ -16,30 +16,6 @@ import { toast } from "sonner";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Skeleton } from "../ui/skeleton";
 import { useTranslations } from "next-intl";
-
-type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
-
-function localizeFieldErrors(errors: unknown[], t: ValidationTFunction) {
-  const messages = {
-    NET_SALARY_REQUIRED: t("netSalary.min", { min: 3 }),
-    NET_SALARY_NOT_POSITIVE: t("netSalary.positive"),
-    NET_SALARY_DECIMALS: t("netSalary.decimal_count"),
-  };
-  return errors.map((error) => {
-    const code =
-      typeof error === "string"
-        ? error
-        : typeof error === "object" &&
-            error !== null &&
-            "message" in error &&
-            typeof error.message === "string"
-          ? error.message
-          : String(error ?? "");
-    const message = messages[code as keyof typeof messages] ?? code;
-    return { message };
-  });
-}
-
 type InsightsSidebarProps = {
   data: Subscription[];
   monthlySpend: number;
@@ -53,6 +29,11 @@ export default function InsightsSidebar({
   const tValidation = useTranslations("Validation");
   const t = useTranslations("dashboard_page.insights_sidebar_component");
 
+  const LOCALIZED_ERROR_MESSAGES = {
+    NET_SALARY_REQUIRED: tValidation("netSalary.min"),
+    NET_SALARY_NOT_POSITIVE: tValidation("netSalary.positive"),
+    NET_SALARY_DECIMALS: tValidation("netSalary.decimal_count"),
+  };
 
   const { user, isLoaded } = useUser();
   const [salary, setSalary] = useState<number | null>(null);
@@ -235,7 +216,7 @@ export default function InsightsSidebar({
                             id="netSalaryError"
                             errors={localizeFieldErrors(
                               field.state.meta.errors,
-                              tValidation,
+                              LOCALIZED_ERROR_MESSAGES,
                             )}
                             aria-live="polite"
                           />

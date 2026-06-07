@@ -10,7 +10,7 @@ import { startOfDay } from "date-fns";
 
 export type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
 
-export const subscriptionErrorCodes = {
+const subscriptionErrorCodes = {
   NAME_TOO_SHORT: "NAME_TOO_SHORT",
   NAME_TOO_LONG: "NAME_TOO_LONG",
   PRICE_REQUIRED: "PRICE_REQUIRED",
@@ -21,11 +21,15 @@ export const subscriptionErrorCodes = {
   NEXT_BILLING_PAST: "NEXT_BILLING_PAST",
 } as const;
 
-export const netSalaryErrorCodes = {
+const netSalaryErrorCodes = {
   NET_SALARY_REQUIRED: "NET_SALARY_REQUIRED",
   NET_SALARY_NOT_POSITIVE: "NET_SALARY_NOT_POSITIVE",
   NET_SALARY_DECIMALS: "NET_SALARY_DECIMALS",
 };
+const customNotificationEmailErrorCodes = {
+  CUSTOM_NOTIFICATION_EMAIL_REQUIRED: "CUSTOM_NOTIFICATION_EMAIL_REQUIRED",
+};
+
 export const subscriptionBaseSchema = z.object({
   name: z
     .string()
@@ -105,6 +109,9 @@ export const netSalarySchema = z.object({
     }),
 });
 
+export const customNotificationEmailSchema = z.object({
+  customNotificationEmail:z.email().min(1, { error: customNotificationEmailErrorCodes.CUSTOM_NOTIFICATION_EMAIL_REQUIRED})
+})
 export type SubscriptionFormValues = z.infer<typeof subscriptionFormSchema>;
 
 export type Subscription = z.infer<typeof subscriptionSchema>;

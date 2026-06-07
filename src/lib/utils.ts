@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
-import { Locale } from "next-intl";
+import { Locale, useTranslations } from "next-intl";
 import { twMerge } from "tailwind-merge";
 import { BillingCycle, Status } from "@/lib/validations/enums";
 import {
@@ -21,12 +21,12 @@ export function cn(...inputs: ClassValue[]) {
 export function dateFormatter(
   date: Date | number,
   locale: Locale,
-  yearFormat?: "numeric" | "2-digit" | undefined
+  yearFormat?: "numeric" | "2-digit" | undefined,
 ) {
   const formattedDate = new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
-    year: yearFormat && yearFormat
+    year: yearFormat && yearFormat,
   }).format(date);
   return formattedDate;
 }
@@ -136,12 +136,28 @@ export function getSubscriptionsWithinTimeInterval(
 export const categoryColors = [
   { hex: "#8B5CF6", dot: "bg-violet-500", text: "text-violet-500" },
   { hex: "#0EA5E9", dot: "bg-sky-500", text: "text-sky-500" },
-  { hex: "#10B981", dot: "bg-emerald-500", text: "text-emerald-500" }, 
-  { hex: "#F59E0B", dot: "bg-amber-500", text: "text-amber-500" }, 
+  { hex: "#10B981", dot: "bg-emerald-500", text: "text-emerald-500" },
+  { hex: "#F59E0B", dot: "bg-amber-500", text: "text-amber-500" },
   { hex: "#F43F5E", dot: "bg-rose-500", text: "text-rose-500" },
-  { hex: "#06B6D4", dot: "bg-cyan-500", text: "text-cyan-500" }, 
+  { hex: "#06B6D4", dot: "bg-cyan-500", text: "text-cyan-500" },
   { hex: "#D946EF", dot: "bg-fuchsia-500", text: "text-fuchsia-500" },
   { hex: "#84CC16", dot: "bg-lime-500", text: "text-lime-500" },
   { hex: "#F97316", dot: "bg-orange-500", text: "text-orange-500" },
-  { hex: "#14B8A6", dot: "bg-teal-500", text: "text-teal-500" }
+  { hex: "#14B8A6", dot: "bg-teal-500", text: "text-teal-500" },
 ];
+
+export function localizeFieldErrors(errors: unknown[], messages: Record<string, string>) {
+  return errors.map((error) => {
+    const code =
+      typeof error === "string"
+        ? error
+        : typeof error === "object" &&
+            error !== null &&
+            "message" in error &&
+            typeof error.message === "string"
+          ? error.message
+          : String(error ?? "");
+    const message = messages[code as keyof typeof messages] ?? code;
+    return { message };
+  });
+}
