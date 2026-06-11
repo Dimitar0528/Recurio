@@ -1,36 +1,213 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Recurio
 
-## Getting Started
+> The modern way to track, manage, and optimize all your subscriptions in one place.
 
-First, run the development server:
+Recurio helps users gain complete visibility over recurring expenses, upcoming renewals, and spending habits across all their subscriptions. From streaming platforms and software licenses to gym memberships and cloud services, Recurio ensures users never lose track of where their money goes.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+## ✨ Features
+### Subscription Dashboard
+Get a complete overview of all active subscriptions in a single place.
+
+- Active, expired, and cancelled subscriptions
+- Monthly and yearly billing cycles
+- Renewal tracking
+- Next payment visibility
+- Subscription categorization
+- Search, filtering and sorting supported
+---
+
+### Spending Analytics
+Understand exactly how much you're spending.
+- Monthly / Yearly subscription costs
+- Spending breakdown by category
+- Most expensive subscriptions
+- Subscription trends over time
+- Interactive charts and visualizations
+---
+
+### Smart Renewal Reminders
+- Email reminders 7 days before renewal
+- Configurable notification preferences
+- Upcoming payment alerts
+---
+
+###  Flexible Renewal Management
+Support for different subscription scenarios.
+#### Auto-Renewing Subscriptions
+Subscriptions that automatically renew and charge users at the end of the billing cycle.
+
+Examples:
+- Netflix
+- Spotify
+- YouTube Premium
+#### Manual Renewal Subscriptions
+Subscriptions that require users to manually renew after expiration.
+
+Examples:
+- Domain registrations
+- Certain software licenses
+- Event memberships
+
+### Authentication & Security
+Secure authentication powered by Clerk.
+
+Features include:
+- Email/password authentication
+- Social login providers
+- Protected routes
+- Secure user management
+---
+
+### Internationalization
+- Multi-language support
+- Locale-based routing
+- Translated UI components and localized dates
+---
+
+## Tech Stack
+
+### Frontend
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- shadcn/ui
+- Lucide Icons
+- next-intl
+### Backend
+- Next.js Server Actions
+- Zod Validation
+### Authentication
+- Clerk
+### Database / ORM
+- PostgreSQL / Drizzle
+### Email Service
+- Resend
+---
+
+## Project Structure
+
+```text
+├── messages/
+src/
+│
+├── app/
+│   ├── [lang]/
+│
+├── components/
+│   ├── ui/
+│   ├── dashboard/
+│   ├── payments/
+│   └── shared/
+│
+├── dal/
+│   ├── subscriptions/
+│   ├── users/
+│
+├── db/
+│
+├── i18n/
+│
+├── lib/
+│   ├── analytics/
+│   ├── security/
+│   ├── validations/│
+│
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Getting Started
+### Prerequisites
+- Node.js 22+
+- Bun (for package management)
+- PostgreSQL
+- Clerk Account
+- Resend Account
+---
+### Installation
+Clone the repository:
+```bash
+git clone https://github.com/Dimitar0528/Recurio.git
+cd Recurio
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Install dependencies:
+```bash
+bun install
+```
+---
 
-## Learn More
+### Environment Variables
+Create a `.env.local` file and fill in the needed informatiom:
+```env
+# Database
+DATABASE_URL=
 
-To learn more about Next.js, take a look at the following resources:
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Upstash Redis
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Resend
+RESEND_API_KEY=
+```
+---
 
-## Deploy on Vercel
+### Database Setup
+Generate migrations:
+```bash
+bun run db:gen
+```
+Run migrations:
+```bash
+bun run db:migrate
+```
+Open database studio:
+```bash
+npm run db:studio
+```
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Run Development Server
+```bash
+bun run dev
+```
+Open:
+```text
+http://localhost:3000
+```
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Roadmap
+
+### Planned Features
+- Smart Add Subscription functionality
+- Budget goals
+- AI-powered spending insights
+- More advanced and in-depth analytics
+---
+
+## Contributing
+
+Contributions, issues, and feature requests are welcome.
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to your branch
+5. Open a Pull Request
+---
+
+## License
+This project is licensed under the MIT License.
+See the [LICENSE](https://github.com/Dimitar0528/Recurio/blob/main/LICENSE) file for details.
+
+---
