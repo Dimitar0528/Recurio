@@ -69,8 +69,7 @@ export async function insertUserSubscription(
   const parsedSubscription = result.data;
   const now = new Date();
   try {
-    await db.transaction(async (tx) => {
-      const [createdSubscription] = await tx
+      const [createdSubscription] = await db
         .insert(subscriptionsTable)
         .values({
           name: parsedSubscription.name,
@@ -92,8 +91,9 @@ export async function insertUserSubscription(
       const shouldCreateInitialBillingEvent =
           createdSubscription.billingEntryMode ===
           billingEntryModeEnum.options[0];
+          
       if (shouldCreateInitialBillingEvent) {
-        await tx.insert(subscriptionBillingEventsTable).values({
+        await db.insert(subscriptionBillingEventsTable).values({
           subscriptionId: createdSubscription.id,
           userId,
           amount: parsedSubscription.price.toFixed(2),
@@ -101,7 +101,6 @@ export async function insertUserSubscription(
           source: "initial",
         });
       }
-    });
 
     await invalidateUserSubscriptionCacheData(userId);
   } catch (err) {
@@ -264,7 +263,6 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
     }
   }
 
-  await db.transaction(async (tx) => {
     for (const subscription of subscriptions) {
       if (subscription.deletedAt) continue;
       if (!isDue(subscription.nextBilling, now)) continue;
@@ -279,12 +277,13 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
           subscription.billingCycle,
         );
 
-        const updated = await tx
+        const updated = await db
           .update(subscriptionsTable)
           .set({
             nextBilling,
             lastRenewedAt: now,
             manualRenewalGraceUntil: null,
+            reminderSentAt: null,
           })
           .where(
             and(
@@ -299,7 +298,7 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
           continue;
         }
 
-        await tx.insert(subscriptionBillingEventsTable).values({
+        await db.insert(subscriptionBillingEventsTable).values({
           subscriptionId: subscription.id,
           userId,
           amount: subscription.price,
@@ -311,7 +310,7 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
       if (!subscription.manualRenewalGraceUntil) {
         const graceUntil = getManualRenewalGraceDate(subscription.nextBilling);
 
-        await tx
+        await db
           .update(subscriptionsTable)
           .set({
             manualRenewalGraceUntil: graceUntil,
@@ -326,12 +325,13 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
       }
 
       if (isManualGraceExpired(subscription.manualRenewalGraceUntil, now)) {
-        await tx
+        await db
           .update(subscriptionsTable)
           .set({
             status: "Paused",
             statusChangedAt: now,
             manualRenewalGraceUntil: null,
+            reminderSentAt: null,
           })
           .where(
             and(
@@ -341,7 +341,6 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
           );
       }
     }
-  });
 }
 
 export async function confirmManualRenewalForUser(id: string) {
@@ -358,15 +357,14 @@ export async function confirmManualRenewalForUser(id: string) {
     subscription.billingCycle,
   );
 
-  await db.transaction(async (tx) => {
-    await tx.insert(subscriptionBillingEventsTable).values({
+    await db.insert(subscriptionBillingEventsTable).values({
       subscriptionId: subscription.id,
       userId,
       amount: subscription.price,
       chargedAt: now,
       source: "manual",
     });
-    const updated = await tx
+    const updated = await db
       .update(subscriptionsTable)
       .set({
         nextBilling,
@@ -385,7 +383,6 @@ export async function confirmManualRenewalForUser(id: string) {
     if (updated.length === 0) {
       throw new Error("Concurrent update detected");
     }
-  });
 
   await invalidateUserSubscriptionCacheData(userId);
 }

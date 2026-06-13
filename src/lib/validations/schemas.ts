@@ -81,9 +81,10 @@ export const subscriptionFormSchema = subscriptionBaseSchema.extend({
 export const subscriptionSchema = subscriptionBaseSchema.extend({
   id: z.uuid(),
   createdAt: z.date(),
-  statusChangedAt: z.date().nullable().optional(),
+  statusChangedAt: z.date(),
   lastRenewedAt: z.date(),
   manualRenewalGraceUntil: z.date().nullable().optional(),
+  reminderSentAt: z.date().nullable().optional(),
 });
 
 export const billingEventSchema = z.object({

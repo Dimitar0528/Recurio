@@ -47,6 +47,7 @@ export const subscriptionsTable = pgTable(
     statusChangedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     lastRenewedAt: timestamp({ withTimezone: true }).notNull(),
     manualRenewalGraceUntil: timestamp({ withTimezone: true }),
+    reminderSentAt: timestamp({ withTimezone: true }),
     userId: char({ length: 32 }).notNull(),
     ...timestamps,
   },

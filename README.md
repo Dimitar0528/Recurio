@@ -1,6 +1,6 @@
 # Recurio
 
-> The modern way to track, manage, and optimize all your subscriptions in one place.
+> The modern way to track, manage, and optimize all your recurring expenses in one place.
 
 Recurio helps users gain complete visibility over recurring expenses, upcoming renewals, and spending habits across all their subscriptions. From streaming platforms and software licenses to gym memberships and cloud services, Recurio ensures users never lose track of where their money goes.
 
@@ -113,7 +113,7 @@ src/
 ├── lib/
 │   ├── analytics/
 │   ├── security/
-│   ├── validations/│
+│   ├── validations/
 │
 ```
 
@@ -173,7 +173,7 @@ bun run db:migrate
 ```
 Open database studio:
 ```bash
-npm run db:studio
+bun run db:studio
 ```
 ---
 
@@ -209,5 +209,3 @@ Contributions, issues, and feature requests are welcome.
 ## License
 This project is licensed under the MIT License.
 See the [LICENSE](https://github.com/Dimitar0528/Recurio/blob/main/LICENSE) file for details.
-
----

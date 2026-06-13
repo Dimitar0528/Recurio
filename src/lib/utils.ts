@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
-import { Locale, useTranslations } from "next-intl";
+import { Locale } from "next-intl";
 import { twMerge } from "tailwind-merge";
 import { BillingCycle, Status } from "@/lib/validations/enums";
 import {
