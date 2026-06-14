@@ -111,9 +111,12 @@ export default function SubscriptionForm({
         return toast.info(t("messages.update.no_changes"));
       }
       if (initialValues?.id) {
+        const loadingUpdateToast = toast.loading(t("messages.update.loading"));
         try {
           await updateSubscription(initialValues.id, result.data);
-          toast.success(t("messages.update.success"));
+          toast.success(t("messages.update.success"), {
+            id: loadingUpdateToast,
+          });
           closeDialog();
         } catch (err) {
           const message =
@@ -121,7 +124,7 @@ export default function SubscriptionForm({
               ? t("messages.rate_limited")
               : t("messages.update.error");
 
-          toast.error(message);
+          toast.error(message, { id: loadingUpdateToast });
         }
         return;
       }
@@ -423,7 +426,7 @@ export default function SubscriptionForm({
           </form.Field>
         </div>
         <div
-          className={` ${!shouldHideTrackingField ? "grid grid-cols-1 sm:grid-cols-2 gap-6 items-start" : ""}`}>
+          className={` ${!shouldHideTrackingField ? "grid grid-cols-1 sm:grid-cols-3 gap-6 items-start" : ""}`}>
           <form.Field name="status">
             {(field) => (
               <Field>
@@ -479,7 +482,7 @@ export default function SubscriptionForm({
                   },
                 ] as const;
                 return (
-                  <Field>
+                  <Field className="col-span-2">
                     <FieldContent>
                       <FieldLabel className="mb-2">
                         {t("fields.billingEntryMode.name")}
@@ -495,7 +498,7 @@ export default function SubscriptionForm({
                             role="radio"
                             aria-checked={field.state.value === option.value}
                             onClick={() => field.handleChange(option.value)}
-                            className={`w-full sm:w-auto px-2 py-1 rounded-md text-sm transition text-left sm:text-center cursor-pointer ${
+                            className={`w-full sm:w-auto px-0.5 py-1 rounded-md text-sm transition text-left sm:text-center cursor-pointer ${
                               field.state.value === option.value
                                 ? "bg-primary text-primary-foreground shadow-sm"
                                 : "hover:bg-muted"

@@ -9,7 +9,7 @@ import {
   subscriptionsTable,
 } from "@/db/schema";
 import { cacheLife, cacheTag, revalidatePath, updateTag } from "next/cache";
-import { and, eq, inArray, isNotNull, isNull } from "drizzle-orm";
+import { and, eq, isNotNull, isNull } from "drizzle-orm";
 import { DatabaseError } from "pg";
 import { DrizzleQueryError } from "drizzle-orm/errors";
 
@@ -78,19 +78,16 @@ export async function insertUserSubscription(
           nextBilling: parsedSubscription.nextBilling,
           category: parsedSubscription.category,
           status: parsedSubscription.status,
-          billingEntryMode: parsedSubscription.billingEntryMode,
           statusChangedAt: now,
           lastRenewedAt: now,
           userId: userId,
         })
         .returning({
           id: subscriptionsTable.id,
-          billingEntryMode: subscriptionsTable.billingEntryMode
         });
 
       const shouldCreateInitialBillingEvent =
-          createdSubscription.billingEntryMode ===
-          billingEntryModeEnum.options[0];
+        subscription.billingEntryMode === billingEntryModeEnum.options[0];
           
       if (shouldCreateInitialBillingEvent) {
         await db.insert(subscriptionBillingEventsTable).values({
@@ -228,40 +225,6 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
         isNull(subscriptionsTable.deletedAt),
       ),
     );
-  const subscriptionIds = subscriptions.map((subscription) => subscription.id);
-
-  if (subscriptionIds.length > 0) {
-    const existingEventRows = await db
-      .select({ subscriptionId: subscriptionBillingEventsTable.subscriptionId })
-      .from(subscriptionBillingEventsTable)
-      .where(
-        and(
-          eq(subscriptionBillingEventsTable.userId, userId),
-          inArray(
-            subscriptionBillingEventsTable.subscriptionId,
-            subscriptionIds,
-          ),
-          isNull(subscriptionBillingEventsTable.deletedAt),
-        ),
-      );
-    const existingSubscriptionIds = new Set(
-      existingEventRows.map((row) => row.subscriptionId),
-    );
-    const missingEvents = subscriptions.filter(
-      (subscription) => !existingSubscriptionIds.has(subscription.id),
-    );
-    if (missingEvents.length > 0) {
-      await db.insert(subscriptionBillingEventsTable).values(
-        missingEvents.map((subscription) => ({
-          subscriptionId: subscription.id,
-          userId,
-          amount: subscription.price,
-          chargedAt: subscription.createdAt,
-          source: "initial" as const,
-        })),
-      );
-    }
-  }
 
     for (const subscription of subscriptions) {
       if (subscription.deletedAt) continue;

@@ -107,6 +107,7 @@ export function priceFormatter(price: number) {
 export function getSubscriptionsWithinTimeInterval(
   subscriptions: Subscription[],
   mode: "upcoming-7-days" | "previous-7-days",
+  billingEventSubscriptionNames?: Set<string>,
 ) {
   const today = startOfDay(new Date());
   const interval =
@@ -119,8 +120,12 @@ export function getSubscriptionsWithinTimeInterval(
           start: subDays(today, 7),
           end: today,
         };
+  
   const subscriptionsWithinTimeInterval = subscriptions.filter((sub) => {
     if (mode === "upcoming-7-days" && sub.status !== "Active") {
+      return false;
+    }
+    if (mode === "previous-7-days" && billingEventSubscriptionNames && !billingEventSubscriptionNames.has(sub.name)) {
       return false;
     }
     const dateToCheck =

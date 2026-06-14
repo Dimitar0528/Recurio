@@ -135,6 +135,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
 
   const { monthlySpendData, yearlySpendData } =
     await getSpendingDataForDateRange(billingEvents);
+  
   return (
     <main
       id="main-content"
@@ -210,7 +211,6 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             </div>
           </Link>
         )}
-
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           <SpendingCard
             variant="light"
@@ -277,7 +277,8 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             <DownloadAuditButton
               subscriptions={userSubscriptions}
               billingEvents={billingEvents}
-              label={t("audit.button")}/>
+              label={t("audit.button")}
+            />
           </div>
         </section>
       </div>

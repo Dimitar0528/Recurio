@@ -6,16 +6,8 @@ import { priceFormatter } from "@/lib/utils";
 import { addDays, startOfDay } from "date-fns";
 import { and, between, eq, isNull } from "drizzle-orm";
 import { Resend } from "resend";
-import { hasLocale } from "next-intl";
-import { routing } from "@/i18n/routing";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const locale = searchParams.get("locale");
-  if (!hasLocale(routing.locales, locale)) {
-    return Response.json({ error: "Invalid locale" }, { status: 400 });
-  }
-    
+export async function GET() {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   const now = new Date();
@@ -43,23 +35,23 @@ export async function GET(request: Request) {
   });
   const userMap = new Map(users.data.map((u) => [u.id, u]));
 
-  await Promise.allSettled(
+  const result = await Promise.allSettled(
     subscriptions.map(async (sub) => {
       try {
         const user = userMap.get(sub.userId);
-        if (!user) return { status: "skipped", reason: "no_user" };
+        if (!user) return { status: "skipped", reason: "no_user", statusCode: 401 };
 
         const primaryEmail = user.emailAddresses.find(
           (e) => e.id === user.primaryEmailAddressId,
         )?.emailAddress;
         const settings = user.publicMetadata?.notificationSettings;
         if(settings?.renewalRemindersEnabled === false){
-            return { status: "skipped", reason: "disabled_renewal_email_sending"}
+            return { status: "skipped", reason: "disabled_renewal_email_sending", statusCode: 400}
         }
 
         const recipient = settings?.customEmail ?? primaryEmail;
         if (!recipient) {
-          return { status: "skipped", reason: "no_email" };
+          return { status: "skipped", reason: "no_email", statusCode: 400 };
         }
 
         const { error } = await resend.emails.send({
@@ -76,7 +68,7 @@ export async function GET(request: Request) {
 
         if (error) {
           console.error("Email failed to send:", error);
-          return { status: "failed", id: sub.id };
+          return { status: "failed", reason: error.message, statusCode: error.statusCode };
         }
 
         await db
@@ -84,11 +76,12 @@ export async function GET(request: Request) {
           .set({ reminderSentAt: new Date() })
           .where(eq(subscriptionsTable.id, sub.id));
 
-        return { status: "sent", id: sub.id };
+        return { status: "sent", statusCode: 200 };
       } catch (err) {
         console.error("Unexpected error:", err);
-        return { status: "error", id: sub.id };
+        return { status: "error", statusCode: 500 };
       }
     }),
   );
+  return Response.json({ result });
 }

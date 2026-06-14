@@ -183,7 +183,6 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
           {t("title")}
         </h2>
       </div>
-
       <div className="flex items-center justify-start py-4 flex-col md:flex-row gap-2">
         <div className="flex grow gap-4">
           <Input
@@ -402,6 +401,7 @@ export function SubscriptionTable({ data }: SubscriptionTableProps) {
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => table.setPageSize(Number(value))}>
               <SelectTrigger
+                aria-label="Change Rows Per Page"
                 id="select-rows-per-page"
                 className="w-[65px] scale-[0.90] cursor-pointer">
                 <SelectValue />

@@ -33,6 +33,10 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   const t = await getTranslations({ locale, namespace: "payments_page" });
 
   const userSubscriptions = await getUserSubscriptions();
+  const billingEvents = await getUserBillingEvents();
+  const billingEventSubscriptionNames = new Set(
+    billingEvents.map((billingEvent) => billingEvent.subscriptionName),
+  );
   const upcomingSubscriptions = getSubscriptionsWithinTimeInterval(
     userSubscriptions,
     "upcoming-7-days",
@@ -40,13 +44,12 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   const recentlyBilledSubscriptions = getSubscriptionsWithinTimeInterval(
     userSubscriptions,
     "previous-7-days",
+    billingEventSubscriptionNames,
   );
+  const recentBillingEvents = billingEvents.slice(0, 30);
+  
+  const { monthlySpendData, yearlySpendData } = await getSpendingDataForDateRange(billingEvents, locale);
   const today = startOfDay(new Date());
-
-  const billingEvents = await getUserBillingEvents();
-  const recentBillingEvents = billingEvents.slice(0, 30)
-  const { monthlySpendData, yearlySpendData } =
-    await getSpendingDataForDateRange(billingEvents, locale);
 
   return (
     <main

@@ -61,7 +61,7 @@ export function SpendingCard({
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}>
-            <h3
+            <h2
               className={cn(
                 "text-md font-black uppercase tracking-[0.125em]",
                 isDarkCardVariant
@@ -69,7 +69,7 @@ export function SpendingCard({
                   : "text-gray-800 dark:text-gray-200",
               )}>
               {title}
-            </h3>
+            </h2>
             <p
               className={cn(
                 "text-xs",
@@ -143,7 +143,7 @@ export function SpendingCard({
           {growthRate != 0 && (
             <span
               className={cn(
-                "text-xs font-bold px-2  rounded-full flex items-center gap-1 absolute bottom-15 @md:bottom-0 @md:relative ",
+                "text-[11px] font-bold px-2  rounded-full flex items-center gap-1 absolute bottom-15 @md:bottom-0 @md:relative ",
                 isIncrease
                   ? "text-red-500 bg-red-500/10"
                   : "text-emerald-500 bg-emerald-500/10",

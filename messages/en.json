@@ -205,7 +205,7 @@
         },
         "cta_component": {
             "title": "Never lose track of your subscriptions",
-            "subtitle": "Use Recurio for free up to 5 subscriptions and stay fully in control of your recurring expenses.",
+            "subtitle": "Use Recurio for free and stay fully in control of your recurring expenses.",
             "primary": "Start Tracking Now",
             "secondary": "Read our Privacy Policy",
             "card": {
@@ -312,6 +312,7 @@
                     "error_already_exists": "The Subscription already exists!"
                 },
                 "update": {
+                    "loading": "Updating subscription...",
                     "success": "Subscription updated successfully!",
                     "error": "An error occurred while editing the subscription!",
                     "no_changes": "No changes were made!"

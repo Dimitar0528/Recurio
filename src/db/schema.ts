@@ -43,7 +43,6 @@ export const subscriptionsTable = pgTable(
     nextBilling: timestamp({ withTimezone: true }).notNull(),
     autoRenew: boolean().notNull().default(true),
     status: dbStatusEnum().notNull(),
-    billingEntryMode: dbBillingEntryModeEnum().notNull(),
     statusChangedAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
     lastRenewedAt: timestamp({ withTimezone: true }).notNull(),
     manualRenewalGraceUntil: timestamp({ withTimezone: true }),

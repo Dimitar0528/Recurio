@@ -46,7 +46,7 @@ export const subscriptionBaseSchema = z.object({
   nextBilling: z.date(),
   autoRenew: z.boolean(),
   status: statusEnum,
-  billingEntryMode: billingEntryModeEnum,
+  billingEntryMode: billingEntryModeEnum.optional(),
 });
 
 export const subscriptionFormSchema = subscriptionBaseSchema.extend({
@@ -76,6 +76,7 @@ export const subscriptionFormSchema = subscriptionBaseSchema.extend({
     .refine((date) => date >= startOfDay(new Date()), {
       error: subscriptionErrorCodes.NEXT_BILLING_PAST,
     }),
+  billingEntryMode: billingEntryModeEnum,
 });
 
 export const subscriptionSchema = subscriptionBaseSchema.extend({
