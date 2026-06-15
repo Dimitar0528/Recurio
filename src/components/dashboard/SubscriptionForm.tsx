@@ -474,7 +474,7 @@ export default function SubscriptionForm({
                 const trackingOptions = [
                   {
                     value: billingEntryModeEnum.options[0],
-                    label: t("fields.billingEntryMode.options.today"),
+                    label: t("fields.billingEntryMode.options.current_cycle"),
                   },
                   {
                     value: billingEntryModeEnum.options[1],
@@ -490,7 +490,7 @@ export default function SubscriptionForm({
                       <div
                         role="radiogroup"
                         aria-label="Start tracking from"
-                        className="grid grid-cols-2 gap-2 p-1 rounded-lg border bg-background">
+                        className="grid grid-cols-2 gap-1 p-1 rounded-lg border bg-background">
                         {trackingOptions.map((option) => (
                           <button
                             key={option.value}

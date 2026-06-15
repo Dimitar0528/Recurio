@@ -13,7 +13,6 @@ import {
   Sparkles,
   CreditCard,
   MessageSquareQuote,
-  Tag,
   Bell,
 } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -37,6 +36,7 @@ export default function Navigation() {
   const { isSignedIn, isLoaded } = useUser();
   const locale = useLocale();
   const tReusable = useTranslations("Reusable.navigation_component");
+  const tCommonLinks = useTranslations("Reusable.common_links")
   const t = useTranslations("custom_clerk_components.menu_items");
   const { setTheme, theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -52,7 +52,7 @@ export default function Navigation() {
     {
       name: isSignedIn ? "Dashboard" : "Insights",
       label: isSignedIn
-        ? tReusable("dashboard_link")
+        ? tCommonLinks("dashboard_link")
         : tReusable("insights_link"),
       href: isSignedIn ? "/dashboard" : `/${locale}#insights`,
       Icon: isSignedIn ? LayoutDashboard : Sparkles,
@@ -60,16 +60,10 @@ export default function Navigation() {
     {
       name: isSignedIn ? "Payments" : "Reviews",
       label: isSignedIn
-        ? tReusable("payments_link")
+        ? tCommonLinks("payments_link")
         : tReusable("reviews_link"),
       href: isSignedIn ? "/payments" : `/${locale}#reviews`,
       Icon: isSignedIn ? CreditCard : MessageSquareQuote,
-    },
-    {
-      name: "Pricing",
-      label: tReusable("pricing_link"),
-      href: "/pricing",
-      Icon: Tag,
     },
   ];
 

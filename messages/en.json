@@ -77,11 +77,13 @@
             "submit": "{action} Subscription",
             "cancel": "Cancel"
         },
+        "common_links": {
+            "dashboard_link": "Dashboard",
+            "payments_link": "Payments"
+        },
         "navigation_component": {
             "skip_link": "Skip to main content",
-            "dashboard_link": "Dashboard",
             "insights_link": "Insights",
-            "payments_link": "Payments",
             "reviews_link": "Reviews",
             "pricing_link": "Pricing",
             "sign_in_link": "Get Started",
@@ -90,6 +92,16 @@
                 "dark": "Dark",
                 "system": "System"
             }
+        },
+        "footer_component": {
+            "description": "The intentional way to manage your recurring expenses. Built for those who value clarity over convenience.",
+            "product_column": "product",
+            "legal_column": {
+                "name": "Legal",
+                "privacy_policy": "Privacy Policy",
+                "terms-of-use": "Terms Of Use"
+            },
+            "rights_reserved": "All rights reserved."
         },
         "data_table": {
             "sorting": {
@@ -299,7 +311,7 @@
                 "billingEntryMode": {
                     "name": "Start tracking from",
                     "options" :{
-                        "today": "Today",
+                        "current_cycle": "Current Cycle",
                         "next_cycle": "Next Cycle"
                     }
                 }
@@ -603,6 +615,227 @@
                     "auto": "Auto",
                     "manual": "Manual"
                 }
+            }
+        }
+    },
+    "privacy_policy_page": {
+        "title": "Privacy Policy",
+        "intro": {
+            "p1": "This Privacy Policy describes how Recurio (“we”, “us”, “our”) collects, processes, stores, shares, and protects personal data when you access or use our web application, services, and related features (collectively, the “Service”).",
+            "p2": "This document is designed to comply with applicable data protection regulations, including but not limited to the General Data Protection Regulation (EU) 2016/679 (“GDPR”), the UK GDPR, the California Consumer Privacy Act as amended by the CPRA (“CCPA/CPRA”), and other applicable privacy laws depending on your jurisdiction.",
+            "p3": "By using the Service, you acknowledge that you have read and understood this Privacy Policy."
+        },
+        "sections": {
+            "data_controller": {
+                "title": "1. Data Controller and Contact Information",
+                "p1": "For the purposes of GDPR and similar regulations, the data controller responsible for your personal data is Recurio.",
+                "p2": "If you have any questions regarding this Privacy Policy or your personal data, you may contact us via the support channel provided within the Service."
+            },
+            "categories": {
+                "title": "2. Categories of Personal Data We Collect",
+                "intro": "We collect and process several categories of personal data depending on your usage of the Service:",
+                "items": {
+                    "account": {
+                        "title": "2.1 Account and Identity Data",
+                        "desc": "When you register or authenticate, we collect identifiers such as email address, user ID, authentication provider identifiers (e.g., Clerk user ID), and optional profile metadata."
+                    },
+                    "subscription": {
+                        "title": "2.2 Subscription and Financial Tracking Data",
+                        "desc": "The core functionality of Recurio involves user-provided data related to recurring subscriptions. This may include subscription names, billing cycles, renewal dates, prices, categories, and notes. This data is user-generated and stored solely for providing the Service."
+                    },
+                    "technical": {
+                        "title": "2.3 Technical and Device Data",
+                        "desc": "We automatically collect technical data such as IP address, browser type, device identifiers, operating system, language preferences, and access timestamps."
+                    },
+                    "usage": {
+                        "title": "2.4 Usage and Interaction Data",
+                        "desc": "We collect information about how you interact with the Service, including pages visited, feature usage, navigation patterns, and performance metrics."
+                    },
+                    "communication": {
+                        "title": "2.5 Communication Data",
+                        "desc": "If you contact support or interact with us, we may process communication content, metadata, and related correspondence."
+                    }
+                }
+            },
+            "purposes": {
+                "title": "3. Purposes of Processing",
+                "intro": "We process personal data for the following purposes:",
+                "items": {
+                    "maintain": "To provide and maintain core application functionality.",
+                    "store": "To store, display, and manage subscription-related user data.",
+                    "authenticate": "To authenticate users and maintain secure sessions.",
+                    "improve": "To improve performance, usability, and feature development.",
+                    "secure": "To ensure system security, prevent fraud, and detect abuse.",
+                    "communicate": "To send essential service-related communications.",
+                    "comply": "To comply with legal obligations and regulatory requirements."
+                }
+            },
+            "legal_basis": {
+                "title": "4. Legal Basis for Processing (GDPR)",
+                "intro": "If you are located in the European Economic Area (EEA), we process personal data under the following legal bases:",
+                "items": {
+                    "contractual": "<bold>Contractual necessity:</bold> Processing required to provide the Service.",
+                    "legitimate": "<bold>Legitimate interests:</bold> Improving, securing, and maintaining the Service.",
+                    "consent": "<bold>Consent:</bold> Where required for optional features such as analytics or marketing communications.",
+                    "legal": "<bold>Legal obligation:</bold> Compliance with applicable laws and regulations."
+                }
+            },
+            "sharing": {
+                "title": "5. Data Sharing and Disclosure",
+                "intro": "We do not sell personal data. However, we may share data with carefully selected third-party service providers strictly for operational purposes.",
+                "items": {
+                    "auth": "<bold>5.1 Authentication Providers:</bold> We use third-party authentication services (e.g., Clerk) to manage secure login and identity verification.",
+                    "infra": "<bold>5.2 Infrastructure Providers:</bold> Hosting, database storage, and cloud infrastructure providers (e.g., Vercel and database services) may process data on our behalf.",
+                    "analytics": "<bold>5.3 Analytics Providers:</bold> If enabled, anonymized or pseudonymized usage data may be processed for analytics and performance monitoring.",
+                    "email": "<bold>5.4 Email and Communication Services:</bold> We may use third-party email providers for transactional and service-related communication."
+                },
+                "outro": "All third-party processors are contractually obligated to implement appropriate data protection safeguards."
+            },
+            "retention": {
+                "title": "6. Data Retention",
+                "p1": "We retain personal data only for as long as necessary to fulfill the purposes outlined in this Privacy Policy.",
+                "p2": "Subscription-related data is retained for as long as your account remains active. Upon account deletion, we will permanently delete or anonymize your data within a reasonable timeframe unless retention is required for legal or security purposes."
+            },
+            "rights": {
+                "title": "7. Your Rights",
+                "intro": "Depending on your jurisdiction, you may have the following rights:",
+                "items": {
+                    "access": "Right of access to your personal data.",
+                    "rectification": "Right to rectification of inaccurate or incomplete data.",
+                    "erasure": "Right to erasure (“right to be forgotten”).",
+                    "portability": "Right to data portability.",
+                    "restrict": "Right to restrict processing.",
+                    "object": "Right to object to processing.",
+                    "withdraw": "Right to withdraw consent at any time."
+                },
+                "outro": "Requests to exercise these rights can be made through the support system within the Service."
+            },
+            "security": {
+                "title": "8. Security Measures",
+                "p1": "We implement industry-standard technical and organizational security measures to protect personal data. These include encryption in transit (HTTPS), access control mechanisms, secure authentication systems, and monitoring for suspicious activity.",
+                "p2": "However, no method of transmission or storage is completely secure, and we cannot guarantee absolute security."
+            },
+            "international": {
+                "title": "9. International Data Transfers",
+                "p1": "Your data may be transferred and processed outside your country of residence. Where applicable, we ensure appropriate safeguards such as Standard Contractual Clauses or equivalent mechanisms."
+            },
+            "cookies": {
+                "title": "10. Cookies and Tracking Technologies",
+                "p1": "We use cookies and similar technologies to maintain authentication sessions, improve functionality, and analyze usage patterns. You may control cookie preferences through your browser settings."
+            },
+            "children": {
+                "title": "11. Children’s Privacy",
+                "p1": "The Service is not intended for individuals under the age of 16 (or the applicable minimum age in your jurisdiction). We do not knowingly collect personal data from minors."
+            },
+            "changes": {
+                "title": "12. Changes to This Policy",
+                "p1": "We may update this Privacy Policy from time to time. Updates will be posted on this page with a revised effective date. Continued use of the Service constitutes acceptance of the updated policy."
+            },
+            "contact": {
+                "title": "13. Contact Information",
+                "p1": "For any questions, concerns, or requests regarding your personal data, please contact us via the support section of the application."
+            }
+        }
+    },
+    "terms_of_use_page": {
+        "title": "Terms of Use",
+        "intro": {
+            "p1": "These Terms of Use (“Terms”) govern your access to and use of Recurio (“we”, “us”, “our”), including all features, services, applications, and related content (collectively, the “Service”).",
+            "p2": "By accessing or using the Service, you agree to be bound by these Terms. If you do not agree, you may not use the Service.",
+            "p3": "These Terms constitute a legally binding agreement between you and Recurio and apply to all users regardless of location."
+        },
+        "sections": {
+            "eligibility": {
+                "title": "1. Eligibility",
+                "p1": "You must be at least 16 years old (or the minimum legal age in your jurisdiction) to use the Service. By using the Service, you represent and warrant that you meet this requirement and that you have the legal capacity to enter into these Terms."
+            },
+            "account": {
+                "title": "2. Account Registration and Security",
+                "p1": "To access certain features, you must create an account using a supported authentication provider. You agree to provide accurate, complete, and up-to-date information.",
+                "p2": "You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. We are not liable for any loss or damage arising from unauthorized access to your account."
+            },
+            "service": {
+                "title": "3. Description of the Service",
+                "p1": "Recurio is a subscription and recurring expense tracking platform that allows users to manage, organize, and analyze their recurring financial commitments.",
+                "p2": "The Service may include dashboards, analytics, reminders, data visualization tools, and related features. We reserve the right to modify, update, or discontinue any part of the Service at any time."
+            },
+            "responsibilities": {
+                "title": "4. User Responsibilities and Acceptable Use",
+                "intro": "You agree not to misuse the Service. Prohibited activities include, but are not limited to:",
+                "items": {
+                    "access": "Attempting to access accounts or data that do not belong to you.",
+                    "reverse": "Reverse engineering, decompiling, or attempting to extract source code.",
+                    "unlawful": "Using the Service for unlawful, fraudulent, or malicious purposes.",
+                    "interfere": "Interfering with system integrity, security, or performance.",
+                    "scraping": "Automated scraping or data extraction without permission.",
+                    "viruses": "Introducing viruses, bots, or harmful code.",
+                    "violation": "Using the Service in violation of applicable laws or regulations."
+                },
+                "outro": "We reserve the right to suspend or terminate accounts that violate these rules."
+            },
+            "billing": {
+                "title": "5. Subscription, Payments, and Billing",
+                "intro": "Some parts of the Service may be offered on a paid subscription basis. By subscribing, you agree to pay all applicable fees as described at the time of purchase.",
+                "items": {
+                    "cycle": "<bold>5.1 Billing Cycle:</bold> Subscription fees are charged on a recurring basis (e.g., monthly or annually) depending on your selected plan.",
+                    "renewal": "<bold>5.2 Automatic Renewal:</bold> Subscriptions automatically renew unless canceled before the renewal date.",
+                    "price": "<bold>5.3 Price Changes:</bold> We reserve the right to modify pricing. Any changes will be communicated in advance.",
+                    "refunds": "<bold>5.4 Refunds:</bold> Payments are generally non-refundable unless required by law or explicitly stated otherwise.",
+                    "processors": "<bold>5.5 Payment Processors:</bold> Payments are processed by third-party providers. We do not store full payment card details."
+                }
+            },
+            "license": {
+                "title": "6. License to Use the Service",
+                "p1": "Subject to these Terms, we grant you a limited, non-exclusive, non-transferable, revocable license to access and use the Service for personal or internal business purposes.",
+                "p2": "This license does not grant you ownership of the Service or any intellectual property rights."
+            },
+            "intellectual": {
+                "title": "7. Intellectual Property Rights",
+                "p1": "All content, design elements, branding, features, and software associated with Recurio are owned by or licensed to us and are protected by intellectual property laws.",
+                "p2": "You may not copy, modify, distribute, sell, or lease any part of the Service without prior written consent."
+            },
+            "data": {
+                "title": "8. User Data and Ownership",
+                "p1": "You retain ownership of the data you input into the Service, including subscription records and related financial information.",
+                "p2": "By using the Service, you grant us a limited license to store, process, and display your data solely for the purpose of providing the Service."
+            },
+            "availability": {
+                "title": "9. Service Availability",
+                "p1": "We strive to maintain continuous availability of the Service, but we do not guarantee uninterrupted or error-free operation.",
+                "p2": "The Service may be temporarily unavailable due to maintenance, updates, or technical issues."
+            },
+            "termination": {
+                "title": "10. Suspension and Termination",
+                "intro": "We reserve the right to suspend or terminate your access to the Service at any time if:",
+                "items": {
+                    "violate": "You violate these Terms.",
+                    "law": "We are required to do so by law.",
+                    "risk": "Your use poses a security or operational risk.",
+                    "inactive": "Your account remains inactive for an extended period."
+                },
+                "outro": "Upon termination, your right to use the Service will immediately cease."
+            },
+            "liability": {
+                "title": "11. Limitation of Liability",
+                "p1": "To the maximum extent permitted by law, Recurio shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of data, revenue, or profits.",
+                "p2": "The Service is provided “as is” and “as available” without warranties of any kind."
+            },
+            "indemnification": {
+                "title": "12. Indemnification",
+                "p1": "You agree to indemnify and hold harmless Recurio from any claims, damages, liabilities, or expenses arising from your use of the Service or violation of these Terms."
+            },
+            "governing": {
+                "title": "13. Governing Law and Jurisdiction",
+                "p1": "These Terms shall be governed by and construed in accordance with applicable laws of your jurisdiction, unless otherwise required by mandatory local law.",
+                "p2": "Any disputes arising from these Terms shall be resolved in competent courts as required by law."
+            },
+            "changes": {
+                "title": "14. Changes to These Terms",
+                "p1": "We may update these Terms from time to time. Continued use of the Service after changes become effective constitutes acceptance of the updated Terms."
+            },
+            "contact": {
+                "title": "15. Contact Information",
+                "p1": "If you have any questions about these Terms, you may contact us through the support section within the Service."
             }
         }
     },

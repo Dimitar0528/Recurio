@@ -1,0 +1,11 @@
+User-Agent: *
+Allow: /
+
+Disallow: /dashboard
+Disallow: /payments
+Disallow: /en/dashboard
+Disallow: /en/payments
+Disallow: /bg/dashboard
+Disallow: /bg/payments
+
+Sitemap: https://recurio-gg.vercel.app/sitemap.xml
