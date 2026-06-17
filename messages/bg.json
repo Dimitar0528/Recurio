@@ -64,7 +64,8 @@
         },
         "billingCycle": {
             "Monthly": "Месечно",
-            "Annual": "Годишно"
+            "Quaterly": "Тримесечно",
+            "Yearly": "Годишно"
         },
         "status": {
             "Active": "Активен",

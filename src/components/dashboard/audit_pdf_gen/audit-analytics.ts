@@ -11,10 +11,18 @@ export function generateAuditData(
   const activeSubs = subscriptions.filter((s) => s.status === "Active");
   const pausedSubs = subscriptions.filter((s) => s.status === "Paused");
   const hasNoSubs = subscriptions.length === 0;
-  const monthlyBurn = activeSubs.reduce(
-    (sum, s) => sum + (s.billingCycle === "Annual" ? s.price / 12 : s.price),
-    0,
-  );
+  const monthlyBurn = activeSubs.reduce((total, { price, billingCycle }) => {
+    let normalized = price;
+    switch (billingCycle) {
+      case "Yearly":
+        normalized = price / 12;
+        break;
+      case "Quaterly":
+        normalized = price / 3;
+        break;
+    }
+    return total + normalized;
+  }, 0);
   const annualBurn = monthlyBurn * 12;
   const lifetimeSpend = billingEvents.reduce((sum, e) => sum + e.amount, 0);
   const avgSubscriptionCost =
@@ -24,7 +32,15 @@ export function generateAuditData(
   const categoryStats = activeSubs.reduce<
     Record<string, { total: number; count: number }>
   >((acc, s) => {
-    const normPrice = s.billingCycle === "Annual" ? s.price / 12 : s.price;
+    let normPrice = s.price;
+    switch (s.billingCycle) {
+      case "Yearly":
+        normPrice = s.price / 12;
+        break;
+      case "Quaterly":
+        normPrice = s.price / 3;
+        break;
+    }
     if (!acc[s.category]) acc[s.category] = { total: 0, count: 0 };
     acc[s.category].total += normPrice;
     acc[s.category].count += 1;
@@ -72,7 +88,7 @@ export function generateAuditData(
           date: dateFormatter(s.nextBilling, locale, "numeric"),
         }),
       );
-    if (s.billingCycle === "Annual" && s.price > 100)
+    if (s.billingCycle === "Yearly" && s.price > 100)
       riskList.push(
         t("analytics.risk.lumpSum", {
           name: s.name,
@@ -147,7 +163,7 @@ export function generateAuditData(
   }
 
   const annualBillingCount = activeSubs.filter(
-    (s) => s.billingCycle === "Annual",
+    (s) => s.billingCycle === "Yearly",
   ).length;
   const annualRatio =
     activeSubs.length > 0 ? annualBillingCount / activeSubs.length : 0;

@@ -85,7 +85,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
               <span className="text-xs text-primary">
                 {tReusable(`billingCycle.${billingCycle}`)}
               </span>
-              {billingCycle === "Annual" && (
+              {billingCycle === "Yearly" && (
                 <span className="text-[10px] text-muted-foreground">
                   {t("table.badges.monthly_estimate", {
                     price: priceFormatter(price / 12),
@@ -163,7 +163,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                 {tReusable(`billingCycle.${billingCycle}`)}
               </span>
             </span>
-            {billingCycle === "Annual" && (
+            {billingCycle === "Yearly" && (
               <span className="ml-1 text-[10px] text-muted-foreground font-medium">
                 {t("table.badges.monthly_estimate", {
                   price: priceFormatter(price / 12),

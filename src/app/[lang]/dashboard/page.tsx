@@ -53,10 +53,14 @@ function calculateAverageSpendings(subscriptions: Subscription[]) {
   );
 
   const averageMonthly = activeSubscriptions.reduce(
-    (acc, sub) =>
-      acc + (sub.billingCycle === "Annual" ? sub.price / 12 : sub.price),
-    0,
-  );
+    (total, {price, billingCycle}) => {
+      let normalized = price;
+      switch(billingCycle){
+        case "Yearly": normalized = price / 12; break;
+        case "Quaterly": normalized = price / 3; break;
+      }
+      return total + normalized;
+    }, 0);
   const projectedYearly = averageMonthly * 12;
 
   return {

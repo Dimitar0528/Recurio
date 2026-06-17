@@ -12,7 +12,7 @@ export const CATEGORY_VALUES = [
   "News & Media",
   "Other",
 ] as const;
-export const BILLING_CYCLE_VALUES = ["Monthly", "Annual"] as const;
+export const BILLING_CYCLE_VALUES = ["Monthly", "Quaterly", "Yearly"] as const;
 export const STATUS_VALUES = ["Active", "Paused", "Cancelled"] as const;
 export const BILLING_ENTRY_MODE_VALUES = [
   "Include_current_cycle",

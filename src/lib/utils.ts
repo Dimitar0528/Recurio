@@ -80,7 +80,7 @@ export function getNextBillingDateFromCycle(
   currentBillingDate: Date,
   billingCycle: BillingCycle,
 ) {
-  if (billingCycle === "Annual") {
+  if (billingCycle === "Yearly") {
     return advanceDateWithClamp(currentBillingDate, { advanceYearNumber: 1 });
   }
   return advanceDateWithClamp(currentBillingDate, { advanceMonthNumber: 1 });

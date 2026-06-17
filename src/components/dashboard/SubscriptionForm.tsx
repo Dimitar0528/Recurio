@@ -292,10 +292,13 @@ export default function SubscriptionForm({
                     onValueChange={(value) => {
                       if (!value || value === field.state.value) return;
                       field.handleChange(value);
-                      const options =
-                        value === "Annual"
-                          ? { advanceYearNumber: 1 }
-                          : { advanceMonthNumber: 1 };
+
+                      let options = {}
+                      switch(value) {
+                        case "Monthly": options = { advanceMonthNumber: 1 }; break;
+                        case "Quaterly": options = { advanceMonthNumber: 3 }; break;
+                        case "Yearly": options = { advanceYearNumber: 1 }; break;
+                      }
                       const nextDate = format(
                         advanceDateWithClamp(new Date(), options),
                         "yyyy-MM-dd",

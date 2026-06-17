@@ -84,9 +84,15 @@ export default function InsightsSidebar({
       (acc, { price, billingCycle, category }) => {
         let normalized = price;
         if (viewMode === "Monthly") {
-          normalized = billingCycle === "Annual" ? price / 12 : price;
+          switch(billingCycle){
+            case "Quaterly": normalized = price / 3; break;
+            case "Yearly": normalized = price / 12; break;
+          }
         } else {
-          normalized = billingCycle === "Monthly" ? price * 12 : price;
+          switch(billingCycle){
+            case "Monthly": normalized = price * 12; break;
+            case "Quaterly": normalized = price * 4; break;
+          }
         }
         acc[category] = (acc[category] ?? 0) + normalized;
         return acc;
@@ -326,10 +332,10 @@ export default function InsightsSidebar({
               {t("breakdown.monthly")}
             </button>
             <button
-              onClick={() => setViewMode("Annual")}
+              onClick={() => setViewMode("Yearly")}
               className={cn(
                 "px-3 py-1 rounded-full transition-all duration-200 cursor-pointer",
-                viewMode === "Annual"
+                viewMode === "Yearly"
                   ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground hover:bg-primary/20",
               )}>

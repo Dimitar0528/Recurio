@@ -13,7 +13,7 @@
         },
         "dashboard_page": {
             "title": "Dashboard",
-            "description": "A centralized dashboard for viewing your subscriptions, monthly and annual expenses, as well as summary data for better financial control."
+            "description": "A centralized dashboard for viewing your subscriptions, monthly and yearly expenses, as well as summary data for better financial control."
         },
         "payments_page": {
             "title": "Payments",
@@ -64,7 +64,8 @@
         },
         "billingCycle": {
             "Monthly": "Monthly",
-            "Annual": "Annual"
+            "Quaterly": "Quaterly",
+            "Yearly": "Yearly"
         },
         "status": {
             "Active": "Active",
@@ -154,7 +155,7 @@
                 "title": "Cost Normalization",
                 "description": "We struggle to compare a 12 €/mo app with a 120 €/year service. Recurio translates every subscription into a single, normalized \"Burn Rate,\" exposing the true weight of your digital footprint.",
                 "monthly": "Monthly",
-                "annual": "Annual Impact"
+                "annual": "Yearly Impact"
             },
             "time_awareness": {
                 "title": "Time Awareness",
@@ -189,7 +190,7 @@
                 "year_10": "Year 10 Impact"
             },
             "opportunity_cost": "OPPORTUNITY COST",
-            "disclaimer": "Calculated based on a single 14.99 €/mo service. This does not account for annual price increases."
+            "disclaimer": "Calculated based on a single 14.99 €/mo service. This does not account for yearly price increases."
         },
         "testimonials_component": {
             "heading": "Feel the Love From Our Users",
@@ -289,7 +290,7 @@
             "breakdown": {
                 "title": "Category Breakdown",
                 "monthly": "Monthly",
-                "annual": "Annual",
+                "annual": "Yearly",
                 "no_results": "No results available."
             }
         },
@@ -468,7 +469,7 @@
                 "pausedServiceLeakage": "Paused service leakage: Automated system scans to ensure paused subscriptions stop executing transactions.",
                 "secureWaste": "Secure: No post-cancel charges or uncategorized leak vectors detected.",
                 "renewalRiskTitle": "Active Renewal Risk Indicators:",
-                "lumpSumRenewals": "Lump-sum renewals: Visual highlights identifying upcoming large-value annual platform renewals.",
+                "lumpSumRenewals": "Lump-sum renewals: Visual highlights identifying upcoming large-value yearly platform renewals.",
                 "gracePeriodExpirations": "Grace period expirations: System safeguards to prevent manual payment plans from unexpected shutdowns.",
                 "secureRenewal": "Secure: All monitored services mapped to active, automatic renewal pipelines."
             },
@@ -521,10 +522,10 @@
                     "optimized": "Your active services profile is highly optimized, demonstrating strong fiscal discipline. You hold a tight stack of {activeCount} active subscriptions with a monthly burn rate of {monthlyBurn}. Only {warningCount} low-priority warning flags were raised, confirming that your recurring overhead is well-protected from leakage."
                 },
                 "financialHealth": {
-                    "noSubs": "When subscriptions are registered in Recurio, this section evaluates your monthly recurring drain and projects your yearly cost. This baseline calculation tracks the balance of flexible monthly agreements alongside discounted annual plans to help you allocate cash buffers.",
-                    "annualHeavy": "A prominent concentration of Annual billing cycles ({annualRatio}% of your subscriptions) points to deep long-term savings but exposes your capital to sudden, massive 'lump-sum' depletions. We recommend retaining a cash reserve equivalent to your top annual obligations.",
+                    "noSubs": "When subscriptions are registered in Recurio, this section evaluates your monthly recurring drain and projects your yearly cost. This baseline calculation tracks the balance of flexible monthly agreements alongside discounted yearly plans to help you allocate cash buffers.",
+                    "annualHeavy": "A prominent concentration of Yearly billing cycles ({annualRatio}% of your subscriptions) points to deep long-term savings but exposes your capital to sudden, massive 'lump-sum' depletions. We recommend retaining a cash reserve equivalent to your top yearly obligations.",
                     "monthlyHeavy": "Your recurring ledger is dominated by Monthly cycles. This provides you with excellent agility and low cancelation overhead, but exposes you to 'death by a thousand cuts'. These small, creeping monthly hits are easy to lose track of over time.",
-                    "balanced": "You are maintaining a balanced hybrid strategy. By mixing flexible monthly agreements with discounted annual plans, you keep immediate cash flow liquid while capitalizing on long-term platform savings where appropriate."
+                    "balanced": "You are maintaining a balanced hybrid strategy. By mixing flexible monthly agreements with discounted yearly plans, you keep immediate cash flow liquid while capitalizing on long-term platform savings where appropriate."
                 },
                 "behavioral": {
                     "noSubs": "This diagnostic panel evaluates platform automation behaviors when active subscriptions are recorded. Recurio measures your automation dependency—calculating set-and-forget billing loops against manual payment controls—to prevent passive payment drift.",
@@ -777,7 +778,7 @@
                 "title": "5. Subscription, Payments, and Billing",
                 "intro": "Some parts of the Service may be offered on a paid subscription basis. By subscribing, you agree to pay all applicable fees as described at the time of purchase.",
                 "items": {
-                    "cycle": "<bold>5.1 Billing Cycle:</bold> Subscription fees are charged on a recurring basis (e.g., monthly or annually) depending on your selected plan.",
+                    "cycle": "<bold>5.1 Billing Cycle:</bold> Subscription fees are charged on a recurring basis (e.g., monthly or yearly) depending on your selected plan.",
                     "renewal": "<bold>5.2 Automatic Renewal:</bold> Subscriptions automatically renew unless canceled before the renewal date.",
                     "price": "<bold>5.3 Price Changes:</bold> We reserve the right to modify pricing. Any changes will be communicated in advance.",
                     "refunds": "<bold>5.4 Refunds:</bold> Payments are generally non-refundable unless required by law or explicitly stated otherwise.",
