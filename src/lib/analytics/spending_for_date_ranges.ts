@@ -14,22 +14,18 @@ import { Category } from "../validations/enums";
 import { bg, enUS } from "date-fns/locale";
 import { Locale } from "next-intl";
 
-interface SpendingCategory {
-  name: Category;
-  amount: number;
-}
-
-export interface SpendingDataForDateRange {
+export type SpendingDataForDateRange = {
   label: string;
   spend: number;
-  categories: SpendingCategory[];
-}
+  categories: { name: Category; amount: number }[];
+  subscriptions: { name: string; amount: number, count: number }[];
+};
 
 function generateSpendingDataForDateRange(
   billingEvents: BillingEvent[],
   date_range_period: "month" | "year",
   locale?: Locale
-): SpendingDataForDateRange[] {
+) {
   if (billingEvents.length === 0) return [];
   const now = new Date();
   const firstBillingDate = billingEvents.at(-1)?.chargedAt ?? now;
@@ -57,6 +53,7 @@ function generateSpendingDataForDateRange(
       label: string;
       spend: number;
       categories: Map<Category, number>;
+      subscriptions: Map<string, { amount: number; count: number }>;
     }
   >();
 
@@ -70,6 +67,7 @@ function generateSpendingDataForDateRange(
       }),
       spend: 0,
       categories: new Map(),
+      subscriptions: new Map(),
     });
   });
   // Single pass through billing events
@@ -82,10 +80,18 @@ function generateSpendingDataForDateRange(
     const bucket = buckets.get(key);
     if (!bucket) return;
     bucket.spend += billingEvent.amount;
-    const category = billingEvent.subscriptionCategory;
+    const {subscriptionName, subscriptionCategory} = billingEvent;
+    const existingSubData = bucket.subscriptions.get(subscriptionName) || {
+      amount: 0,
+      count: 0,
+    };
+    bucket.subscriptions.set(subscriptionName, {
+      amount: existingSubData.amount + billingEvent.amount,
+      count: existingSubData.count + 1,
+    });
     bucket.categories.set(
-      category,
-      (bucket.categories.get(category) || 0) + billingEvent.amount,
+      subscriptionCategory,
+      (bucket.categories.get(subscriptionCategory) || 0) + billingEvent.amount,
     );
   });
   return Array.from(buckets.values()).map((bucket) => ({
@@ -96,6 +102,14 @@ function generateSpendingDataForDateRange(
       ([name, amount]) => ({
         name,
         amount,
+      }),
+    ),
+
+    subscriptions: Array.from(bucket.subscriptions.entries()).map(
+      ([name, data]) => ({
+        name,
+        amount: data.amount,
+        count: data.count,
       }),
     ),
   }));

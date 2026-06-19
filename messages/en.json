@@ -339,6 +339,25 @@
             "status_button_clear_text": "Clear",
             "view_button": "View",
             "toggle_columns": "Toggle columns",
+            "manual_renewal": {
+                "title": "Renewal due",
+                "follow_up": "Mark this subscription as:",
+                "grace_not_started": "Grace period starts now.",
+                "grace_expired": "Grace period expired. This subscription will be paused automatically.",
+                "grace_days_left": "Auto-pauses in {count} days.",
+                "actions": {
+                    "renew_yes": "Renewed",
+                    "renew_no": "Not renewed"
+                },
+                "messages": {
+                    "renewing": "Confirming renewal...",
+                    "renewed": "Renewal recorded and next billing updated.",
+                    "updating_status": "Updating subscription status...",
+                    "paused": "Subscription set to paused.",
+                    "cancelled": "Subscription set to cancelled.",
+                    "error": "Something went wrong."
+                }
+            },
             "table": {
                 "columns": {
                     "name": "Name",
@@ -374,32 +393,13 @@
                 "cancel": "Cancel",
                 "confirm": "Delete Subscription",
                 "phrase_template": "I want to delete {name}",
-                "validation_error": "You must type exactly: \"{phrase}\""
-            },
-            "delete_messages": {
-                "deleting": "Deleting subscription...",
-                "deleted": "Subscription deleted successfully!",
-                "undo": "Undo",
-                "error": "An error has occured!",
-                "rate_limited": "Too many requests! Please try again in a minute."
-            },
-            "manual_renewal": {
-                "title": "Renewal due",
-                "follow_up": "Mark this subscription as:",
-                "grace_not_started": "Grace period starts now.",
-                "grace_expired": "Grace period expired. This subscription will be paused automatically.",
-                "grace_days_left": "Auto-pauses in {count} days.",
-                "actions": {
-                    "renew_yes": "Renewed",
-                    "renew_no": "Not renewed"
-                },
-                "messages": {
-                    "renewing": "Confirming renewal...",
-                    "renewed": "Renewal recorded and next billing updated.",
-                    "updating_status": "Updating subscription status...",
-                    "paused": "Subscription set to paused.",
-                    "cancelled": "Subscription set to cancelled.",
-                    "error": "Something went wrong."
+                "validation_error": "You must type exactly: \"{phrase}\"",
+                "delete_messages": {
+                    "deleting": "Deleting subscription...",
+                    "deleted": "Subscription deleted successfully!",
+                    "undo": "Undo",
+                    "error": "An error has occured!",
+                    "rate_limited": "Too many requests! Please try again in a minute."
                 }
             }
         },
@@ -578,7 +578,7 @@
             "paid_yesterday": "Paid yesterday",
             "paid_days_ago": "{days, plural, one {Paid # day ago} other {Paid # days ago}}"
         },
-        "spending_chart_component": {
+        "spending_charts_component": {
             "title": "Spending Insights",
             "view": {
                 "monthly": "Monthly",
@@ -594,6 +594,14 @@
             },
             "tooltip": {
                 "total": "Total"
+            },
+            "breakdown": {
+                "name": "Breakdown",
+                "breakdown_type": {
+                    "subscriptions": "Subscriptions",
+                    "categories": "Cateogories"
+                },
+                "paid": "Paid"
             },
             "empty": {
                 "title": "No spending history yet",

@@ -382,7 +382,7 @@ export default function InsightsSidebar({
                       "text-[10px] font-bold tabular-nums w-10 text-right",
                       colors.text,
                     )}>
-                    {item.value}%
+                    ({item.value}%)
                   </span>
                 </div>
               );

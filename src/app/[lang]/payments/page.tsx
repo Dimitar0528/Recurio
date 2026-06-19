@@ -8,7 +8,7 @@ import { startOfDay, differenceInDays } from "date-fns";
 import { getSubscriptionsWithinTimeInterval } from "@/lib/utils";
 import { TimelineSection } from "@/components/payments/TimeLineSection";
 import { getSpendingDataForDateRange } from "@/lib/analytics/spending_for_date_ranges";
-import { SpendingChart } from "@/components/payments/SpendingChart";
+import { SpendingCharts } from "@/components/payments/SpendingCharts";
 import PaymentsTable from "@/components/payments/payments_table/PaymentsTable";
 import { Metadata } from "next";
 
@@ -173,7 +173,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         </section>
 
         <section className="mt-8">
-          <SpendingChart
+          <SpendingCharts
             monthlyData={monthlySpendData}
             yearlyData={yearlySpendData}
           />

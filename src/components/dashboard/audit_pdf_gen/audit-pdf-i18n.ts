@@ -4,7 +4,7 @@ import { BillingCycle, CATEGORY_VALUES, Status } from "@/lib/validations/enums";
 export type AuditPdfT = ReturnType<
   typeof useTranslations<"dashboard_page.audit_pdf_component">
 >;
-export type ReusableT = ReturnType<typeof useTranslations<"Reusable">>;
+type ReusableT = ReturnType<typeof useTranslations<"Reusable">>;
 
 export type AuditPdfLabels = {
   cover: {
