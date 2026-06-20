@@ -3,7 +3,7 @@ import * as z from "zod";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { type Subscription } from "@/lib/validations/schemas";
-import { AlertTriangle, Delete, Edit } from "lucide-react";
+import { AlertTriangle, Ban, Delete, Edit, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "../../shared/DataTableColumnHeader";
 import { dateFormatter, priceFormatter, isDue } from "@/lib/utils";
@@ -19,8 +19,13 @@ import {
   DialogContent,
   DialogFooter,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useForm } from "@tanstack/react-form";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import {
@@ -33,6 +38,7 @@ import { deleteSubscription, undoDeleteSubscription } from "@/app/actions";
 import { SubIcon } from "@/components/shared/SubIcon";
 import { isWithinInterval, startOfDay, subDays } from "date-fns";
 import { RateLimitError } from "@/lib/security/rate_limits";
+import { useState } from "react";
 
 export const useColumns = (): ColumnDef<Subscription>[] => {
   const tReusable = useTranslations("Reusable");
@@ -279,6 +285,9 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           name: subscription.name,
         });
 
+        const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+        const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
         const deleteSubscriptionSchema = z.object({
           requiredPhrase: z
             .string()
@@ -298,56 +307,133 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           onSubmit: async () => {
             try {
               await deleteSubscription(id);
-              toast.success(t("delete_messages.deleted"), {
+              setIsDeleteDialogOpen(false);
+              toast.success(t("delete_dialog.delete_messages.deleted"), {
                 duration: 8000,
                 action: {
-                  label: t("delete_messages.undo"),
+                  label: t("delete_dialog.delete_messages.undo"),
                   onClick: async () => await undoDeleteSubscription(id),
                 },
               });
             } catch (err) {
               const message =
                 err instanceof RateLimitError
-                  ? t("delete_messages.rate_limited")
-                  : t("delete_messages.error");
+                  ? t("delete_dialog.delete_messages.rate_limited")
+                  : t("delete_dialog.delete_messages.error");
 
               toast.error(message);
             }
           },
         });
-        return (
-          <div className="flex gap-2 flex-col sm:flex-row">
-            <SubscriptionDialog
-              trigger={
-                <Button
-                  id="edit-btn"
-                  aria-label="Edit button"
-                  className="bg-background outline-solid outline-primary/20 cursor-pointer hover:scale-[1.05] active:scale-[0.98] transition-all">
-                  <Edit className="text-primary" />
-                </Button>
-              }
-              title={tReusable("dialog.title", {
-                action: locale === "bg" ? "Редактирай" : "Edit ",
-              })}
-              description={tReusable("dialog.description")}
-              submitLabel={tReusable("dialog.submit", {
-                action: locale === "bg" ? "Редактирай" : "Edit",
-              })}
-              cancelLabel={tReusable("dialog.cancel")}>
-              <SubscriptionForm initialValues={subscription} shouldHideTrackingField/>
-            </SubscriptionDialog>
 
-            <Dialog>
-              <DialogTrigger
+        const dropdownItems = [
+          {
+            id: "edit",
+            label: t("actions_dropdown.dropdown_items.edit"),
+            icon: Edit,
+            textClass: "text-primary",
+            iconClass: "text-primary",
+            onClick: () => setIsEditDialogOpen(true),
+          },
+          {
+            id: "cancel",
+            label: t("actions_dropdown.dropdown_items.cancel"),
+            icon: Ban,
+            textClass: "text-foreground",
+            iconClass: "text-muted-foreground",
+            onClick: () => {
+              toast.info(
+                locale === "bg"
+                  ? "Тази функция ще бъде достъпна скоро"
+                  : "This feature will be available soon",
+              );
+            },
+          },
+          {
+            id: "delete",
+            label: t("actions_dropdown.dropdown_items.delete"),
+            icon: Delete,
+            textClass: "text-destructive",
+            iconClass: "text-destructive",
+            onClick: () => setIsDeleteDialogOpen(true),
+          },
+        ];
+
+        return (
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger
                 render={
                   <Button
-                    id="delete-btn"
-                    aria-label="Delele button"
-                    className="bg-background outline-solid outline-primary/20 cursor-pointer hover:scale-[1.05] active:scale-[0.98] transition-all">
-                    <Delete className="text-destructive" />
+                    id="actions-menu-btn"
+                    aria-label="Actions button"
+                    className="bg-background outline-solid outline-primary/20 cursor-pointer hover:scale-[1.05] active:scale-[0.98] transition-all p-2 rounded-md">
+                    <MoreHorizontal
+                      className="text-muted-foreground"
+                      size={20}
+                    />
                   </Button>
                 }
               />
+              <DropdownMenuContent className="min-w-[190px] bg-popover border border-border p-1 rounded-md shadow-md">
+                {dropdownItems.map(
+                  ({
+                    id,
+                    label,
+                    icon: Icon,
+                    textClass,
+                    iconClass,
+                    onClick,
+                  }) => (
+                    <DropdownMenuItem
+                      key={id}
+                      nativeButton={true}
+                      render={
+                        <button
+                          className={`flex w-full items-center gap-1 px-2 py-1.5 text-sm cursor-pointer rounded-sm hover:bg-accent transition-colors group ${textClass} ${
+                            id === "cancel" ? "relative" : ""
+                          }`}>
+                          {id === "cancel" && (
+                            <span className="absolute -top-1.5 right-1.5 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 text-[8px] tracking-wide uppercase font-bold px-1 py-0.5 rounded pointer-events-none select-none leading-none z-10 tab">
+                              {locale === "bg"
+                                ? "Скоро"
+                                : "Coming Soon"}
+                            </span>
+                          )}
+                          <Icon
+                            size={16}
+                            className={`${iconClass} group-hover:text-gray-200 transition-colors`}
+                          />
+                          <span>{label}</span>
+                        </button>
+                      }
+                      onClick={onClick}
+                    />
+                  ),
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <SubscriptionDialog
+              open={isEditDialogOpen}
+              onOpenChange={setIsEditDialogOpen}
+              title={tReusable("dialog.title", {
+                action: t("actions_dropdown.dropdown_items.edit"),
+              })}
+              description={tReusable("dialog.description")}
+              submitLabel={tReusable("dialog.submit", {
+                action: t("actions_dropdown.dropdown_items.edit"),
+              })}
+              cancelLabel={tReusable("dialog.cancel")}>
+              <SubscriptionForm
+                initialValues={subscription}
+                shouldHideTrackingField
+              />
+            </SubscriptionDialog>
+
+            <Dialog
+              open={isDeleteDialogOpen}
+              onOpenChange={setIsDeleteDialogOpen}>
               <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden border-border shadow-2xl">
                 <div className="bg-destructive/5 px-6 py-4 border-b border-destructive/10 flex items-center gap-3">
                   <div className="p-2 bg-destructive/10 rounded-full text-destructive">
@@ -467,7 +553,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-          </div>
+          </>
         );
       },
     },

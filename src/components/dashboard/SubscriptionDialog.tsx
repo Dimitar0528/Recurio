@@ -14,12 +14,14 @@ import { Button } from "../ui/button";
 import { DialogCloseContext } from "@/context/subscription-dialog-context";
 
 type SubscriptionDialogProps = {
-  trigger: React.ReactElement;
+  trigger?: React.ReactElement
   title: string;
   description: string;
   submitLabel: string;
   cancelLabel: string;
   children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export default function SubscriptionDialog({
@@ -29,12 +31,23 @@ export default function SubscriptionDialog({
   submitLabel,
   cancelLabel,
   children,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: SubscriptionDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [localOpen, setLocalOpen] = useState(false);
+
+  // Fallback to local state if parent does not control open state
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : localOpen;
+  const setOpen =
+    isControlled && controlledOnOpenChange
+      ? controlledOnOpenChange
+      : setLocalOpen;
+
   return (
     <DialogCloseContext.Provider value={() => setOpen(false)}>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger render={trigger} />
+        {trigger && <DialogTrigger render={trigger} />}
         <DialogContent className="sm:max-w-[475px]">
           <DialogHeader>
             <DialogTitle className="font-bold text-lg">{title}</DialogTitle>

@@ -299,8 +299,10 @@
                 "name": "Name",
                 "name_placeholder": "Netflix, Gym, etc.",
                 "category": "Category",
-                "price": "Price (€)",
-                "price_placeholder": "9.99 €",
+                "price": {
+                    "name": "Price (€)",
+                    "placeholder": "9.99 €"
+                },
                 "billing_cycle": "Billing Cycle",
                 "next_billing": "Next Billing",
                 "date_placeholder": "Pick a date",
@@ -311,7 +313,7 @@
                 "status": "Status",
                 "billingEntryMode": {
                     "name": "Start tracking from",
-                    "options" :{
+                    "options": {
                         "current_cycle": "Current Cycle",
                         "next_cycle": "Next Cycle"
                     }
@@ -378,6 +380,13 @@
                     "expiring_soon": "Expires in 7–14 days",
                     "renew_required": "Renewal required",
                     "monthly_estimate": "(~{price} / Monthly)"
+                }
+            },
+            "actions_dropdown": {
+                "dropdown_items": {
+                    "edit": "Edit",
+                    "cancel": "Cancel Subscription",
+                    "delete": "Delete"
                 }
             },
             "delete_dialog": {
@@ -848,12 +857,12 @@
             }
         }
     },
-    "custom_clerk_components":{
-        "menu_items":{
+    "custom_clerk_components": {
+        "menu_items": {
             "name": "Notifications"
         },
-        "notification_settings_component":{
-            "get_notifications":{
+        "notification_settings_component": {
+            "get_notifications": {
                 "title": "Renewal Reminder Notifications",
                 "description": "Get notified 7 days before your subscription renews."
             },

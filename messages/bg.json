@@ -78,7 +78,7 @@
             "submit": "{action} Абонамент",
             "cancel": "Отмени"
         },
-        "common_links":{
+        "common_links": {
             "dashboard_link": "Табло",
             "payments_link": "Плащания"
         },
@@ -300,8 +300,10 @@
                 "name": "Име",
                 "name_placeholder": "Netflix, Фитнес, и т.н.",
                 "category": "Категория",
-                "price": "Цена (€)",
-                "price_placeholder": "9.99 €",
+                "price": {
+                    "name": "Цена (€)",
+                    "placeholder": "9.99 €"
+                },
                 "billing_cycle": "Платежен цикъл",
                 "next_billing": "Следващо плащане",
                 "date_placeholder": "Изберете дата",
@@ -379,6 +381,13 @@
                     "expiring_soon": "Изтича след 7–14 дни",
                     "renew_required": "Необходимо е подновяване",
                     "monthly_estimate": "(~{price} / Месечно)"
+                }
+            },
+            "actions_dropdown": {
+                "dropdown_items": {
+                    "edit": "Редактирай",
+                    "cancel": "Отмени абонамента",
+                    "delete": "Изтрий"
                 }
             },
             "delete_dialog": {

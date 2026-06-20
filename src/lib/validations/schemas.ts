@@ -76,7 +76,6 @@ export const subscriptionFormSchema = subscriptionBaseSchema.extend({
     .refine((date) => date >= startOfDay(new Date()), {
       error: subscriptionErrorCodes.NEXT_BILLING_PAST,
     }),
-  billingEntryMode: billingEntryModeEnum,
 });
 
 export const subscriptionSchema = subscriptionBaseSchema.extend({

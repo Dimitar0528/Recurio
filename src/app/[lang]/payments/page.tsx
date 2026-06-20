@@ -156,7 +156,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                 getSubtitle={(subscription) => {
                   const daysPassed = differenceInDays(
                     today,
-                    subscription.lastRenewedAt,
+                    startOfDay(subscription.lastRenewedAt),
                   );
                   if (daysPassed === 0)
                     return t("timeline_component.paid_today");

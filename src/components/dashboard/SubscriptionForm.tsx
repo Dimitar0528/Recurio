@@ -97,7 +97,9 @@ export default function SubscriptionForm({
         .split("T")[0],
       autoRenew: true,
       status: statusEnum.options[0],
-      billingEntryMode: billingEntryModeEnum.options[0],
+      ...(!initialValues && {
+        billingEntryMode: billingEntryModeEnum.options[0],
+      }),
     },
     validators: {
       onSubmit: subscriptionFormSchema,
@@ -252,14 +254,14 @@ export default function SubscriptionForm({
                   field.state.meta.isTouched && !field.state.meta.isValid
                 }>
                 <FieldLabel htmlFor={field.name}>
-                  {t("fields.price")}
+                  {t("fields.price.name")}
                 </FieldLabel>
                 <Input
                   type="number"
                   id={field.name}
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder={t("fields.price_placeholder")}
+                  placeholder={t("fields.price.placeholder")}
                   className="w-full"
                   aria-describedby="priceError"
                   aria-invalid={
@@ -293,11 +295,17 @@ export default function SubscriptionForm({
                       if (!value || value === field.state.value) return;
                       field.handleChange(value);
 
-                      let options = {}
-                      switch(value) {
-                        case "Monthly": options = { advanceMonthNumber: 1 }; break;
-                        case "Quaterly": options = { advanceMonthNumber: 3 }; break;
-                        case "Yearly": options = { advanceYearNumber: 1 }; break;
+                      let options = {};
+                      switch (value) {
+                        case "Monthly":
+                          options = { advanceMonthNumber: 1 };
+                          break;
+                        case "Quaterly":
+                          options = { advanceMonthNumber: 3 };
+                          break;
+                        case "Yearly":
+                          options = { advanceYearNumber: 1 };
+                          break;
                       }
                       const nextDate = format(
                         advanceDateWithClamp(new Date(), options),
