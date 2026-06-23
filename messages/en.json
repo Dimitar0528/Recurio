@@ -301,7 +301,13 @@
                 "category": "Category",
                 "price": {
                     "name": "Price (€)",
-                    "placeholder": "9.99 €"
+                    "placeholder": "9.99 €",
+                    "change_reason": {
+                        "name": "Reason",
+                        "increase": "Provider increased the price",
+                        "discount": "Discount started / ended",
+                        "correcting": "Just correcting the price"
+                    }
                 },
                 "billing_cycle": "Billing Cycle",
                 "next_billing": "Next Billing",
@@ -385,9 +391,24 @@
             "actions_dropdown": {
                 "dropdown_items": {
                     "edit": "Edit",
+                    "price_history": "Price History",
                     "cancel": "Cancel Subscription",
                     "delete": "Delete"
                 }
+            },
+            "price_history_dialog":{
+                "title": "Price History",
+                "description": "Visual timeline of subscription price transitions",
+                "empty_state": "No price history available.",
+                "price_showcase": "Price: {price}",
+                "initial": "Initial",
+                "price_change_reasons": {
+                    "increase": "Increase",
+                    "discount": "Discount"
+                },
+                "error_title": "Error",
+                "error_description": "An unexpected error occured!",
+                "close": "Close"
             },
             "delete_dialog": {
                 "title": "Are you absolutely sure?",

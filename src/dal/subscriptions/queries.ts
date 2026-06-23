@@ -5,6 +5,7 @@ import { db } from "@/db/db";
 import {
   subscriptionBillingEventsTable,
   subscriptionsTable,
+  subscriptionPriceHistoryTable
 } from "@/db/schema";
 import { asc, desc, getTableColumns, eq, and, isNull, gte } from "drizzle-orm";
 import { verifyUser } from "../users/verifyUser";
@@ -64,7 +65,6 @@ async function getBillingEventsData(userId: string) {
     .where(
       and(
         eq(subscriptionBillingEventsTable.userId, userId),
-        isNull(subscriptionBillingEventsTable.deletedAt),
         gte(subscriptionBillingEventsTable.chargedAt, threeYearsAgo),
       ),
     )
@@ -74,4 +74,37 @@ async function getBillingEventsData(userId: string) {
     ...event,
     amount: Number(event.amount),
   }));
+}
+
+export async function getSubscriptionPriceHistoryData(userId: string, subscriptionId: string) {
+  "use cache";
+  cacheTag(`price-history-${subscriptionId}`);
+  cacheLife("max");
+
+  const rawData = await db
+    .select({
+      id: subscriptionPriceHistoryTable.id,
+      oldPrice: subscriptionPriceHistoryTable.oldPrice,
+      newPrice: subscriptionPriceHistoryTable.newPrice,
+      changeReason: subscriptionPriceHistoryTable.changeReason,
+      createdAt: subscriptionPriceHistoryTable.createdAt,
+    })
+    .from(subscriptionPriceHistoryTable)
+    .innerJoin(
+      subscriptionsTable,
+      eq(subscriptionPriceHistoryTable.subscriptionId, subscriptionsTable.id),
+    )
+    .where(
+      and(
+        eq(subscriptionPriceHistoryTable.subscriptionId, subscriptionId),
+        eq(subscriptionsTable.userId, userId),
+      ),
+    )
+    .orderBy(desc(subscriptionPriceHistoryTable.createdAt));
+    
+    return rawData.map((row) => ({
+      ...row,
+      oldPrice: Number(row.oldPrice),
+      newPrice: Number(row.newPrice),
+    }));
 }

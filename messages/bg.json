@@ -279,7 +279,7 @@
                     "placeholder": "620.20 €",
                     "save": "Запази",
                     "saving": "Запазване...",
-                    "cancel": "Отказ"
+                    "cancel": "Отмени"
                 },
                 "stats": {
                     "burn": "Месечен разход",
@@ -302,7 +302,13 @@
                 "category": "Категория",
                 "price": {
                     "name": "Цена (€)",
-                    "placeholder": "9.99 €"
+                    "placeholder": "9.99 €",
+                    "change_reason": {
+                        "name": "Причина",
+                        "increase": "Доставчикът увеличи цената",
+                        "discount": "Отстъпката започна / приключи",
+                        "correcting": "Просто коригирам цената"
+                    }
                 },
                 "billing_cycle": "Платежен цикъл",
                 "next_billing": "Следващо плащане",
@@ -386,9 +392,24 @@
             "actions_dropdown": {
                 "dropdown_items": {
                     "edit": "Редактирай",
+                    "price_history": "История на цените",
                     "cancel": "Отмени абонамента",
                     "delete": "Изтрий"
                 }
+            },
+            "price_history_dialog": {
+                "title": "История на цените",
+                "description": "Визуална хронология на промените в цените на абонамента",
+                "empty_state": "Няма налична история на цените.",
+                "price_showcase": "Цена: {price}",
+                "initial": "Начало",
+                "price_change_reasons": {
+                    "increase": "Увеличение",
+                    "discount": "Отстъпка"
+                },
+                "error_title": "Грешка",
+                "error_description": "Възникна неочаквана грешка!",
+                "close": "Затвори"
             },
             "delete_dialog": {
                 "title": "Напълно ли сте сигурни?",
@@ -400,7 +421,7 @@
                 "verification_label": "Изисква се потвърждение",
                 "type_phrase": "Напишете:",
                 "placeholder": "Напишете фразата по-горе...",
-                "cancel": "Отказ",
+                "cancel": "Отмени",
                 "confirm": "Изтрий абонамента",
                 "phrase_template": "Искам да изтрия {name}",
                 "validation_error": "Трябва да напишете точно: \"{phrase}\"",

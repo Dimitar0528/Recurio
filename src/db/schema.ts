@@ -15,6 +15,7 @@ import {
   BILLING_CYCLE_VALUES,
   STATUS_VALUES,
   BILLING_ENTRY_MODE_VALUES,
+  CHANGE_REASON_VALUES,
 } from "@/lib/validations/enums";
 import { sql } from "drizzle-orm";
 
@@ -24,6 +25,10 @@ export const dbStatusEnum = pgEnum("status", STATUS_VALUES);
 export const dbBillingEntryModeEnum = pgEnum(
   "billing_entry_mode",
   BILLING_ENTRY_MODE_VALUES,
+);
+export const dbChangeReasonEnum = pgEnum(
+  "change_reasong",
+  CHANGE_REASON_VALUES,
 );
 
 const timestamps = {
@@ -76,7 +81,7 @@ export const subscriptionBillingEventsTable = pgTable(
     amount: numeric({ precision: 10, scale: 2 }).notNull(),
     chargedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     source: dbBillingEventSourceEnum().notNull(),
-    ...timestamps,
+    createdAt: timestamps.createdAt,
   },
   (table) => [
     index("subscription_billing_events_sub_idx").on(table.subscriptionId),
@@ -84,3 +89,14 @@ export const subscriptionBillingEventsTable = pgTable(
     index("subscription_billing_events_charged_idx").on(table.chargedAt),
   ],
 );
+
+export const subscriptionPriceHistoryTable = pgTable("subscription_price_history", {
+  id: uuid().primaryKey().defaultRandom(),
+  subscriptionId: uuid()
+    .notNull()
+    .references(() => subscriptionsTable.id, { onDelete: "cascade" }),
+  oldPrice: numeric({ precision: 10, scale: 2 }).notNull(),
+  newPrice: numeric({ precision: 10, scale: 2 }).notNull(),
+  changeReason: dbChangeReasonEnum().notNull(),
+  createdAt: timestamps.createdAt,
+});

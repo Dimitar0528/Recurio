@@ -7,6 +7,7 @@ import {
 } from "@/lib/validations/enums";
 import type { useTranslations } from "next-intl";
 import { startOfDay } from "date-fns";
+import { changeReasonEnum } from "@/lib/validations/enums";
 
 export type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
 
@@ -41,7 +42,7 @@ export const subscriptionBaseSchema = z.object({
       error: subscriptionErrorCodes.NAME_TOO_LONG,
     }),
   category: categoryEnum,
-  price: z.number().gt(0),
+  price: z.number().positive().gt(0),
   billingCycle: billingCycleEnum,
   nextBilling: z.date(),
   autoRenew: z.boolean(),
@@ -89,11 +90,19 @@ export const subscriptionSchema = subscriptionBaseSchema.extend({
 
 export const billingEventSchema = z.object({
   id: z.uuid(),
-  amount: z.number().positive(),
+  amount: z.number().positive().gt(0),
   chargedAt: z.date(),
   source: z.enum(["initial", "auto", "manual"]),
   subscriptionName: z.string().min(3).max(50),
   subscriptionCategory: categoryEnum
+});
+
+export const priceHistorySchema = z.object({
+  id: z.uuid(),
+  oldPrice: z.number().positive().gt(0),
+  newPrice: z.number().positive().gt(0),
+  changeReason: changeReasonEnum,
+  createdAt: z.date(),
 });
 
 export const netSalarySchema = z.object({
@@ -117,3 +126,6 @@ export type SubscriptionFormValues = z.infer<typeof subscriptionFormSchema>;
 
 export type Subscription = z.infer<typeof subscriptionSchema>;
 export type BillingEvent = z.infer<typeof billingEventSchema>;
+export type PriceHistory = z.infer<typeof priceHistorySchema>;
+
+export type ChangePriceReason = "Increase" | "Discount" | "Correcting" | null;

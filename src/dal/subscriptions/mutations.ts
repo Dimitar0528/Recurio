@@ -1,14 +1,16 @@
 import "server-only";
 import {
+  ChangePriceReason,
   subscriptionBaseSchema,
   SubscriptionFormValues,
 } from "@/lib/validations/schemas";
 import { db } from "@/db/db";
 import {
+  subscriptionPriceHistoryTable,
   subscriptionBillingEventsTable,
   subscriptionsTable,
 } from "@/db/schema";
-import { cacheLife, cacheTag, revalidatePath, updateTag } from "next/cache";
+import { cacheLife, cacheTag, refresh, revalidatePath, updateTag } from "next/cache";
 import { and, eq, isNotNull, isNull } from "drizzle-orm";
 import { DatabaseError } from "pg";
 import { DrizzleQueryError } from "drizzle-orm/errors";
@@ -115,9 +117,10 @@ export async function insertUserSubscription(
 export async function updateUserSubscription(
   id: string,
   subscription: SubscriptionFormValues,
+  changePriceReason: ChangePriceReason,
 ) {
   const userId = await verifyUser();
-  await enforceRateLimit(rateLimiters.updateSubscription, userId);
+  // await enforceRateLimit(rateLimiters.updateSubscription, userId);
 
   const result = subscriptionBaseSchema.safeParse(subscription);
   if (!result.success) throw new Error("Invalid subscription data shape!");
@@ -125,8 +128,14 @@ export async function updateUserSubscription(
   const parsedSubscription = result.data;
   const now = new Date();
   const existingSubscription = await getOwnedSubscriptionOrThrow(id, userId);
+  const oldPrice = Number(existingSubscription.price);
+  const newPrice = parsedSubscription.price
+  const priceChanged =
+    oldPrice !== newPrice &&
+    changePriceReason != null &&
+    changePriceReason !== "Correcting";
 
-  await db
+  const [updatedSubscription] = await db
     .update(subscriptionsTable)
     .set({
       name: parsedSubscription.name,
@@ -143,8 +152,19 @@ export async function updateUserSubscription(
     })
     .where(
       and(eq(subscriptionsTable.userId, userId), eq(subscriptionsTable.id, id)),
-    );
+    )
+    .returning({ id: subscriptionsTable.id, price: subscriptionsTable.price });
 
+    if (priceChanged) {
+      await db.insert(subscriptionPriceHistoryTable).values({
+        subscriptionId: updatedSubscription.id,
+        oldPrice: oldPrice.toFixed(2),
+        newPrice: newPrice.toFixed(2),
+        changeReason: changePriceReason,
+      });
+      updateTag(`price-history-${updatedSubscription.id}`);
+      refresh();
+    }
   await invalidateUserSubscriptionCacheData(userId);
 }
 

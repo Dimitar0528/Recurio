@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  ChangePriceReason,
   Subscription,
   subscriptionFormSchema,
 } from "@/lib/validations/schemas";
@@ -45,6 +46,9 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { useDialogClose } from "@/context/subscription-dialog-context";
 import { RateLimitError } from "@/lib/security/rate_limits";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Label } from "../ui/label";
+import { useState } from "react";
 
 type SubscriptionFormProps = {
   initialValues?: Subscription;
@@ -86,6 +90,8 @@ export default function SubscriptionForm({
     price: initialValues.price.toFixed(2),
   };
 
+  const [changePriceReason, setChangePriceReasonValue] = useState<ChangePriceReason>(null);
+
   const form = useForm({
     defaultValues: initialModifiedValues ?? {
       name: "",
@@ -115,7 +121,7 @@ export default function SubscriptionForm({
       if (initialValues?.id) {
         const loadingUpdateToast = toast.loading(t("messages.update.loading"));
         try {
-          await updateSubscription(initialValues.id, result.data);
+          await updateSubscription(initialValues.id, result.data, changePriceReason);
           toast.success(t("messages.update.success"), {
             id: loadingUpdateToast,
           });
@@ -277,6 +283,47 @@ export default function SubscriptionForm({
                   )}
                   aria-live="polite"
                 />
+                {initialValues && !field.state.meta.isDefaultValue && (
+                  <div className="mt-2 space-y-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                      {t("fields.price.change_reason.name")}
+                    </span>
+
+                    <RadioGroup
+                      className="flex flex-col gap-2"
+                      value={changePriceReason}
+                      onValueChange={setChangePriceReasonValue}>
+                      {[
+                        {
+                          value: "Increase",
+                          label: t("fields.price.change_reason.increase"),
+                        },
+                        {
+                          value: "Discount",
+                          label: t("fields.price.change_reason.discount"),
+                        },
+                        {
+                          value: "Correcting",
+                          label: t("fields.price.change_reason.correcting"),
+                        },
+                      ].map(({ value, label }) => (
+                        <div
+                          key={value}
+                          className="flex items-center space-x-2.5">
+                          <RadioGroupItem
+                            value={value}
+                            id={`reason-${value}`}
+                          />
+                          <Label
+                            htmlFor={`reason-${value}`}
+                            className="text-xs font-semibold cursor-pointer text-foreground/80 hover:text-foreground">
+                            {label}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </div>
+                )}
               </Field>
             )}
           </form.Field>
