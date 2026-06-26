@@ -15,7 +15,7 @@ export default function Footer() {
   return (
     <footer className="relative border-t border-border bg-background py-12 px-6 sm:px-12 md:py-16">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-full max-w-7xl bg-linear-to-r from-transparent via-border to-transparent" />
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-8">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12 lg:gap-8">
         <div className="max-w-sm space-y-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -34,8 +34,8 @@ export default function Footer() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-16 w-full lg:w-auto">
-          <div className="space-y-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-16 w-full lg:w-auto text-center sm:text-left">
+          <div className="space-y-4 col-span-2 sm:col-span-1">
             <h4 className="text-xs font-bold uppercase tracking-widest text-foreground/80">
               {tReusable("product_column")}
             </h4>
@@ -81,9 +81,19 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-6 pt-6 border-t border-border/60 text-center">
+      <div className="max-w-7xl mx-auto mt-6 pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
         <p className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} Recurio. {tReusable("rights_reserved")}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Created by{" "}
+          <a
+            href="https://github.com/Dimitar0528"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-foreground hover:text-primary transition-colors hover:underline hover:underline-offset-4 hover:decoration-primary decoration-2">
+            Dimitar
+          </a>
         </p>
       </div>
     </footer>

@@ -13,7 +13,7 @@ import {
   updateUserSubscription,
 } from "@/dal/subscriptions/mutations";
 import { updateUserNotificationsMetadata } from "@/dal/users/mutateMetadata";
-import { getSubscriptionPriceHistoryData } from "@/dal/subscriptions/queries";
+import { getCancellationGuideData, getPriceHistoryData } from "@/dal/subscriptions/queries";
 import { verifyUser } from "@/dal/users/verifyUser";
 
 export async function createSubscription(subscription: SubscriptionFormValues) {
@@ -55,9 +55,14 @@ export async function updateNotificationSettings(data: {
   await updateUserNotificationsMetadata(data);
 }
 
-export async function getUserSubscriptionPriceHistoryAction(
+export async function getUserSubscriptionPriceHistory(subscriptionId: string) {
+  const userId = await verifyUser();
+  return await getPriceHistoryData(userId, subscriptionId);
+}
+
+export async function getUserSubscriptiontCancellationGuide(
   subscriptionId: string,
 ) {
-  const userId = await verifyUser();
-  return await getSubscriptionPriceHistoryData(userId, subscriptionId);
+  await verifyUser();
+  return await getCancellationGuideData(subscriptionId);
 }

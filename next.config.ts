@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
       revalidate: 60 * 60 * 12, // 12 h
       expire: 60 * 60 * 24 * 2, // 2d
     },
+    max: {
+      stale: 60 * 60 * 24 * 7 // 7d
+    }
   },
   experimental: {
     globalNotFound: true,

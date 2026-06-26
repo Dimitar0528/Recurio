@@ -20,14 +20,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "sonner";
 import { SubIcon } from "@/components/shared/SubIcon";
 import { isWithinInterval, startOfDay, subDays } from "date-fns";
 import { useState } from "react";
 import DeleteDialog from "./actions/DeleteDialog";
 import PriceHistoryDialog from "./actions/PriceHistoryDialog";
-import { getUserSubscriptionPriceHistoryAction } from "@/app/actions";
+import { getUserSubscriptionPriceHistory, getUserSubscriptiontCancellationGuide } from "@/app/actions";
 import { useQuery } from "@tanstack/react-query";
+import CancellationDialog from "./actions/CancellationDialog";
 
 export const useColumns = (): ColumnDef<Subscription>[] => {
   const tReusable = useTranslations("Reusable");
@@ -276,6 +276,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         const { id, name } = subscription;
         const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
         const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
         const [isPriceHistoryDialogOpen, setIsPriceHistoryDialogOpen] =
           useState(false);
         const {
@@ -284,13 +285,29 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
           isError,
         } = useQuery({
           queryKey: ["price-history", id],
-          queryFn: () => getUserSubscriptionPriceHistoryAction(id),
+          queryFn: () => getUserSubscriptionPriceHistory(id),
           enabled: isPriceHistoryDialogOpen,
           staleTime: Infinity,
           gcTime: Infinity,
           refetchOnWindowFocus: false,
           refetchOnReconnect: false,
         });
+
+        const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+        const {
+          data: guide,
+          isLoading: isGuideLoading,
+          isError: isGuideError,
+        } = useQuery({
+          queryKey: ["cancellation-guide", name],
+          queryFn: () => getUserSubscriptiontCancellationGuide(name),
+          enabled: isCancelDialogOpen,
+          staleTime: Infinity,
+          gcTime: Infinity,
+          refetchOnWindowFocus: false,
+          refetchOnReconnect: false,
+        });
+
         const dropdownItems = [
           {
             id: "edit",
@@ -314,13 +331,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
             icon: Ban,
             textClass: "text-foreground",
             iconClass: "text-muted-foreground",
-            onClick: () => {
-              toast.info(
-                locale === "bg"
-                  ? "Тази функция ще бъде достъпна скоро"
-                  : "This feature will be available soon",
-              );
-            },
+            onClick: () => setIsCancelDialogOpen(true)
           },
           {
             id: "delete",
@@ -366,11 +377,6 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                           className={`flex w-full items-center gap-1 px-2 py-1.5 text-sm cursor-pointer rounded-sm hover:bg-accent transition-colors group ${textClass} ${
                             id === "cancel" ? "relative" : ""
                           }`}>
-                          {id === "cancel" && (
-                            <span className="absolute -top-1.5 right-1.5 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 text-[8px] tracking-wide uppercase font-bold px-1 py-0.5 rounded pointer-events-none select-none leading-none z-10 tab">
-                              {locale === "bg" ? "Скоро" : "Coming Soon"}
-                            </span>
-                          )}
                           <Icon
                             size={16}
                             className={`${iconClass} group-hover:text-gray-200 transition-colors`}
@@ -408,6 +414,16 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
               priceHistory={priceHistory}
               isLoading={isLoading}
               isError={isError}
+              t={t}
+            />
+
+            <CancellationDialog
+              isCancelDialogOpen={isCancelDialogOpen}
+              setIsCancelDialogOpen={setIsCancelDialogOpen}
+              guide={guide}
+              isLoading={isGuideLoading}
+              isError={isGuideError}
+              serviceName={name}
               t={t}
             />
 

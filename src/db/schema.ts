@@ -2,6 +2,8 @@ import {
   boolean,
   char,
   index,
+  integer,
+  jsonb,
   numeric,
   pgEnum,
   pgTable,
@@ -26,6 +28,7 @@ export const dbBillingEntryModeEnum = pgEnum(
   "billing_entry_mode",
   BILLING_ENTRY_MODE_VALUES,
 );
+export const difficultyEnum = pgEnum("difficulty", ["easy", "medium", "hard"]);
 export const dbChangeReasonEnum = pgEnum(
   "change_reasong",
   CHANGE_REASON_VALUES,
@@ -100,3 +103,16 @@ export const subscriptionPriceHistoryTable = pgTable("subscription_price_history
   changeReason: dbChangeReasonEnum().notNull(),
   createdAt: timestamps.createdAt,
 });
+
+export const cancellationGuideTable = pgTable(
+  "subscription_cancellation_guides",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    service_name: varchar({ length: 50 }).notNull().unique(),
+    cancel_url: varchar({ length: 255 }).notNull(),
+    difficulty: difficultyEnum().notNull(),
+    estimated_minutes: integer().notNull(),
+    steps_json: jsonb(),
+    last_verified_at: timestamp({ withTimezone: true }).$onUpdate(() => new Date()).defaultNow().notNull(),
+  },
+);

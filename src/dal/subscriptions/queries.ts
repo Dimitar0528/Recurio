@@ -5,9 +5,18 @@ import { db } from "@/db/db";
 import {
   subscriptionBillingEventsTable,
   subscriptionsTable,
-  subscriptionPriceHistoryTable
+  subscriptionPriceHistoryTable,
+  cancellationGuideTable,
 } from "@/db/schema";
-import { asc, desc, getTableColumns, eq, and, isNull, gte } from "drizzle-orm";
+import {
+  asc,
+  desc,
+  getTableColumns,
+  eq,
+  and,
+  isNull,
+  gte,
+} from "drizzle-orm";
 import { verifyUser } from "../users/verifyUser";
 import { subYears } from "date-fns";
 
@@ -33,7 +42,10 @@ async function getSubscriptionsData(userID: string) {
     .select({ ...rest })
     .from(subscriptionsTable)
     .where(and(eq(userId, userID), isNull(subscriptionsTable.deletedAt)))
-    .orderBy(asc(subscriptionsTable.nextBilling));
+    .orderBy(
+      asc(subscriptionsTable.status),
+      asc(subscriptionsTable.nextBilling),
+    );
 
   const data = rawData.map((row) => ({
     ...row,
@@ -76,7 +88,10 @@ async function getBillingEventsData(userId: string) {
   }));
 }
 
-export async function getSubscriptionPriceHistoryData(userId: string, subscriptionId: string) {
+export async function getPriceHistoryData(
+  userId: string,
+  subscriptionId: string,
+) {
   "use cache";
   cacheTag(`price-history-${subscriptionId}`);
   cacheLife("max");
@@ -101,10 +116,32 @@ export async function getSubscriptionPriceHistoryData(userId: string, subscripti
       ),
     )
     .orderBy(desc(subscriptionPriceHistoryTable.createdAt));
-    
-    return rawData.map((row) => ({
-      ...row,
-      oldPrice: Number(row.oldPrice),
-      newPrice: Number(row.newPrice),
-    }));
+
+  return rawData.map((row) => ({
+    ...row,
+    oldPrice: Number(row.oldPrice),
+    newPrice: Number(row.newPrice),
+  }));
+}
+
+function normalize(str: string) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/g, "");
+}
+function isTokenMatch(subscriptionName: string, guideServiceName: string) {
+  const subscriptionTokens = normalize(subscriptionName).split(/\s+/);
+  const guideTokens = normalize(guideServiceName).split(/\s+/);
+  return guideTokens.every((token) => subscriptionTokens.includes(token));
+}
+
+export async function getCancellationGuideData(serviceName: string) {
+  "use cache";
+  cacheTag(`cancellation-guide-${serviceName}`);
+  cacheLife("max");
+
+  const guides = await db.select().from(cancellationGuideTable);
+  const guide = guides.find((g) => isTokenMatch(serviceName, g.service_name));
+  return guide ?? null;
 }

@@ -18,6 +18,10 @@
         "payments_page": {
             "title": "Payments",
             "description": "A financial ledger for exploring recurring charges, payment activity, billing timelines, and subscription spending patterns."
+        },
+        "planner_page": {
+            "title": "Planner",
+            "description": "An interactive sandbox to model potential costs, visualize your subscription hierarchy, and translate recurring bills into real-world lifestyle impacts."
         }
     },
     "Validation": {
@@ -80,13 +84,13 @@
         },
         "common_links": {
             "dashboard_link": "Dashboard",
-            "payments_link": "Payments"
+            "payments_link": "Payments",
+            "planner_link": "Planner"
         },
         "navigation_component": {
             "skip_link": "Skip to main content",
             "insights_link": "Insights",
             "reviews_link": "Reviews",
-            "pricing_link": "Pricing",
             "sign_in_link": "Get Started",
             "theme_switcher": {
                 "light": "Light",
@@ -119,6 +123,11 @@
                 "next_page": "Go to next page",
                 "last_page": "Go to last page"
             }
+        },
+        "cancellation_difficulty":{
+            "easy": "easy",
+            "medium": "medium",
+            "hard": "hard"
         }
     },
     "landing_page": {
@@ -409,6 +418,20 @@
                 "error_title": "Error",
                 "error_description": "An unexpected error occured!",
                 "close": "Close"
+            },
+            "cancel_assistant_dialog": {
+                "title": "Cancel",
+                "label": "Experimental",
+                "description": "Follow these steps to terminate your recurring subscription.",
+                "error_message": "An error occurred while loading the cancellation instructions for {serviceName}. Please try again later.",
+                "not_found_message": "We couldn't find precise manual steps for {serviceName}. Maybe a Google Search might help you out.",
+                "difficulty": "difficulty",
+                "est_time": "Estimated {estimated_minutes} min",
+                "instructions": "Instructions",
+                "actions": {
+                    "open_page": "Open Cancellation Page",
+                    "search_google": "Search Google Instructions"
+                }
             },
             "delete_dialog": {
                 "title": "Are you absolutely sure?",
