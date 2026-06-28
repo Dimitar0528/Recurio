@@ -5,7 +5,9 @@ Disallow: /dashboard
 Disallow: /payments
 Disallow: /en/dashboard
 Disallow: /en/payments
+Disallow: /en/planner
 Disallow: /bg/dashboard
 Disallow: /bg/payments
+Disallow: /bg/planner
 
 Sitemap: https://recurio-gg.vercel.app/sitemap.xml

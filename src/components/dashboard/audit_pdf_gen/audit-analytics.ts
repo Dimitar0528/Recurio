@@ -17,7 +17,7 @@ export function generateAuditData(
       case "Yearly":
         normalized = price / 12;
         break;
-      case "Quaterly":
+      case "Quarterly":
         normalized = price / 3;
         break;
     }
@@ -37,7 +37,7 @@ export function generateAuditData(
       case "Yearly":
         normPrice = s.price / 12;
         break;
-      case "Quaterly":
+      case "Quarterly":
         normPrice = s.price / 3;
         break;
     }

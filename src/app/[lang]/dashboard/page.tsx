@@ -53,14 +53,20 @@ function calculateAverageSpendings(subscriptions: Subscription[]) {
   );
 
   const averageMonthly = activeSubscriptions.reduce(
-    (total, {price, billingCycle}) => {
+    (total, { price, billingCycle }) => {
       let normalized = price;
-      switch(billingCycle){
-        case "Yearly": normalized = price / 12; break;
-        case "Quaterly": normalized = price / 3; break;
+      switch (billingCycle) {
+        case "Yearly":
+          normalized = price / 12;
+          break;
+        case "Quarterly":
+          normalized = price / 3;
+          break;
       }
       return total + normalized;
-    }, 0);
+    },
+    0,
+  );
   const projectedYearly = averageMonthly * 12;
 
   return {
@@ -107,7 +113,8 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
 
   const { averageMonthly, projectedYearly } =
     calculateAverageSpendings(userSubscriptions);
-  const { actualMonthlySpend, actualYearlySpend } = calculateActualSpendings(billingEvents)
+  const { actualMonthlySpend, actualYearlySpend } =
+    calculateActualSpendings(billingEvents);
 
   const activeSubscriptions = userSubscriptions.filter(
     (s) => s.status === "Active",

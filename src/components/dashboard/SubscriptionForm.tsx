@@ -90,7 +90,8 @@ export default function SubscriptionForm({
     price: initialValues.price.toFixed(2),
   };
 
-  const [changePriceReason, setChangePriceReasonValue] = useState<ChangePriceReason>(null);
+  const [changePriceReason, setChangePriceReasonValue] =
+    useState<ChangePriceReason>(null);
 
   const form = useForm({
     defaultValues: initialModifiedValues ?? {
@@ -121,7 +122,11 @@ export default function SubscriptionForm({
       if (initialValues?.id) {
         const loadingUpdateToast = toast.loading(t("messages.update.loading"));
         try {
-          await updateSubscription(initialValues.id, result.data, changePriceReason);
+          await updateSubscription(
+            initialValues.id,
+            result.data,
+            changePriceReason,
+          );
           toast.success(t("messages.update.success"), {
             id: loadingUpdateToast,
           });
@@ -347,7 +352,7 @@ export default function SubscriptionForm({
                         case "Monthly":
                           options = { advanceMonthNumber: 1 };
                           break;
-                        case "Quaterly":
+                        case "Quarterly":
                           options = { advanceMonthNumber: 3 };
                           break;
                         case "Yearly":

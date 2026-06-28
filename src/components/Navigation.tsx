@@ -14,6 +14,7 @@ import {
   CreditCard,
   MessageSquareQuote,
   Bell,
+  SquareChartGantt,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -65,6 +66,17 @@ export default function Navigation() {
       href: isSignedIn ? "/payments" : `/${locale}#reviews`,
       Icon: isSignedIn ? CreditCard : MessageSquareQuote,
     },
+    // Conditionally inject the Planner link only when signed in
+    ...(isSignedIn
+      ? [
+          {
+            name: "Planner",
+            label: tCommonLinks("planner_link"),
+            href: "/planner",
+            Icon: SquareChartGantt,
+          },
+        ]
+      : []),
   ];
 
   const switchTheme = (value: string) => {
@@ -101,7 +113,7 @@ export default function Navigation() {
 
         <div className="hidden md:flex items-center gap-2 text-sm font-medium">
           {navLinks.map(({ name, label, href, Icon }) => {
-            const isActive = pathname.split("/")[2] === name.toLowerCase();
+            const isActive = pathname.split("/")[2] === name?.toLowerCase();
             return (
               <Link
                 key={name}

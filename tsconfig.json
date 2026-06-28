@@ -33,6 +33,6 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "src/proxy.ts"
-  ],
+, "src/context"  ],
   "exclude": ["node_modules"]
 }

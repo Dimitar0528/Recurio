@@ -25,7 +25,10 @@ import { isWithinInterval, startOfDay, subDays } from "date-fns";
 import { useState } from "react";
 import DeleteDialog from "./actions/DeleteDialog";
 import PriceHistoryDialog from "./actions/PriceHistoryDialog";
-import { getUserSubscriptionPriceHistory, getUserSubscriptiontCancellationGuide } from "@/app/actions";
+import {
+  getUserSubscriptionPriceHistory,
+  getUserSubscriptiontCancellationGuide,
+} from "@/app/actions";
 import { useQuery } from "@tanstack/react-query";
 import CancellationDialog from "./actions/CancellationDialog";
 
@@ -82,7 +85,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
               </span>
               {billingCycle != "Monthly" && (
                 <span className="text-[10px] text-muted-foreground">
-                  {billingCycle === "Quaterly"
+                  {billingCycle === "Quarterly"
                     ? t("table.badges.monthly_estimate", {
                         price: priceFormatter(price / 3),
                       })
@@ -331,7 +334,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
             icon: Ban,
             textClass: "text-foreground",
             iconClass: "text-muted-foreground",
-            onClick: () => setIsCancelDialogOpen(true)
+            onClick: () => setIsCancelDialogOpen(true),
           },
           {
             id: "delete",

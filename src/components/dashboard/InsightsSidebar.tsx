@@ -1,6 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
-import { categoryColors, cn, localizeFieldErrors, priceFormatter } from "@/lib/utils";
+import { useState } from "react";
+import {
+  categoryColors,
+  cn,
+  localizeFieldErrors,
+  priceFormatter,
+} from "@/lib/utils";
 import { Subscription } from "@/lib/validations/schemas";
 import { Button } from "../ui/button";
 import {
@@ -36,22 +41,15 @@ export default function InsightsSidebar({
   };
 
   const { user, isLoaded } = useUser();
-  const [salary, setSalary] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [viewMode, setViewMode] = useState<BillingCycle>("Monthly");
 
-  useEffect(() => {
-    if (!isLoaded) return;
-    const clerkSalary = user?.unsafeMetadata?.net_salary;
-    if (typeof clerkSalary === "number") {
-      setSalary(clerkSalary);
-    }
-  }, [isLoaded, user]);
-
-  const ratio = salary && salary > 0 ? (monthlySpend / salary) * 100 : 0;
+  const netSalary = user?.unsafeMetadata.net_salary;
+  const ratio =
+    netSalary && netSalary > 0 ? (monthlySpend / netSalary) * 100 : 0;
 
   const form = useForm({
-    defaultValues: { netSalary: salary?.toFixed(2) ?? "" },
+    defaultValues: { netSalary: netSalary?.toFixed(2) ?? "" },
     validators: { onSubmit: netSalarySchema },
     onSubmit: async ({ value }) => {
       if (!user) return;
@@ -60,7 +58,6 @@ export default function InsightsSidebar({
       const parsedNetSalary = result.data.netSalary;
       try {
         await user.update({ unsafeMetadata: { net_salary: parsedNetSalary } });
-        setSalary(parsedNetSalary);
         setIsEditing(false);
       } catch (err) {
         console.error("Failed to update salary:", err);
@@ -72,7 +69,6 @@ export default function InsightsSidebar({
     if (!user) return;
     try {
       await user.update({ unsafeMetadata: { net_salary: null } });
-      setSalary(null);
     } catch (err) {
       console.error("Failed to remove salary:", err);
     }
@@ -84,14 +80,22 @@ export default function InsightsSidebar({
       (acc, { price, billingCycle, category }) => {
         let normalized = price;
         if (viewMode === "Monthly") {
-          switch(billingCycle){
-            case "Quaterly": normalized = price / 3; break;
-            case "Yearly": normalized = price / 12; break;
+          switch (billingCycle) {
+            case "Quarterly":
+              normalized = price / 3;
+              break;
+            case "Yearly":
+              normalized = price / 12;
+              break;
           }
         } else {
-          switch(billingCycle){
-            case "Monthly": normalized = price * 12; break;
-            case "Quaterly": normalized = price * 4; break;
+          switch (billingCycle) {
+            case "Monthly":
+              normalized = price * 12;
+              break;
+            case "Quarterly":
+              normalized = price * 4;
+              break;
           }
         }
         acc[category] = (acc[category] ?? 0) + normalized;
@@ -148,7 +152,7 @@ export default function InsightsSidebar({
             <p className="text-[10px] uppercase tracking-[0.15em] font-semibold text-muted-foreground">
               {t("income_ratio.title")}
             </p>
-            {!isEditing && salary && (
+            {!isEditing && netSalary && (
               <div className="flex items-center">
                 <button
                   onClick={() => setIsEditing(true)}
@@ -165,7 +169,7 @@ export default function InsightsSidebar({
           </div>
 
           {/* Empty state */}
-          {!salary && !isEditing && (
+          {!netSalary && !isEditing && (
             <div>
               <p className="text-xs text-muted-foreground leading-relaxed mb-3">
                 {t("income_ratio.intro")}
@@ -255,7 +259,7 @@ export default function InsightsSidebar({
           )}
 
           {/* Ratio display */}
-          {!isEditing && salary && (
+          {!isEditing && netSalary && (
             <div className="space-y-3.5">
               <div className="flex justify-between items-center">
                 <div>
@@ -278,7 +282,7 @@ export default function InsightsSidebar({
                     {t("income_ratio.stats.salary")}
                   </p>
                   <p className="text-sm font-mono font-bold">
-                    {priceFormatter(salary)}
+                    {priceFormatter(netSalary)}
                   </p>
                 </div>
               </div>

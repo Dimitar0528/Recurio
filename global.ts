@@ -23,4 +23,7 @@ declare global {
         customEmail: string | null;
     };
   }
+  interface UserUnsafeMetadata {
+    net_salary: number | null
+  }
 }

@@ -12,7 +12,7 @@ export const CATEGORY_VALUES = [
   "News & Media",
   "Other",
 ] as const;
-export const BILLING_CYCLE_VALUES = ["Monthly", "Quaterly", "Yearly"] as const;
+export const BILLING_CYCLE_VALUES = ["Monthly", "Quarterly", "Yearly"] as const;
 export const STATUS_VALUES = ["Active", "Paused", "Cancelled"] as const;
 export const BILLING_ENTRY_MODE_VALUES = [
   "Include_current_cycle",
@@ -26,7 +26,7 @@ export const categoryEnum = z.enum(CATEGORY_VALUES, {
 });
 export const statusEnum = z.enum(STATUS_VALUES);
 export const billingEntryModeEnum = z.enum(BILLING_ENTRY_MODE_VALUES);
-export const changeReasonEnum = z.enum(CHANGE_REASON_VALUES)
+export const changeReasonEnum = z.enum(CHANGE_REASON_VALUES);
 
 export type Category = z.infer<typeof categoryEnum>;
 export type BillingCycle = z.infer<typeof billingCycleEnum>;

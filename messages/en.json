@@ -68,7 +68,7 @@
         },
         "billingCycle": {
             "Monthly": "Monthly",
-            "Quaterly": "Quaterly",
+            "Quarterly": "Quarterly",
             "Yearly": "Yearly"
         },
         "status": {
@@ -124,7 +124,7 @@
                 "last_page": "Go to last page"
             }
         },
-        "cancellation_difficulty":{
+        "cancellation_difficulty": {
             "easy": "easy",
             "medium": "medium",
             "hard": "hard"
@@ -405,7 +405,7 @@
                     "delete": "Delete"
                 }
             },
-            "price_history_dialog":{
+            "price_history_dialog": {
                 "title": "Price History",
                 "description": "Visual timeline of subscription price transitions",
                 "empty_state": "No price history available.",
@@ -921,7 +921,7 @@
                 "change_text": "You can change these preferences anytime.",
                 "save_changes": "Save Changes"
             },
-            "update_metadata_messages":{
+            "update_metadata_messages": {
                 "loading": "Updating preferences...",
                 "success": "Preferences updated successfully!",
                 "error": "Failed to update preferences."
