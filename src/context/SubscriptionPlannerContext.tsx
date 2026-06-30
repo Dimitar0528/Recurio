@@ -1,6 +1,7 @@
 "use client";
 
 import { BillingCycle, Category } from "@/lib/validations/enums";
+import { useTranslations } from "next-intl";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 type Preset = {
@@ -75,26 +76,21 @@ type SubscriptionPlannerContextType = {
   setHypotheticalPrice: (val: string) => void;
   hypotheticalPeriod: BillingCycle;
   setHypotheticalPeriod: (val: BillingCycle) => void;
-  monthlyIncome: number;
-  setMonthlyIncome: (val: number) => void;
-  calculations: CalculationResults;
   handleLoadPresetToDraft: (preset: Preset) => void;
 };
 
-const SubscriptionPlannerContext = createContext<
-  SubscriptionPlannerContextType | undefined
->(undefined);
+const SubscriptionPlannerContext = createContext<SubscriptionPlannerContextType | undefined>(undefined);
 
-export const getPeriodLabel = (period: BillingCycle) => {
-  if (period === "Yearly") return "yr";
-  if (period === "Quarterly") return "qtr";
-  return "mo";
-};
+export const getPeriodLabel = (
+  period: BillingCycle,
+  tLabels: ReturnType<
+    typeof useTranslations<"planner_page.period_labels">
+  >
+) => {
 
-const parseMonthly = (price: number, period: BillingCycle) => {
-  if (period === "Yearly") return price / 12;
-  if (period === "Quarterly") return price / 3;
-  return price;
+  if (period === "Yearly") return tLabels("yearly");
+  if (period === "Quarterly") return tLabels("quarterly");
+  return tLabels("monthly");
 };
 
 export function SubscriptionPlannerProvider({ children }: { children: ReactNode }) {
@@ -104,24 +100,12 @@ export function SubscriptionPlannerProvider({ children }: { children: ReactNode 
     useState<BillingCycle>("Monthly");
   const [hypotheticalCategory, setHypotheticalCategory] =
     useState<Category | null>(null);
-  const [monthlyIncome, setMonthlyIncome] = useState<number>(3000);
 
   const handleLoadPresetToDraft = (preset: Preset) => {
     setHypotheticalName(preset.name);
     setHypotheticalPrice(preset.price.toString());
     setHypotheticalPeriod(preset.period);
     setHypotheticalCategory(preset.category);
-  };
-
-  const parsedPrice = parseFloat(hypotheticalPrice) || 0;
-  const hasDraft = hypotheticalName.trim() !== "" && parsedPrice > 0;
-  const draftMonthly = hasDraft
-    ? parseMonthly(parsedPrice, hypotheticalPeriod)
-    : 0;
-
-  const calculations: CalculationResults = {
-    draftMonthly,
-    hasDraft,
   };
   return (
     <SubscriptionPlannerContext.Provider
@@ -134,9 +118,6 @@ export function SubscriptionPlannerProvider({ children }: { children: ReactNode 
         setHypotheticalPrice,
         hypotheticalPeriod,
         setHypotheticalPeriod,
-        monthlyIncome,
-        setMonthlyIncome,
-        calculations,
         handleLoadPresetToDraft,
       }}>
       {children}

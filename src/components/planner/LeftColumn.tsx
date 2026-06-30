@@ -9,8 +9,13 @@ import { priceFormatter } from "@/lib/utils";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Category, CATEGORY_VALUES } from "@/lib/validations/enums";
 import { Input } from "../ui/input";
+import { useTranslations } from "next-intl";
 
 export default function LeftColumn() {
+  const t = useTranslations("planner_page.left_column_component");
+  const tLabels = useTranslations("planner_page.period_labels");
+  const tReusable = useTranslations("Reusable");
+
   const {
     hypotheticalName,
     setHypotheticalName,
@@ -24,16 +29,16 @@ export default function LeftColumn() {
   } = useSubscription();
 
   const PERIOD_OPTIONS = [
-    { value: "Monthly", label: "Monthly" },
-    { value: "Quarterly", label: "Quarterly" },
-    { value: "Yearly", label: "Yearly" },
+    { value: "Monthly", label: tReusable("billingCycle.Monthly") },
+    { value: "Quarterly", label: tReusable("billingCycle.Quarterly") },
+    { value: "Yearly", label: tReusable("billingCycle.Yearly") },
   ] as const;
 
   return (
     <div className="lg:col-span-5 lg:sticky lg:top-24 lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto pr-0 lg:pr-2 space-y-6 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm">
         <h3 className="text-xs font-bold tracking-widest text-slate-400 dark:text-slate-500 uppercase mb-3">
-          Quick-Reference Presets
+          {t("quick_presets.title")}
         </h3>
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((p) => (
@@ -46,7 +51,7 @@ export default function LeftColumn() {
                 {p.name}
               </span>
               <span className="text-[10px] text-primary dark:text-slate-500 font-mono">
-                {priceFormatter(p.price)}/{getPeriodLabel(p.period)}
+                {priceFormatter(p.price)}/{getPeriodLabel(p.period, tLabels)}
               </span>
             </button>
           ))}
@@ -57,40 +62,42 @@ export default function LeftColumn() {
         <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full filter blur-xl pointer-events-none" />
         <h2 className="text-md font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-indigo-500 dark:text-indigo-400 animate-pulse" />
-          Draft Sandbox
+          {t("draft_sandbox.title")}
         </h2>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
-                Subscription Name
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                {t("draft_sandbox.labels.sub_name")}
               </label>
               <Input
                 type="text"
                 value={hypotheticalName}
                 onChange={(e) => setHypotheticalName(e.target.value)}
-                placeholder="Enter potential service..."
+                placeholder={t("draft_sandbox.labels.sub_name_placeholder")}
                 className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl text-slate-800 dark:text-slate-200"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
-                Category
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                {t("draft_sandbox.labels.category")}
               </label>
               <Select
                 onValueChange={(value: Category | null) => {
                   if (value) setHypotheticalCategory(value);
                 }}>
                 <SelectTrigger className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl text-slate-800 dark:text-slate-200 font-mono">
-                  <SelectValue placeholder="Select Category">
-                    {hypotheticalCategory}
+                  <SelectValue>
+                    {hypotheticalCategory != null
+                      ? tReusable(`categories.${hypotheticalCategory}`)
+                      : t("draft_sandbox.labels.select_placeholder")}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     {CATEGORY_VALUES.map((category) => (
                       <SelectItem key={category} value={category}>
-                        {category}
+                        {tReusable(`categories.${category}`)}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -100,8 +107,8 @@ export default function LeftColumn() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
-                Cost
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                {t("draft_sandbox.labels.price")}
               </label>
               <div className="relative">
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm">
@@ -118,8 +125,8 @@ export default function LeftColumn() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
-                Cycle
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                {t("draft_sandbox.labels.billing_cycle")}
               </label>
               <div className="flex bg-slate-50 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-850 gap-0.5">
                 {PERIOD_OPTIONS.map(({ value, label }) => {

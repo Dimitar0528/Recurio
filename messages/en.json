@@ -680,6 +680,70 @@
             }
         }
     },
+    "planner_page":{
+        "period_labels":{
+            "yearly": "yr",
+            "quarterly": "qtr",
+            "monthly": "mo"
+        },
+        "header_component":{
+            "title": "Subscription Planner",
+            "description": "Visualize hierarchy shifts, weight, and lifestyle opportunity costs in real-time.",
+            "net_income": "Monthly Net Income:",
+            "not_set": "Not set"
+        },
+        "left_column_component":{
+            "quick_presets":{
+                "title": "Quick-Reference Presets"
+            },
+            "draft_sandbox":{
+                "title": "Draft Sandbox",
+                "labels":{
+                    "sub_name_placeholder": "Enter subscription...",
+                    "sub_name": "Subscription Name",
+                    "category": "Category",
+                    "select_placeholder": "Select Category",
+                    "price": "Price",
+                    "billing_cycle": "Billing Cycle"
+                }
+            }
+        },
+        "right_column_component":{
+            "active_subscriptions": {
+                "title": "The Active Subscription Hierarchy",
+                "monthly_spend": "Base Total: {monthlySpend}/mo",
+                "empty": {
+                    "title": "Your subscription stack is empty.",
+                    "description": "First create or draft a subscription, or use the presets bank to start building your stack."
+                },
+                "sandbox_sub": {
+                    "label": "Sandbox Draft",
+                    "rank_total": "Rank #{index} of {total}",
+                    "rank": "Rank #{index}"
+                }
+            },
+            "projected_price_stats": {
+                "title": "Projected Monthly Burden",
+                "compared_to": "up from {monthlySpend}",
+                "sandbox_shift": "Sandbox Shift",
+                "five_year_leak": "5-Year Leak",
+                "micro_velocity_cost": {
+                    "name": "Micro-Velocity Cost Flow",
+                    "timeline_points": {
+                        "daily": "Daily",
+                        "weekly": "Weekly",
+                        "monthly": "Monthly",
+                        "quarterly": "Quarterly",
+                        "yearly": "Yearly"
+                    }
+                },
+                "empty": {
+                    "title": "Unlock Rich Comparison Insights",
+                    "description": "Draft a potential subscription via the Draft Sandbox inputs, or click on an already made preset to watch calculations rewrite dynamically."
+                }
+            }
+        }
+    },
     "privacy_policy_page": {
         "title": "Privacy Policy",
         "intro": {
