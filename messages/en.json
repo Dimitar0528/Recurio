@@ -741,6 +741,91 @@
                     "title": "Unlock Rich Comparison Insights",
                     "description": "Draft a potential subscription via the Draft Sandbox inputs, or click on an already made preset to watch calculations rewrite dynamically."
                 }
+            },
+            "opportunity_costs": {
+                "alt_money_path": {
+                    "name": "Alternative Money Path",
+                    "description":{
+                        "part_1": "If you choose to redirect",
+                        "part_2": "into a basic compound index fund at 7%:"
+                    },
+                    "steps": {
+                        "one_year": "1 Year",
+                        "five_years": "5 Years",
+                        "ten_years": "10 Years"
+                    }
+                },
+                "real_world_comparisons": {
+                    "title": "Lifestyle Exchanges",
+                    "description": "Funding directly trades away the monthly equivalent of:",
+                    "coffee_equivalent": "specialty coffees prepared out-of-home every single month.",
+                    "meals_equivalent": "sit-down dinners with friends or family at an inexpensive restaurant.",
+                    "discretionary_bar":{
+                        "title": "Discretionary Room Impact",
+                        "description": "This is the proportion of your monthly entertainment, dining, and discretionary room (modeled at 30% of total income based on the 50/30/20 rule) absorbed by this draft."
+                    }
+                },
+                "budget_health_analysis": {
+                    "title": "Budget Health Analysis",
+                    "description": "The share of your monthly net income occupied by the collective subscription stack:",
+                    "curr_stack_allocation": "Current Stack Allocation",
+                    "projected_allocation": "Sandbox Projected Allocation",
+                    "labels": {
+                        "Safe": "Safe",
+                        "Caution": "Caution",
+                        "Alert": "Alert",
+                        "messages": {
+                            "Safe": "Your overhead is secure. Well below the recommended 5% subscription threshold.",
+                            "Caution": "Warning: Approaching the 5-10% threshold. We recommend auditing low-use services.",
+                            "Alert": "High Exposure! Subscription overhead is heavily claiming your net savings potential."
+                        }
+                    },
+                    "empty": {
+                        "title": "Subscription Stack Impact",
+                        "description": "We can’t analyze your budget health without a specified salary, but we can look at your draft’s weight within your overall subscription footprint:",
+                        "draft_weight": "Draft Weight in Stack",
+                        "callout": "This single potential service will absorb{draftPercentOfStack}% of your upcoming recurring bill portfolio."
+                    }
+                },
+                "labor_exchange_rate": {
+                    "title": "The Labor Exchange Rate",
+                    "description": "Translating your draft subscription directly into the exact hours of working time required to pay for it:",
+                    "cost": "Draft Labor Cost",
+                    "hrs": "hrs",
+                    "labels": {
+                        "zero_cost": "Zero Cost",
+                        "micro_shift": "Micro-Shift",
+                        "half_day": "Half-Day Shift",
+                        "full_day": "Full-Day Shift"
+                    },
+                    "periods": {
+                        "Monthly": {
+                            "adjective": "monthly",
+                            "every": "every month"
+                        },
+                        "Quarterly": {
+                            "adjective": "quarterly",
+                            "every": "every quarter"
+                        },
+                        "Yearly": {
+                            "adjective": "yearly",
+                            "every": "every year"
+                        }
+                    },
+                    "labor_exchange": {
+                        "hours_plural": "{count, plural, =1 {1 hour} other {# hours}}",
+                        "description": "To cover your {price} {periodAdjective} payment, you must swap <bold>{hours}</bold> of your active working time {periodEvery}."
+                    },
+                    "empty": {
+                        "title": "Personalized Labor Insights Locked",
+                        "description": "To calculate exactly how many hours of your life go toward funding this subscription, specify your net monthly income.",
+                        "unlock": {
+                            "title": "Ready to Unlock",
+                            "description": "Set your net monthly salary to reveal life-hour rates and tax calendars."
+                        },
+                        "callout":"Your financial details are kept strictly private on your profile metadata."
+                    }
+                }
             }
         }
     },
