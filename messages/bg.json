@@ -417,7 +417,9 @@
                 },
                 "error_title": "Грешка",
                 "error_description": "Възникна неочаквана грешка!",
-                "close": "Затвори"
+                "close": "Затвори",
+                "percentage_increase": "Този абонамент се е увеличил с {percent}%, откакто го започнахте.",
+                "percentage_decrease": "Този абонамент е намалял с {percent}%, откакто го започнахте."
             },
             "cancel_assistant_dialog": {
                 "title": "Отмени",

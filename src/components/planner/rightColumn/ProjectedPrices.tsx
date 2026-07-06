@@ -27,8 +27,8 @@ export default function ProjectedPrices ({
         letter: locale === "bg" ? "Д" : "D",
         value: draftMonthly / 30.417,
         badgeStyles:
-          "border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400",
-        labelStyles: "text-slate-400 dark:text-slate-500",
+          "border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400",
+        labelStyles: "text-slate-600 dark:text-slate-400",
         valueStyles: "text-slate-800 dark:text-slate-200",
       },
       {
@@ -39,8 +39,8 @@ export default function ProjectedPrices ({
         letter: locale === "bg" ? "С" : "W",
         value: draftMonthly / 4.33,
         badgeStyles:
-          "border-slate-350 dark:border-slate-750 text-slate-500 dark:text-slate-400",
-        labelStyles: "text-slate-400 dark:text-slate-500",
+          "border-slate-350 dark:border-slate-750 text-slate-600 dark:text-slate-400",
+        labelStyles: "text-slate-600 dark:text-slate-400",
         valueStyles: "text-slate-800 dark:text-slate-200",
       },
       {
@@ -63,8 +63,8 @@ export default function ProjectedPrices ({
         letter: locale === "bg" ? "Т" : "Q",
         value: draftMonthly * 3,
         badgeStyles:
-          "border-slate-350 dark:border-slate-750 text-slate-500 dark:text-slate-400",
-        labelStyles: "text-slate-400 dark:text-slate-500",
+          "border-slate-350 dark:border-slate-750 text-slate-600 dark:text-slate-400",
+        labelStyles: "text-slate-600 dark:text-slate-400",
         valueStyles: "text-slate-800 dark:text-slate-200",
       },
       {
@@ -75,7 +75,7 @@ export default function ProjectedPrices ({
         letter: locale === "bg" ? "Г" : "Y",
         value: draftYearly,
         badgeStyles:
-          "border-emerald-550 dark:border-emerald-800/80 text-emerald-600 dark:text-emerald-400 shadow-xs",
+          "border-emerald-500 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-400 shadow-xs",
         labelStyles: "text-emerald-500 dark:text-emerald-400/80",
         valueStyles: "text-slate-850 dark:text-slate-100",
       },
@@ -85,7 +85,7 @@ export default function ProjectedPrices ({
       <>
         <div className="flex flex-col md:flex-row md:items-end items-center gap-6 pb-6 border-b border-slate-250/60 dark:border-slate-800/80 ">
           <div className="space-y-1">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-slate-400 dark:text-slate-500 block">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-slate-600 dark:text-slate-400 block">
               {t("projected_price_stats.title")}
             </span>
             <div className="flex items-baseline gap-3">
@@ -102,7 +102,7 @@ export default function ProjectedPrices ({
 
           <div className="flex items-center gap-6 sm:gap-10">
             <div className="space-y-0.5">
-              <span className="block text-[9px] text-slate-400 dark:text-slate-550 uppercase tracking-widest font-semibold">
+              <span className="block text-[9px] text-slate-600 dark:text-slate-550 uppercase tracking-widest font-semibold">
                 {t("projected_price_stats.sandbox_shift")}
               </span>
               <span className="text-xl font-extrabold text-indigo-600 dark:text-indigo-400 font-mono">
@@ -114,7 +114,7 @@ export default function ProjectedPrices ({
             </div>
             <div className="w-px h-8 bg-slate-200 dark:bg-slate-800" />
             <div className="space-y-0.5">
-              <span className="block text-[9px] text-slate-400 dark:text-slate-550 uppercase tracking-widest font-semibold">
+              <span className="block text-[9px] text-slate-600 dark:text-slate-550 uppercase tracking-widest font-semibold">
                 {t("projected_price_stats.five_year_leak")}
               </span>
               <span className="text-xl font-extrabold text-rose-500 dark:text-rose-450 font-mono">
@@ -125,7 +125,7 @@ export default function ProjectedPrices ({
         </div>
 
         <div className="space-y-6">
-          <h4 className="text-[10px] font-bold tracking-widest text-slate-400 dark:text-slate-550 uppercase">
+          <h4 className="text-[10px] font-bold tracking-widest text-slate-600 dark:text-slate-550 uppercase">
             {t("projected_price_stats.micro_velocity_cost.name")}
           </h4>
           <div className="relative mx-auto">

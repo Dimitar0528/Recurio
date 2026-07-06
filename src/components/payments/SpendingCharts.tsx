@@ -454,7 +454,7 @@ export function SpendingCharts({ monthlyData, yearlyData }: SpendChartProps) {
                           className="group flex flex-col gap-2 p-2 rounded-xl border border-transparent hover:border-border/15 hover:bg-muted/20 transition-all duration-200">
                           <div className="flex items-center justify-between text-xs leading-none">
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className="font-bold text-foreground truncate tracking-tight">
+                              <span className="text-[11px] font-bold text-foreground truncate tracking-tight">
                                 {item.name}
                               </span>
                               <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-black tracking-wider uppercase bg-primary/10 text-primary shrink-0 leading-none">

@@ -71,7 +71,7 @@ type SubscriptionPlannerContextType = {
   hypotheticalName: string;
   setHypotheticalName: (val: string) => void;
   hypotheticalCategory: Category | null;
-  setHypotheticalCategory: (val: Category) => void;
+  setHypotheticalCategory: (val: Category | null) => void;
   hypotheticalPrice: string;
   setHypotheticalPrice: (val: string) => void;
   hypotheticalPeriod: BillingCycle;

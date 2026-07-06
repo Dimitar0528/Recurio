@@ -417,7 +417,9 @@
                 },
                 "error_title": "Error",
                 "error_description": "An unexpected error occured!",
-                "close": "Close"
+                "close": "Close",
+                "percentage_increase": "This subscription increased by {percent}% since you started.",
+                "percentage_decrease": "This subscription decreased by {percent}% since you started."
             },
             "cancel_assistant_dialog": {
                 "title": "Cancel",

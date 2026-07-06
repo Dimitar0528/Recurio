@@ -21,6 +21,7 @@ import {
   RadialBarChart,
   ResponsiveContainer,
   YAxis,
+  LabelList,
 } from "recharts";
 import {
   type ChartConfig,
@@ -173,7 +174,7 @@ export default function OpportunityCosts({
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   data={wealthData}
-                  margin={{ left: -10, right: 10, top: 5, bottom: 5 }}>
+                  margin={{ left: -5, right: 30, top: 18, bottom: 5 }}>
                   <defs>
                     <linearGradient
                       id="colorAmount"
@@ -221,15 +222,24 @@ export default function OpportunityCosts({
                     stroke="rgb(16 185 129)"
                     strokeWidth={1.5}
                     fillOpacity={1}
-                    fill="url(#colorAmount)"
-                  />
+                    fill="url(#colorAmount)">
+                    <LabelList
+                      dataKey="amount"
+                      position="top"
+                      offset={12}
+                      className="fill-slate-600 dark:fill-slate-400 font-mono text-[8px] font-semibold"
+                      formatter={(value) =>
+                        Number(value) !== 0 ? priceFormatter(Number(value)) : ""
+                      }
+                    />
+                  </Area>
                 </AreaChart>
               </ResponsiveContainer>
             </ChartContainer>
           </div>
           <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
             <div className="flex flex-col">
-              <span className="text-[9px] text-slate-400 dark:text-slate-550 uppercase tracking-wider font-mono">
+              <span className="text-[9px] text-slate-600 dark:text-slate-400 uppercase tracking-wider font-mono">
                 {t("opportunity_costs.alt_money_path.steps.one_year")}
               </span>
               <span className="text-sm font-bold text-slate-700 dark:text-slate-300 font-mono">
@@ -237,18 +247,18 @@ export default function OpportunityCosts({
               </span>
             </div>
             <div className="flex flex-col border-l border-slate-100 dark:border-slate-800 pl-3">
-              <span className="text-[9px] text-slate-400 dark:text-slate-550 uppercase tracking-wider font-mono">
+              <span className="text-[9px] text-slate-600 dark:text-slate-400 uppercase tracking-wider font-mono">
                 {t("opportunity_costs.alt_money_path.steps.five_years")}
               </span>
-              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+              <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400 font-mono">
                 {priceFormatter(compoundFiveYear)}
               </span>
             </div>
             <div className="flex flex-col border-l border-slate-100 dark:border-slate-800 pl-3">
-              <span className="text-[9px] text-slate-400 dark:text-slate-550 uppercase tracking-wider font-mono">
+              <span className="text-[9px] text-slate-600 dark:text-slate-400 uppercase tracking-wider font-mono">
                 {t("opportunity_costs.alt_money_path.steps.ten_years")}
               </span>
-              <span className="text-sm font-bold text-indigo-500 dark:text-indigo-400 font-mono">
+              <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400 font-mono">
                 {priceFormatter(draftTenYearCompound)}
               </span>
             </div>
@@ -342,10 +352,10 @@ export default function OpportunityCosts({
                   <span
                     className={`text-[9px] font-bold uppercase px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 transition-all duration-300 ${
                       safetyMarginZone === "Alert"
-                        ? "bg-rose-50 border-rose-200 text-rose-600 dark:bg-rose-950/30 dark:border-rose-900/60 dark:text-rose-400"
+                        ? "bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-950/30 dark:border-rose-900/60 dark:text-rose-400"
                         : safetyMarginZone === "Caution"
-                          ? "bg-amber-50 border-amber-200 text-amber-600 dark:bg-amber-950/30 dark:border-amber-900/60 dark:text-amber-400"
-                          : "bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/30 dark:border-emerald-900/60 dark:text-emerald-400"
+                          ? "bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-950/30 dark:border-amber-900/60 dark:text-amber-400"
+                          : "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/30 dark:border-emerald-900/60 dark:text-emerald-400"
                     }`}>
                     {safetyMarginZone === "Alert" && (
                       <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
@@ -362,7 +372,7 @@ export default function OpportunityCosts({
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs">
-                    <span className="text-slate-500 dark:text-slate-450">
+                    <span className="text-slate-600 dark:text-slate-400">
                       {t(
                         `opportunity_costs.budget_health_analysis.curr_stack_allocation`,
                       )}
@@ -399,7 +409,7 @@ export default function OpportunityCosts({
                   </div>
                 </div>
               </div>
-              <div className="text-[10px] text-slate-450 dark:text-slate-500 font-mono uppercase tracking-wider leading-relaxed">
+              <div className="text-[10px] text-slate-600 dark:text-slate-400 font-mono uppercase tracking-wider leading-relaxed">
                 {t(
                   `opportunity_costs.budget_health_analysis.labels.messages.${safetyMarginZone}`,
                 )}
@@ -440,7 +450,7 @@ export default function OpportunityCosts({
                   </div>
                 </div>
               </div>
-              <div className="text-[10px] text-slate-450 dark:text-slate-500 font-mono uppercase tracking-wider leading-relaxed">
+              <div className="text-[10px] text-slate-600 dark:text-slate-400 font-mono uppercase tracking-wider leading-relaxed">
                 {t(`opportunity_costs.budget_health_analysis.empty.callout`, {
                   draftPercentOfStack: draftPercentOfStack.toFixed(2),
                 })}
@@ -478,7 +488,7 @@ export default function OpportunityCosts({
                 </div>
                 <div className="flex-1 space-y-2">
                   <div>
-                    <span className="block text-[9px] text-slate-450 dark:text-slate-500 uppercase tracking-widest font-semibold font-mono">
+                    <span className="block text-[9px] text-slate-600 dark:text-slate-400 uppercase tracking-widest font-semibold font-mono">
                       {t(`opportunity_costs.labor_exchange_rate.cost`)}
                     </span>
                     <span className="text-3xl font-extrabold text-slate-850 dark:text-slate-100 font-mono tracking-tight block leading-tight">
@@ -553,7 +563,7 @@ export default function OpportunityCosts({
                   </span>
                 </div>
               </div>
-              <div className="text-[10px] text-slate-450 dark:text-slate-500 font-mono uppercase tracking-wider leading-relaxed">
+              <div className="text-[10px] text-slate-600 dark:text-slate-400 font-mono uppercase tracking-wider leading-relaxed">
                 {t("opportunity_costs.labor_exchange_rate.empty.callout")}
               </div>
             </>

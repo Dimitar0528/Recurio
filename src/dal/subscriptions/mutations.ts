@@ -55,6 +55,7 @@ async function getOwnedSubscriptionOrThrow(id: string, userId: string) {
 
 async function invalidateUserSubscriptionCacheData(userId: string) {
   revalidatePath("/dashboard");
+  revalidatePath("/planner")
   updateTag(`subscriptions-${userId}`);
   updateTag(`billing-events-${userId}`);
 }

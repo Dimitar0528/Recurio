@@ -377,9 +377,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                       nativeButton={true}
                       render={
                         <button
-                          className={`flex w-full items-center gap-1 px-2 py-1.5 text-sm cursor-pointer rounded-sm hover:bg-accent transition-colors group ${textClass} ${
-                            id === "cancel" ? "relative" : ""
-                          }`}>
+                          className={`flex w-full items-center gap-1 px-2 py-1.5 text-sm cursor-pointer rounded-sm hover:bg-accent transition-colors group ${textClass}`}>
                           <Icon
                             size={16}
                             className={`${iconClass} group-hover:text-gray-200 transition-colors`}

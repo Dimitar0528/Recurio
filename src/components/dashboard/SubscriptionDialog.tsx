@@ -63,7 +63,7 @@ export default function SubscriptionDialog({
             <DialogFooter>
               <DialogClose
                 render={
-                  <Button variant="outline" className="p-4 cursor-pointer">
+                  <Button variant="outline" className="p-4 cursor-pointer outline-dashed">
                     {cancelLabel}
                   </Button>
                 }

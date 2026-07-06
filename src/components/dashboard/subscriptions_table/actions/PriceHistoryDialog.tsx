@@ -32,17 +32,16 @@ type PriceHistoryDialogProps = {
   >;
 };
 
-
 export default function PriceHistoryDialog({
   isPriceHistoryDialogOpen,
   setIsPriceHistoryDialogOpen,
   priceHistory,
   isLoading,
   isError,
-  t
+  t,
 }: PriceHistoryDialogProps) {
   const locale = useLocale();
-  
+
   const hasHistory = priceHistory && priceHistory.length > 0;
   const sortedHistory = hasHistory
     ? [...priceHistory].sort(
@@ -50,6 +49,7 @@ export default function PriceHistoryDialog({
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       )
     : [];
+
   const chartData = hasHistory
     ? [
         {
@@ -62,6 +62,13 @@ export default function PriceHistoryDialog({
         })),
       ]
     : [];
+
+  const initialPrice = sortedHistory[0]?.oldPrice;
+  const currentPrice = sortedHistory[sortedHistory.length - 1]?.newPrice;
+  const percentChange =
+    initialPrice && initialPrice !== 0
+      ? Math.round(((currentPrice - initialPrice) / initialPrice) * 100)
+      : 0;
 
   const chartConfig = {
     price: {
@@ -215,41 +222,50 @@ export default function PriceHistoryDialog({
               </ChartContainer>
             </div>
 
-            <div className="border-t border-border/40 pt-2">
-              <div className="relative border-l border-border/70 ml-3 pl-6 space-y-3">
-                {priceHistory.map((item, index) => {
-                  const reason = reasonMap[item.changeReason];
-
-                  return (
-                    <div key={index} className="relative group">
-                      <div className="absolute left-[-30px] top-1.5 h-3 w-3 rounded-full border-2 border-background bg-green-600 transition-transform group-hover:scale-125" />
-
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-                            {dateFormatter(item.createdAt, locale, "numeric")}
-                          </span>
-
-                          <span className="text-[13px] font-bold text-foreground">
-                            {priceFormatter(item.oldPrice)}
-                            <span className="text-muted-foreground/50 font-normal mx-1">
-                              →
+            <div className="border-t border-border/40 pt-3">
+              {percentChange !== 0 && (
+                <p className="text-xs font-medium text-muted-foreground mb-3 px-1">
+                  {percentChange > 0
+                    ? t("price_history_dialog.percentage_increase", {
+                        percent: percentChange,
+                      })
+                    : t("price_history_dialog.percentage_decrease", {
+                        percent: Math.abs(percentChange),
+                      })}
+                </p>
+              )}
+              <div className="max-h-[160px] overflow-y-auto pr-1">
+                <div className="relative border-l border-border/70 ml-3 pl-6 space-y-3">
+                  {priceHistory.map((item, index) => {
+                    const reason = reasonMap[item.changeReason];
+                    return (
+                      <div key={index} className="relative group">
+                        <div className="absolute left-[-30px] top-1.5 h-3 w-3 rounded-full border-2 border-background bg-green-600 transition-transform group-hover:scale-125" />
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex flex-col">
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                              {dateFormatter(item.createdAt, locale, "numeric")}
                             </span>
-                            {priceFormatter(item.newPrice)}
+                            <span className="text-[13px] font-bold text-foreground">
+                              {priceFormatter(item.oldPrice)}
+                              <span className="text-muted-foreground/50 font-normal mx-1">
+                                →
+                              </span>
+                              {priceFormatter(item.newPrice)}
+                            </span>
+                          </div>
+                          <span
+                            className={cn(
+                              "text-[9px] uppercase font-black tracking-widest px-2 py-0.5 rounded-md leading-none",
+                              reason.className,
+                            )}>
+                            {reason.label}
                           </span>
                         </div>
-
-                        <span
-                          className={cn(
-                            "text-[9px] uppercase font-black tracking-widest px-2 py-0.5 rounded-md leading-none",
-                            reason.className,
-                          )}>
-                          {reason.label}
-                        </span>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </>
@@ -259,7 +275,7 @@ export default function PriceHistoryDialog({
             render={
               <Button
                 variant="outline"
-                className="cursor-pointer border-border hover:bg-accent font-semibold">
+                className="cursor-pointer border-border hover:bg-accent font-semibold outline-dashed">
                 {t("price_history_dialog.close")}
               </Button>
             }

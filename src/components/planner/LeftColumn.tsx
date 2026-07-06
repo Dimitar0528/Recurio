@@ -1,4 +1,5 @@
 "use client";
+
 import { Sparkles } from "lucide-react";
 import {
   useSubscription,
@@ -6,15 +7,28 @@ import {
   getPeriodLabel,
 } from "@/context/SubscriptionPlannerContext";
 import { priceFormatter } from "@/lib/utils";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Category, CATEGORY_VALUES } from "@/lib/validations/enums";
 import { Input } from "../ui/input";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { Button } from "../ui/button";
+import SubscriptionDialog from "../dashboard/SubscriptionDialog";
+import { useState } from "react";
+import SubscriptionForm from "../dashboard/SubscriptionForm";
 
 export default function LeftColumn() {
   const t = useTranslations("planner_page.left_column_component");
   const tLabels = useTranslations("planner_page.period_labels");
   const tReusable = useTranslations("Reusable");
+  const locale = useLocale();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const {
     hypotheticalName,
@@ -34,10 +48,34 @@ export default function LeftColumn() {
     { value: "Yearly", label: tReusable("billingCycle.Yearly") },
   ] as const;
 
+  const initialDraftValues = {
+    name: hypotheticalName,
+    category: hypotheticalCategory as Category,
+    price: Number(hypotheticalPrice),
+    billingCycle: hypotheticalPeriod,
+  };
+
+  const isDraftValues =
+    hypotheticalName.trim() !== "" &&
+    hypotheticalPrice !== "" &&
+    hypotheticalCategory !== null;
+
+  const isDirty =
+    hypotheticalName.trim() !== "" ||
+    hypotheticalPrice !== "" ||
+    hypotheticalCategory !== null;
+
+  const handleClear = () => {
+    setHypotheticalName("");
+    setHypotheticalPrice("");
+    setHypotheticalCategory(null);
+    setHypotheticalPeriod("Monthly");
+  };
+
   return (
     <div className="lg:col-span-5 lg:sticky lg:top-24 lg:max-h-[calc(100vh-10rem)] lg:overflow-y-auto pr-0 lg:pr-2 space-y-6 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm">
-        <h3 className="text-xs font-bold tracking-widest text-slate-400 dark:text-slate-500 uppercase mb-3">
+        <h3 className="text-xs font-bold tracking-widest text-slate-600 dark:text-slate-400 uppercase mb-3">
           {t("quick_presets.title")}
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -60,14 +98,52 @@ export default function LeftColumn() {
 
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full filter blur-xl pointer-events-none" />
-        <h2 className="text-md font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-indigo-500 dark:text-indigo-400 animate-pulse" />
-          {t("draft_sandbox.title")}
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-md font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+            {!isDirty && (
+              <Sparkles className="w-4 h-4 text-indigo-500 dark:text-indigo-400 animate-pulse" />
+            )}
+            {t("draft_sandbox.title")}
+          </h2>
+          <div className="flex items-center gap-2">
+            {isDraftValues && (
+              <Button
+                size="sm"
+                onClick={() => setIsDialogOpen(true)}
+                className="dark:bg-primary/50 h-7 hover:scale-[1.02] active:scale-[0.98] text-xs px-3 cursor-pointer">
+                {locale === "bg"
+                  ? "Добави към абонаментите"
+                  : "Add to Subscriptions"}
+              </Button>
+            )}
+            {isDirty && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClear}
+                className="h-7 text-xs px-2.5 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer rounded-lg transition-colors outline-dashed">
+                {locale === "bg" ? "Изчисти" : "Clear"}
+              </Button>
+            )}
+          </div>
+          <SubscriptionDialog
+            open={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            title={tReusable("dialog.title", {
+              action: `${locale === "bg" ? "Добави" : "Add"}`,
+            })}
+            description={tReusable("dialog.description")}
+            submitLabel={tReusable("dialog.submit", {
+              action: `${locale === "bg" ? "Добави" : "Add"}`,
+            })}
+            cancelLabel={tReusable("dialog.cancel")}>
+            <SubscriptionForm initialDraftValues={initialDraftValues} />
+          </SubscriptionDialog>
+        </div>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                 {t("draft_sandbox.labels.sub_name")}
               </label>
               <Input
@@ -79,7 +155,7 @@ export default function LeftColumn() {
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                 {t("draft_sandbox.labels.category")}
               </label>
               <Select
@@ -107,7 +183,7 @@ export default function LeftColumn() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                 {t("draft_sandbox.labels.price")}
               </label>
               <div className="relative">
@@ -125,7 +201,7 @@ export default function LeftColumn() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                 {t("draft_sandbox.labels.billing_cycle")}
               </label>
               <div className="flex bg-slate-50 dark:bg-slate-950 p-1 rounded-xl border border-slate-200 dark:border-slate-850 gap-0.5">

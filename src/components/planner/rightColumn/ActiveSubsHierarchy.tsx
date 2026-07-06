@@ -44,14 +44,14 @@ export default function ActiveSubsHierarchy({
                     <h4 className="text-sm font-semibold text-slate-850 dark:text-slate-200">
                       {sub.name}
                     </h4>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-550 font-mono font-bold bg-slate-200 dark:bg-slate-800/80 px-1.5 py-0.2 rounded">
+                    <span className="text-[10px] text-slate-600 dark:text-slate-550 font-mono font-bold bg-slate-200 dark:bg-slate-800/80 px-1.5 py-0.2 rounded">
                       {t("active_subscriptions.sandbox_sub.rank_total", {
                         index: index + 1,
                         total: sortedStack.length,
                       })}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-450 dark:text-slate-500 font-mono uppercase tracking-wider">
+                  <p className="text-[10px] text-slate-600 dark:text-slate-400 font-mono uppercase tracking-wider">
                     {tReusable(`categories.${sub.category}`)}
                   </p>
                 </div>
@@ -80,13 +80,13 @@ export default function ActiveSubsHierarchy({
                   <h4 className="text-sm font-semibold text-slate-850 dark:text-slate-200">
                     {sub.name}
                   </h4>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-550 font-mono font-bold bg-slate-200 dark:bg-slate-800/80 px-1.5 py-0.2 rounded">
+                  <span className="text-[10px] text-slate-600 dark:text-slate-550 font-mono font-bold bg-slate-200 dark:bg-slate-800/80 px-1.5 py-0.2 rounded">
                     {t("active_subscriptions.sandbox_sub.rank", {
                       index: index + 1,
                     })}
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-450 dark:text-slate-500 font-mono uppercase tracking-wider">
+                <p className="text-[10px] text-slate-600 dark:text-slate-400 font-mono uppercase tracking-wider">
                   {tReusable(`categories.${sub.category}`)}
                 </p>
               </div>

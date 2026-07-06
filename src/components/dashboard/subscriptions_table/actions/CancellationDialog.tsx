@@ -199,7 +199,7 @@ export default function CancellationDialog({
                  render={
                    <Button
                      variant="outline"
-                     className="cursor-pointer border-border hover:bg-accent font-semibold">
+                     className="cursor-pointer border-border hover:bg-accent font-semibold outline-dashed">
                      {t("price_history_dialog.close")}
                    </Button>
                  }

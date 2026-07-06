@@ -249,7 +249,7 @@ export default function InsightsSidebar({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-7 text-xs cursor-pointer"
+                  className="h-7 text-xs cursor-pointer outline-dashed"
                   onClick={() => setIsEditing(false)}
                   disabled={form.state.isSubmitting}>
                   {t("income_ratio.form.cancel")}

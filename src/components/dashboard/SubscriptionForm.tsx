@@ -53,11 +53,13 @@ import { useState } from "react";
 type SubscriptionFormProps = {
   initialValues?: Subscription;
   shouldHideTrackingField?: boolean
+  initialDraftValues?: Pick<Subscription, "name" | "category" | "price" | "billingCycle">
 };
 
 export default function SubscriptionForm({
   initialValues,
   shouldHideTrackingField,
+  initialDraftValues
 }: SubscriptionFormProps) {
   const closeDialog = useDialogClose();
 
@@ -89,25 +91,40 @@ export default function SubscriptionForm({
     nextBilling: format(initialValues.nextBilling, "yyyy-MM-dd"),
     price: initialValues.price.toFixed(2),
   };
-
+  
+  const advanceMonthNumber = initialDraftValues?.billingCycle === "Monthly" ? 1 : initialDraftValues?.billingCycle === "Quarterly" ? 3 : 12;
+  const initialModifiedDraftValues = initialDraftValues && {
+    ...initialDraftValues,
+    price: initialDraftValues.price.toFixed(2),
+    nextBilling: advanceDateWithClamp(new Date(), {
+      advanceMonthNumber: advanceMonthNumber,
+    })
+      .toISOString()
+      .split("T")[0],
+    autoRenew: true,
+    status: statusEnum.options[0],
+    billingEntryMode: billingEntryModeEnum.options[0],
+  };
+  
   const [changePriceReason, setChangePriceReasonValue] =
     useState<ChangePriceReason>(null);
 
   const form = useForm({
-    defaultValues: initialModifiedValues ?? {
-      name: "",
-      category: "",
-      price: "",
-      billingCycle: billingCycleEnum.options[0],
-      nextBilling: advanceDateWithClamp(new Date(), { advanceMonthNumber: 1 })
-        .toISOString()
-        .split("T")[0],
-      autoRenew: true,
-      status: statusEnum.options[0],
-      ...(!initialValues && {
-        billingEntryMode: billingEntryModeEnum.options[0],
-      }),
-    },
+    defaultValues: initialModifiedDraftValues ??
+      initialModifiedValues ?? {
+        name: "",
+        category: "",
+        price: "",
+        billingCycle: billingCycleEnum.options[0],
+        nextBilling: advanceDateWithClamp(new Date(), { advanceMonthNumber: 1 })
+          .toISOString()
+          .split("T")[0],
+        autoRenew: true,
+        status: statusEnum.options[0],
+        ...(!initialValues && {
+          billingEntryMode: billingEntryModeEnum.options[0],
+        }),
+      },
     validators: {
       onSubmit: subscriptionFormSchema,
     },
