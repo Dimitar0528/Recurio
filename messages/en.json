@@ -402,7 +402,8 @@
                     "edit": "Edit",
                     "price_history": "Price History",
                     "cancel": "Cancel Subscription",
-                    "delete": "Delete"
+                    "delete": "Delete",
+                    "saving_sim": "Savings Simulator"
                 }
             },
             "price_history_dialog": {
@@ -455,6 +456,31 @@
                     "undo": "Undo",
                     "error": "An error has occured!",
                     "rate_limited": "Too many requests! Please try again in a minute."
+                }
+            },
+            "savings_dialog": {
+                "title_header": "Savings Simulator",
+                "cancel_savings_title": "If you cancel today you would save",
+                "next_month": "Next Month",
+                "next_year": "Next Year",
+                "over_5_years": "Over 5 Years",
+                "keep_paying_title": "If you keep paying",
+                "one_year": "1 Year",
+                "three_years": "3 Years",
+                "five_years": "5 Years",
+                "since_subscribing_title": "Since subscribing",
+                "youve_spent": "You've spent:",
+                "this_sub_title": "This subscription",
+                "rank_message": "• #{rank} most expensive subscription",
+                "share_message": "• {percent}% of your monthly subscription budget",
+                "alternatives_title": "Instead, {price} could buy",
+                "close": "Close",
+                "view_guide": "[View cancellation guide]",
+                "alternatives": {
+                    "ps5": "🎮 PlayStation 5",
+                    "airpods": "🎧 AirPods Pro",
+                    "trips": "✈️ {count, plural, =1 {1 weekend trip} other {# weekend trips}}",
+                    "coffees": "☕ {count, plural, =1 {1 coffee} other {# coffees}}"
                 }
             }
         },

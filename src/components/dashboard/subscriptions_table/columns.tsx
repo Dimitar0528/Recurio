@@ -1,7 +1,7 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { type Subscription } from "@/lib/validations/schemas";
-import { Ban, Delete, Edit, MoreHorizontal, CalendarDays } from "lucide-react";
+import { Ban, Delete, Edit, MoreHorizontal, CalendarDays, HandCoinsIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "../../shared/DataTableColumnHeader";
 import { dateFormatter, priceFormatter, isDue } from "@/lib/utils";
@@ -31,6 +31,16 @@ import {
 } from "@/app/actions";
 import { useQuery } from "@tanstack/react-query";
 import CancellationDialog from "./actions/CancellationDialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import SavingsSimDialog from "./actions/SavingsSimDialog";
 
 export const useColumns = (): ColumnDef<Subscription>[] => {
   const tReusable = useTranslations("Reusable");
@@ -274,14 +284,17 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
     {
       id: "actions",
       header: `${t("table.columns.actions")}`,
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
         const subscription = row.original;
         const { id, name } = subscription;
         const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
         const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+        const [isPriceHistoryDialogOpen, setIsPriceHistoryDialogOpen] = useState(false);
+        const [isSavingsDialogOpen, setIsSavingsDialogOpen] = useState(false);
+            const allSubs = table
+              .getFilteredRowModel()
+              .rows.map((r) => r.original);
 
-        const [isPriceHistoryDialogOpen, setIsPriceHistoryDialogOpen] =
-          useState(false);
         const {
           data: priceHistory,
           isLoading,
@@ -313,12 +326,12 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
 
         const dropdownItems = [
           {
-            id: "edit",
-            label: t("actions_dropdown.dropdown_items.edit"),
-            icon: Edit,
-            textClass: "text-primary",
-            iconClass: "text-primary",
-            onClick: () => setIsEditDialogOpen(true),
+            id: "savings",
+            label: t("actions_dropdown.dropdown_items.saving_sim"),
+            icon: HandCoinsIcon,
+            textClass: "text-amber-600",
+            iconClass: "text-amber-600",
+            onClick: () => setIsSavingsDialogOpen(true),
           },
           {
             id: "price-history",
@@ -337,6 +350,14 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
             onClick: () => setIsCancelDialogOpen(true),
           },
           {
+            id: "edit",
+            label: t("actions_dropdown.dropdown_items.edit"),
+            icon: Edit,
+            textClass: "text-primary",
+            iconClass: "text-primary",
+            onClick: () => setIsEditDialogOpen(true),
+          },
+          {
             id: "delete",
             label: t("actions_dropdown.dropdown_items.delete"),
             icon: Delete,
@@ -348,66 +369,61 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
 
         return (
           <>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    id="actions-menu-btn"
-                    aria-label="Actions button"
-                    className="bg-background outline-solid outline-primary/20 cursor-pointer hover:scale-[1.05] active:scale-[0.98] transition-all p-2 rounded-md w-12">
-                    <MoreHorizontal
-                      className="text-muted-foreground"
-                      size={20}
-                    />
-                  </Button>
-                }
-              />
-              <DropdownMenuContent className="min-w-[190px] bg-popover border border-border p-1 rounded-md shadow-md">
-                {dropdownItems.map(
-                  ({
-                    id,
-                    label,
-                    icon: Icon,
-                    textClass,
-                    iconClass,
-                    onClick,
-                  }) => (
-                    <DropdownMenuItem
-                      key={id}
-                      nativeButton={true}
-                      render={
-                        <button
-                          className={`flex w-full items-center gap-1 px-2 py-1.5 text-sm cursor-pointer rounded-sm hover:bg-accent transition-colors group ${textClass}`}>
-                          <Icon
-                            size={16}
-                            className={`${iconClass} group-hover:text-gray-200 transition-colors`}
-                          />
-                          <span>{label}</span>
-                        </button>
-                      }
-                      onClick={onClick}
-                    />
-                  ),
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      size="sm"
+                      id="actions-menu-btn"
+                      aria-label="Actions button"
+                      className="bg-background outline-solid outline-primary/20 cursor-pointer hover:scale-[1.05] active:scale-[0.98] transition-all p-2 rounded-md w-12">
+                      <MoreHorizontal
+                        className="text-muted-foreground"
+                        size={20}
+                      />
+                    </Button>
+                  }
+                />
+                <DropdownMenuContent className="min-w-[235px] bg-popover border border-border p-1 rounded-md shadow-md">
+                  {dropdownItems.map(
+                    ({
+                      id,
+                      label,
+                      icon: Icon,
+                      textClass,
+                      iconClass,
+                      onClick,
+                    }) => (
+                      <DropdownMenuItem
+                        key={id}
+                        nativeButton={true}
+                        render={
+                          <button
+                            className={`flex w-full items-center gap-1 px-2 py-1.5 text-sm cursor-pointer rounded-sm hover:bg-accent transition-colors group ${textClass}`}>
+                            <Icon
+                              size={16}
+                              className={`${iconClass} group-hover:text-gray-200 transition-colors`}
+                            />
+                            <span>{label}</span>
+                          </button>
+                        }
+                        onClick={onClick}
+                      />
+                    ),
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
-            <SubscriptionDialog
-              open={isEditDialogOpen}
-              onOpenChange={setIsEditDialogOpen}
-              title={tReusable("dialog.title", {
-                action: t("actions_dropdown.dropdown_items.edit"),
-              })}
-              description={tReusable("dialog.description")}
-              submitLabel={tReusable("dialog.submit", {
-                action: t("actions_dropdown.dropdown_items.edit"),
-              })}
-              cancelLabel={tReusable("dialog.cancel")}>
-              <SubscriptionForm
-                initialValues={subscription}
-                shouldHideTrackingField
-              />
-            </SubscriptionDialog>
+            <SavingsSimDialog
+              isSavingsDialogOpen={isSavingsDialogOpen}
+              setIsSavingsDialogOpen={setIsSavingsDialogOpen}
+              setIsCancelDialogOpen={setIsCancelDialogOpen}
+              allSubs={allSubs}
+              subscription={subscription}
+              t={t}
+            />
 
             <PriceHistoryDialog
               isPriceHistoryDialogOpen={isPriceHistoryDialogOpen}
@@ -427,6 +443,23 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
               serviceName={name}
               t={t}
             />
+            
+            <SubscriptionDialog
+              open={isEditDialogOpen}
+              onOpenChange={setIsEditDialogOpen}
+              title={tReusable("dialog.title", {
+                action: t("actions_dropdown.dropdown_items.edit"),
+              })}
+              description={tReusable("dialog.description")}
+              submitLabel={tReusable("dialog.submit", {
+                action: t("actions_dropdown.dropdown_items.edit"),
+              })}
+              cancelLabel={tReusable("dialog.cancel")}>
+              <SubscriptionForm
+                initialValues={subscription}
+                shouldHideTrackingField
+              />
+            </SubscriptionDialog>
 
             <DeleteDialog
               isDeleteDialogOpen={isDeleteDialogOpen}

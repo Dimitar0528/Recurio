@@ -402,7 +402,8 @@
                     "edit": "Редактирай",
                     "price_history": "История на цените",
                     "cancel": "Отмени абонамента",
-                    "delete": "Изтрий"
+                    "delete": "Изтрий",
+                    "saving_sim": "Симулатор на спестявания"
                 }
             },
             "price_history_dialog": {
@@ -454,6 +455,31 @@
                     "deleted": "Абонаментът е изтрит успешно!",
                     "undo": "Отмени",
                     "error": "Възникна грешка!"
+                }
+            },
+            "savings_dialog": {
+                "title_header": "Симулатор на спестявания",
+                "cancel_savings_title": "Ако анулирате днес, ще спестите",
+                "next_month": "Следващ месец",
+                "next_year": "Следваща година",
+                "over_5_years": "Над 5 години",
+                "keep_paying_title": "Ако продължите да плащате",
+                "one_year": "1 година",
+                "three_years": "3 години",
+                "five_years": "5 години",
+                "since_subscribing_title": "Откакто сте абонирани",
+                "youve_spent": "Изразходили сте:",
+                "this_sub_title": "Този абонамент",
+                "rank_message": "• #{rank}-ят най-скъп абонамент",
+                "share_message": "• {percent}% от месечния ви бюджет за абонаменти",
+                "alternatives_title": "Вместо това, {price} биха могли да купят",
+                "close": "Затвори",
+                "view_guide": "[Вижте ръководство за анулиране]",
+                "alternatives": {
+                    "ps5": "🎮 PlayStation 5",
+                    "airpods": "🎧 AirPods Pro",
+                    "trips": "✈️ {count, plural, =1 {1 уикенд пътуване} other {# уикенд пътувания}}",
+                    "coffees": "☕ {count, plural, =1 {1 кафе} other {# кафета}}"
                 }
             }
         },
