@@ -112,17 +112,17 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                 theme_color="amber"
                 emptyMessage={t("timeline_component.upcoming_empty")}
                 getLabel={(subscription) => {
-                  const daysLeft = differenceInDays(
-                    subscription.nextBilling,
-                    today,
+                  const daysLeft = Math.max(
+                    0, 
+                    differenceInDays(subscription.nextBilling, today)
                   );
                   return t("timeline_component.days_short", { days: daysLeft });
                 }}
                 getTitle={(subscription) => subscription.name}
                 getSubtitle={(subscription) => {
-                  const daysLeft = differenceInDays(
-                    subscription.nextBilling,
-                    today,
+                  const daysLeft = Math.max(
+                    0,
+                    differenceInDays(subscription.nextBilling, today),
                   );
                   return t("timeline_component.renews_in", { days: daysLeft });
                 }}
