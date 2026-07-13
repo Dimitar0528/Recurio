@@ -21,7 +21,8 @@ import {
 import {
   ChangePriceReason,
   Subscription,
-  subscriptionFormSchema,
+  createSubscriptionFormSchema,
+  editSubscriptionFormSchema
 } from "@/lib/validations/schemas";
 import {
   billingCycleEnum,
@@ -126,10 +127,12 @@ export default function SubscriptionForm({
         }),
       },
     validators: {
-      onSubmit: subscriptionFormSchema,
+      onSubmit: initialValues ? editSubscriptionFormSchema : createSubscriptionFormSchema,
     },
     onSubmit: async ({ value }) => {
-      const result = subscriptionFormSchema.safeParse(value);
+      const result = initialValues
+        ? editSubscriptionFormSchema.safeParse(value)
+        : createSubscriptionFormSchema.safeParse(value);
       if (!result.success) {
         return toast.error(result.error.message);
       }
@@ -519,6 +522,12 @@ export default function SubscriptionForm({
                     value={field.state.value}
                     onValueChange={(value) => {
                       if (value) field.handleChange(value);
+                      if (value === 'Free Trial'){
+                         field.form.setFieldValue(
+                           "billingEntryMode",
+                           billingEntryModeEnum.options[1],
+                         );
+                      }
                     }}>
                     <SelectTrigger
                       id="select-status"

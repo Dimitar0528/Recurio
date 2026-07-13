@@ -117,7 +117,6 @@ export default function DeleteDialog({
                 </span>{" "}
                 {t.rich("delete_dialog.recommendation_text", {
                   critical: (c) => <strong>{c}</strong>,
-                  paused: (c) => <strong>{c}</strong>,
                   cancelled: (c) => <strong>{c}</strong>,
                 })}
               </p>

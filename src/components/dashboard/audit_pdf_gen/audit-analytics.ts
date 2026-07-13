@@ -9,7 +9,7 @@ export function generateAuditData(
   t: AuditPdfT,
 ) {
   const activeSubs = subscriptions.filter((s) => s.status === "Active");
-  const pausedSubs = subscriptions.filter((s) => s.status === "Paused");
+  const cancelledSubs = subscriptions.filter((s) => s.status === "Cancelled");
   const hasNoSubs = subscriptions.length === 0;
   const monthlyBurn = activeSubs.reduce((total, { price, billingCycle }) => {
     let normalized = price;
@@ -57,7 +57,7 @@ export function generateAuditData(
 
   // Anomalies & audit threat vectors
   const wasteList: string[] = [];
-  pausedSubs.forEach((sub) => {
+  cancelledSubs.forEach((sub) => {
     const hasRecentCharge = billingEvents.some(
       (e) =>
         e.subscriptionName === sub.name &&

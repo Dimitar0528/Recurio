@@ -23,11 +23,9 @@ import {
   getManualRenewalGraceDate,
   isManualGraceExpired,
 } from "@/lib/utils";
-import { startOfDay } from "date-fns";
+import { startOfDay, subMonths, subYears } from "date-fns";
 import { enforceRateLimit, rateLimiters } from "@/lib/security/rate_limits";
-import { billingEntryModeEnum } from "@/lib/validations/enums";
-
-type RenewalDecisionStatus = "Paused" | "Cancelled";
+import { billingCycleEnum, billingEntryModeEnum } from "@/lib/validations/enums";
 
 async function getOwnedSubscriptionOrThrow(id: string, userId: string) {
   const [subscription] = await db
@@ -70,7 +68,17 @@ export async function insertUserSubscription(
   if (!result.success) throw new Error("Invalid subscription data shape!");
 
   const parsedSubscription = result.data;
-  const now = new Date();
+  let chargedAtDate;
+  switch (parsedSubscription.billingCycle) {
+    case billingCycleEnum.options[2]:
+      chargedAtDate = subYears(parsedSubscription.nextBilling, 1);
+      break;
+    case billingCycleEnum.options[1]:
+      chargedAtDate = subMonths(parsedSubscription.nextBilling, 3);
+      break;
+    default:
+      chargedAtDate = subMonths(parsedSubscription.nextBilling, 1);
+  }
   try {
       const [createdSubscription] = await db
         .insert(subscriptionsTable)
@@ -81,12 +89,14 @@ export async function insertUserSubscription(
           nextBilling: parsedSubscription.nextBilling,
           category: parsedSubscription.category,
           status: parsedSubscription.status,
-          statusChangedAt: now,
-          lastRenewedAt: now,
+          statusChangedAt: chargedAtDate,
+          lastRenewedAt: chargedAtDate,
           userId: userId,
         })
         .returning({
           id: subscriptionsTable.id,
+          billingCycle: subscriptionsTable.billingCycle,
+          nextBilling: subscriptionsTable.nextBilling,
         });
 
       const shouldCreateInitialBillingEvent =
@@ -97,7 +107,7 @@ export async function insertUserSubscription(
           subscriptionId: createdSubscription.id,
           userId,
           amount: parsedSubscription.price.toFixed(2),
-          chargedAt: now,
+          chargedAt: chargedAtDate,
           source: "initial",
         });
       }
@@ -312,7 +322,7 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
         await db
           .update(subscriptionsTable)
           .set({
-            status: "Paused",
+            status: "Cancelled",
             statusChangedAt: now,
             manualRenewalGraceUntil: null,
             reminderSentAt: null,
@@ -371,10 +381,7 @@ export async function confirmManualRenewalForUser(id: string) {
   await invalidateUserSubscriptionCacheData(userId);
 }
 
-export async function declineManualRenewalForUser(
-  id: string,
-  status: RenewalDecisionStatus,
-) {
+export async function declineManualRenewalForUser(id: string) {
   const userId = await verifyUser();
   const now = new Date();
   await getOwnedSubscriptionOrThrow(id, userId);
@@ -382,7 +389,7 @@ export async function declineManualRenewalForUser(
   const result = await db
     .update(subscriptionsTable)
     .set({
-      status,
+      status: "Cancelled",
       statusChangedAt: now,
       manualRenewalGraceUntil: null,
     })

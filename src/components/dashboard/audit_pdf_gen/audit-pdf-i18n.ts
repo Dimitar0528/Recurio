@@ -57,7 +57,7 @@ export type AuditPdfLabels = {
     passiveWasteTitle: string;
     inactiveAccountDrift: string;
     uncappedUtilityChecks: string;
-    pausedServiceLeakage: string;
+    cancelledServiceLeakage: string;
     secureWaste: string;
     renewalRiskTitle: string;
     lumpSumRenewals: string;
@@ -162,7 +162,7 @@ export function buildAuditPdfLabels(
       passiveWasteTitle: t("anomalies.passiveWasteTitle"),
       inactiveAccountDrift: t("anomalies.inactiveAccountDrift"),
       uncappedUtilityChecks: t("anomalies.uncappedUtilityChecks"),
-      pausedServiceLeakage: t("anomalies.pausedServiceLeakage"),
+      cancelledServiceLeakage: t("anomalies.cancelledServiceLeakage"),
       secureWaste: t("anomalies.secureWaste"),
       renewalRiskTitle: t("anomalies.renewalRiskTitle"),
       lumpSumRenewals: t("anomalies.lumpSumRenewals"),
@@ -205,8 +205,7 @@ export function buildAuditPdfLabels(
       tReusable(`categories.${category as keyof typeof categoryDescriptions}`),
     formatBillingCycle: (cycle) =>
       tReusable(`billingCycle.${cycle as BillingCycle}`),
-    formatStatus: (status) =>
-      tReusable(`status.${status as Status}`),
+    formatStatus: (status) => tReusable(`status.${status as Status}`),
     formatEventSource: (source) => {
       const key = source as "initial" | "auto" | "manual";
       return t(`appendix.history.eventSource.${key}`);

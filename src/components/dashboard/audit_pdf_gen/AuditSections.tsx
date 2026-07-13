@@ -379,7 +379,7 @@ export const AnomaliesRisks = ({
           &bull; {labels.anomalies.uncappedUtilityChecks}
         </Text>
         <Text style={[styles.bodyText, { fontSize: 7.5, color: "#64748B" }]}>
-          &bull; {labels.anomalies.pausedServiceLeakage}
+          &bull; {labels.anomalies.cancelledServiceLeakage}
         </Text>
       </View>
     ) : data.wasteList.length > 0 ? (

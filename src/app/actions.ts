@@ -40,11 +40,8 @@ export async function confirmManualRenewal(id: string) {
   await confirmManualRenewalForUser(id);
 }
 
-export async function declineManualRenewal(
-  id: string,
-  status: "Paused" | "Cancelled",
-) {
-  await declineManualRenewalForUser(id, status);
+export async function declineManualRenewal(id: string) {
+  await declineManualRenewalForUser(id);
 }
 
 export async function updateNotificationSettings(data: {

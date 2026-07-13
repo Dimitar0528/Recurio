@@ -2,10 +2,8 @@ import { toast } from "sonner";
 import { confirmManualRenewal, declineManualRenewal } from "@/app/actions";
 import { Subscription } from "@/lib/validations/schemas";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp } from "lucide-react";
 import { startOfDay } from "date-fns";
 
 type ManualRenewalControlsProps = {
@@ -21,9 +19,6 @@ export function ManualRenewalControls({
   t,
   tReusable,
 }: ManualRenewalControlsProps) {
-  const [expandedDeclineId, setExpandedDeclineId] = useState<string | null>(
-    null,
-  );
   const today = startOfDay(new Date());
 
   const items = pendingRenewalSubscriptions.filter(
@@ -58,7 +53,6 @@ export function ManualRenewalControls({
               : t("manual_renewal.grace_days_left", { count: daysLeft });
 
         const isExpired = daysLeft !== null && daysLeft <= 0;
-        const isDeclineOpen = expandedDeclineId === id;
 
         return (
           <div
@@ -110,69 +104,23 @@ export function ManualRenewalControls({
 
                 <Button
                   size="xs"
-                  variant="secondary"
+                  variant="outline"
                   className={cn(
-                    "h-6 rounded-full px-2 text-xs font-medium cursor-pointer transition-colors",
-                    "bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800",
-                    "dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800/60 dark:hover:text-blue-200",
-                    isDeclineOpen &&
-                      "bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200",
+                    "h-6 rounded-full px-3 text-xs font-medium cursor-pointer transition-colors",
+                    "border-red-300 bg-red-50 text-red-800 hover:bg-red-100 hover:text-red-800",
+                    "dark:border-red-800 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60",
                   )}
                   onClick={() =>
-                    setExpandedDeclineId((prev) => (prev === id ? null : id))
+                    toast.promise(declineManualRenewal(id), {
+                      loading: t("manual_renewal.messages.updating_status"),
+                      success: t("manual_renewal.messages.cancelled"),
+                      error: t("manual_renewal.messages.error"),
+                    })
                   }>
-                  {t("manual_renewal.actions.renew_no")}
-                  {isDeclineOpen ? <ArrowUp /> : <ArrowDown />}
+                  {tReusable("status.Cancelled")}
                 </Button>
               </div>
             </div>
-
-            {/* Inline decline panel */}
-            {isDeclineOpen && (
-              <div className="flex items-center justify-between gap-2 px-1 py-1 border-t  border-amber-200/70 dark:border-amber-600/40 bg-amber-50/40 dark:bg-amber-700/15">
-                <span className="text-xs ">
-                  {t("manual_renewal.follow_up")}
-                </span>
-
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className={cn(
-                      "h-6 rounded-full px-3 text-xs font-medium cursor-pointer transition-colors",
-                      "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 hover:text-amber-800",
-                      "dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-900/60",
-                    )}
-                    onClick={() =>
-                      toast.promise(declineManualRenewal(id, "Paused"), {
-                        loading: t("manual_renewal.messages.updating_status"),
-                        success: t("manual_renewal.messages.paused"),
-                        error: t("manual_renewal.messages.error"),
-                      })
-                    }>
-                    {tReusable("status.Paused")}
-                  </Button>
-
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className={cn(
-                      "h-6 rounded-full px-3 text-xs font-medium cursor-pointer transition-colors",
-                      "border-red-300 bg-red-50 text-red-800 hover:bg-red-100 hover:text-red-800",
-                      "dark:border-red-800 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60",
-                    )}
-                    onClick={() =>
-                      toast.promise(declineManualRenewal(id, "Cancelled"), {
-                        loading: t("manual_renewal.messages.updating_status"),
-                        success: t("manual_renewal.messages.cancelled"),
-                        error: t("manual_renewal.messages.error"),
-                      })
-                    }>
-                    {tReusable("status.Cancelled")}
-                  </Button>
-                </div>
-              </div>
-            )}
           </div>
         );
       })}

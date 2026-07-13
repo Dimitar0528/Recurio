@@ -60,18 +60,18 @@ function SubscriptionItem({
               : "oklch(var(--muted-foreground))",
           }}
           className="flex items-center justify-center w-5 h-5 rounded-md border transition-colors">
-            <motion.div
-              key={active ? "check" : "minus"}
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ duration: 0.15 }}>
-              {active ? (
-                <Check className="text-primary-foreground w-3.5 h-3.5" />
-              ) : (
-                <Minus className="text-muted-foreground w-3.5 h-3.5" />
-              )}
-            </motion.div>
+          <motion.div
+            key={active ? "check" : "minus"}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.5, opacity: 0 }}
+            transition={{ duration: 0.15 }}>
+            {active ? (
+              <Check className="text-primary-foreground w-3.5 h-3.5" />
+            ) : (
+              <Minus className="text-muted-foreground w-3.5 h-3.5" />
+            )}
+          </motion.div>
         </motion.div>
         <div className={`w-2 h-2 rounded-full ${color}`} />
         <div className="text-left">
@@ -84,7 +84,7 @@ function SubscriptionItem({
           <p className="text-xs text-muted-foreground">
             {active
               ? `${t("subscription_item.renews")} ${date}`
-              : t("subscription_item.paused")}
+              : t("subscription_item.cancelled")}
           </p>
         </div>
       </div>

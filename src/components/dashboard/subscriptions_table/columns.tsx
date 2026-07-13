@@ -38,6 +38,14 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
   const t = useTranslations("dashboard_page.subscription_table_component");
   const locale = useLocale();
 
+  const statusClasses = {
+    Active:
+      "bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-300",
+    "Free Trial":
+      "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300",
+    Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
+  };
+
   return [
     {
       id: "mobile",
@@ -55,14 +63,6 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
 
         const formattedPrice = priceFormatter(price);
         const billingDate = dateFormatter(nextBilling, locale);
-
-        const statusClasses = {
-          Active:
-            "bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-300",
-          Paused:
-            "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300",
-          Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
-        };
 
         return (
           <div className="grid grid-cols-2 sm:grid-cols-4 items-center">
@@ -258,13 +258,6 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
       },
       cell: ({ row }) => {
         const { status } = row.original;
-        const statusClasses = {
-          Active:
-            "bg-green-50 text-green-900 dark:bg-green-950 dark:text-green-300",
-          Paused:
-            "bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300",
-          Cancelled: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
-        };
         return (
           <Badge variant="outline" className={`${statusClasses[status]}`}>
             {tReusable(`status.${status}`)}
@@ -376,7 +369,8 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
                     </Button>
                   }
                 />
-                <DropdownMenuContent className="min-w-[235px] bg-popover border border-border p-1 rounded-md shadow-md">
+                <DropdownMenuContent
+                  className={` ${locale === "bg" ? "min-w-[235px]" : "min-w-[180px]"} bg-popover border border-border p-1 rounded-md shadow-md`}>
                   {dropdownItems.map(
                     ({
                       id,
@@ -434,7 +428,7 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
               serviceName={name}
               t={t}
             />
-            
+
             <SubscriptionDialog
               open={isEditDialogOpen}
               onOpenChange={setIsEditDialogOpen}

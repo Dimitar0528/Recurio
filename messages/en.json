@@ -72,8 +72,8 @@
             "Yearly": "Yearly"
         },
         "status": {
+            "Free Trial": "Free Trial",
             "Active": "Active",
-            "Paused": "Paused",
             "Cancelled": "Cancelled"
         },
         "dialog": {
@@ -146,7 +146,7 @@
             },
             "subscription_item": {
                 "renews": "Renews",
-                "paused": "Paused"
+                "cancelled": "Cancelled"
             },
             "tip": "Tip: Click a subscription to see how it impacts your monthly / yearly burn."
         },
@@ -360,8 +360,8 @@
                 "title": "Renewal due",
                 "follow_up": "Mark this subscription as:",
                 "grace_not_started": "Grace period starts now.",
-                "grace_expired": "Grace period expired. This subscription will be paused automatically.",
-                "grace_days_left": "Auto-pauses in {count} days.",
+                "grace_expired": "Grace period expired. This subscription will be cancelled automatically.",
+                "grace_days_left": "Auto-cancels in {count} days.",
                 "actions": {
                     "renew_yes": "Renewed",
                     "renew_no": "Not renewed"
@@ -370,7 +370,6 @@
                     "renewing": "Confirming renewal...",
                     "renewed": "Renewal recorded and next billing updated.",
                     "updating_status": "Updating subscription status...",
-                    "paused": "Subscription set to paused.",
                     "cancelled": "Subscription set to cancelled.",
                     "error": "Something went wrong."
                 }
@@ -442,7 +441,7 @@
                 "impact_title": "Statistical Impact",
                 "impact_text": "Deletion will affect aggregated subscription statistics such as totals, averages, historical insights etc. <italic>These numbers will be recalculated and may no longer reflect past reality.</italic>",
                 "recommendation_title": "Recommendation:",
-                "recommendation_text": "Deletion should only be performed for <critical>extremely critical reasons</critical>. In most cases, changing the status to <paused>\"Paused\"</paused> or <cancelled>\"Cancelled\"</cancelled> is safer.",
+                "recommendation_text": "Deletion should only be performed for <critical>extremely critical reasons</critical>. In most cases, changing the status to <cancelled>\"Cancelled\"</cancelled> is safer.",
                 "verification_label": "Verification Required",
                 "type_phrase": "Type:",
                 "placeholder": "Type the phrase above...",
@@ -547,7 +546,7 @@
                 "passiveWasteTitle": "Passive Waste & Leakage Indicators:",
                 "inactiveAccountDrift": "Inactive account drift: Ghost accounts quietly drawing capital.",
                 "uncappedUtilityChecks": "Uncapped utility checks: Automated warnings identifying high-cost unmapped software items.",
-                "pausedServiceLeakage": "Paused service leakage: Automated system scans to ensure paused subscriptions stop executing transactions.",
+                "cancelledServiceLeakage": "Cancelled service leakage: Automated system scans to ensure cancelled subscriptions stop executing transactions.",
                 "secureWaste": "Secure: No post-cancel charges or uncategorized leak vectors detected.",
                 "renewalRiskTitle": "Active Renewal Risk Indicators:",
                 "lumpSumRenewals": "Lump-sum renewals: Visual highlights identifying upcoming large-value yearly platform renewals.",
@@ -598,7 +597,7 @@
                 },
                 "executiveSummary": {
                     "noSubs": "Our diagnostic scan shows that you currently have zero active subscriptions logged in your ledger. If you are using digital tools, registering them inside Recurio will unlock critical metrics like projected burn-rates, auto-renew buffers, and potential expense waste alerts.",
-                    "heavyLeakage": "Recurio's audit engines have flagged a heavy leakage profile in your portfolio. You currently maintain {activeCount} active subscriptions costing {monthlyBurn}/mo, but our scan identified {warningCount} critical warnings. These include potentially active charges on paused services, and pending lump-sum renewals. Optimizing these entries in Section VI is highly recommended to protect cash flow.",
+                    "heavyLeakage": "Recurio's audit engines have flagged a heavy leakage profile in your portfolio. You currently maintain {activeCount} active subscriptions costing {monthlyBurn}/mo, but our scan identified {warningCount} critical warnings. These include potentially active charges on cancelled services, and pending lump-sum renewals. Optimizing these entries in Section VI is highly recommended to protect cash flow.",
                     "highSpend": "Your digital software investment footprint is high but structurally sound. With an average item cost of {avgCost}, you maintain healthy baseline control. Recurio detected {warningCount} moderate operational risk factors. The ledger has high automated maintenance, meaning passive subscription creep remains your main financial threat vector.",
                     "optimized": "Your active services profile is highly optimized, demonstrating strong fiscal discipline. You hold a tight stack of {activeCount} active subscriptions with a monthly burn rate of {monthlyBurn}. Only {warningCount} low-priority warning flags were raised, confirming that your recurring overhead is well-protected from leakage."
                 },
@@ -708,25 +707,25 @@
             }
         }
     },
-    "planner_page":{
-        "period_labels":{
+    "planner_page": {
+        "period_labels": {
             "yearly": "yr",
             "quarterly": "qtr",
             "monthly": "mo"
         },
-        "header_component":{
+        "header_component": {
             "title": "Subscription Planner",
             "description": "Visualize hierarchy shifts, weight, and lifestyle opportunity costs in real-time.",
             "net_income": "Monthly Net Income:",
             "not_set": "Not set"
         },
-        "left_column_component":{
-            "quick_presets":{
+        "left_column_component": {
+            "quick_presets": {
                 "title": "Quick-Reference Presets"
             },
-            "draft_sandbox":{
+            "draft_sandbox": {
                 "title": "Draft Sandbox",
-                "labels":{
+                "labels": {
                     "sub_name_placeholder": "Enter subscription...",
                     "sub_name": "Subscription Name",
                     "category": "Category",
@@ -736,7 +735,7 @@
                 }
             }
         },
-        "right_column_component":{
+        "right_column_component": {
             "active_subscriptions": {
                 "title": "The Active Subscription Hierarchy",
                 "monthly_spend": "Base Total: {monthlySpend}/mo",
@@ -773,7 +772,7 @@
             "opportunity_costs": {
                 "alt_money_path": {
                     "name": "Alternative Money Path",
-                    "description":{
+                    "description": {
                         "part_1": "If you choose to redirect",
                         "part_2": "into a basic compound index fund at 7%:"
                     },
@@ -788,7 +787,7 @@
                     "description": "Funding directly trades away the monthly equivalent of:",
                     "coffee_equivalent": "specialty coffees prepared out-of-home every single month.",
                     "meals_equivalent": "sit-down dinners with friends or family at an inexpensive restaurant.",
-                    "discretionary_bar":{
+                    "discretionary_bar": {
                         "title": "Discretionary Room Impact",
                         "description": "This is the proportion of your monthly entertainment, dining, and discretionary room (modeled at 30% of total income based on the 50/30/20 rule) absorbed by this draft."
                     }
@@ -851,7 +850,7 @@
                             "title": "Ready to Unlock",
                             "description": "Set your net monthly salary to reveal life-hour rates and tax calendars."
                         },
-                        "callout":"Your financial details are kept strictly private on your profile metadata."
+                        "callout": "Your financial details are kept strictly private on your profile metadata."
                     }
                 }
             }

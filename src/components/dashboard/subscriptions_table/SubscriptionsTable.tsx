@@ -446,7 +446,12 @@ function SubscriptionTableContent({ data }: SubscriptionTableProps) {
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}>
+                data-state={row.getIsSelected() && "selected"}
+                className={
+                  row.original.status === "Active"
+                    ? "bg-primary/5 dark:bg-primary/10 outline-1 outline-primary/20"
+                    : ""
+                }>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

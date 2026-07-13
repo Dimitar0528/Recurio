@@ -13,7 +13,7 @@ export const CATEGORY_VALUES = [
   "Other",
 ] as const;
 export const BILLING_CYCLE_VALUES = ["Monthly", "Quarterly", "Yearly"] as const;
-export const STATUS_VALUES = ["Active", "Paused", "Cancelled"] as const;
+export const STATUS_VALUES = ["Active", "Free Trial", "Cancelled"] as const;
 export const BILLING_ENTRY_MODE_VALUES = [
   "Include_current_cycle",
   "Start_from_next_cycle",

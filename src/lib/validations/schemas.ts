@@ -74,10 +74,18 @@ export const subscriptionFormSchema = subscriptionBaseSchema.extend({
     .refine((date) => !isNaN(date.getTime()), {
       error: subscriptionErrorCodes.NEXT_BILLING_INVALID,
     })
-    .refine((date) => date >= startOfDay(new Date()), {
-      error: subscriptionErrorCodes.NEXT_BILLING_PAST,
-    }),
 });
+
+export const createSubscriptionFormSchema = subscriptionFormSchema.extend({
+  nextBilling: subscriptionFormSchema.shape.nextBilling.refine(
+    (date) => date >= startOfDay(new Date()),
+    {
+      error: subscriptionErrorCodes.NEXT_BILLING_PAST,
+    },
+  ),
+});
+
+export const editSubscriptionFormSchema = subscriptionFormSchema;
 
 export const subscriptionSchema = subscriptionBaseSchema.extend({
   id: z.uuid(),
