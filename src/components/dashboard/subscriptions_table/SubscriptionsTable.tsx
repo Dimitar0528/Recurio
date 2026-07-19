@@ -251,9 +251,8 @@ function SubscriptionTableContent({ data }: SubscriptionTableProps) {
 
   const pendingRenewalSubscriptions = data.filter(
     ({ autoRenew, status, nextBilling }) =>
-      !autoRenew && status === "Active" && isDue(nextBilling, new Date()),
+      !autoRenew && status !== "Cancelled" && isDue(nextBilling, new Date()),
   );
-
   return (
     <div className="max-w-4xl mx-auto overflow-hidden px-2">
       <div className="p-[2.5] border-2 border-primary dark:border-primary/10 bg-primary dark:bg-primary/50 text-primary-foreground rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all dark:hover:translate-x-[2px] dark:hover:translate-y-[2px] dark:hover:shadow-none">

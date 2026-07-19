@@ -274,6 +274,7 @@ export async function processDueRenewalsForUser(userId: string, now: Date) {
         const updated = await db
           .update(subscriptionsTable)
           .set({
+            ...(subscription.status === "Free Trial" && { status: "Active" }),
             nextBilling,
             lastRenewedAt: now,
             manualRenewalGraceUntil: null,
@@ -361,6 +362,7 @@ export async function confirmManualRenewalForUser(id: string) {
     const updated = await db
       .update(subscriptionsTable)
       .set({
+        ...(subscription.status === "Free Trial" && { status: "Active" }),
         nextBilling,
         lastRenewedAt: now,
         manualRenewalGraceUntil: null,

@@ -73,7 +73,7 @@ export function isDue(nextBilling: Date, now = new Date()) {
 }
 
 export function canGenerateCharge(status: Status) {
-  return status === "Active";
+  return status !== "Cancelled";
 }
 
 export function getNextBillingDateFromCycle(
@@ -122,7 +122,7 @@ export function getSubscriptionsWithinTimeInterval(
         };
   
   const subscriptionsWithinTimeInterval = subscriptions.filter((sub) => {
-    if (mode === "upcoming-7-days" && sub.status !== "Active") {
+    if (mode === "upcoming-7-days" && sub.status === "Cancelled") {
       return false;
     }
     if (mode === "previous-7-days" && billingEventSubscriptionNames && !billingEventSubscriptionNames.has(sub.name)) {

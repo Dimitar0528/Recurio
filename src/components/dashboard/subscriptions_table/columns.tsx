@@ -198,14 +198,16 @@ export const useColumns = (): ColumnDef<Subscription>[] => {
         const dailyTime = startOfDay(new Date()).getTime();
         const subscriptionTime = startOfDay(nextBilling).getTime();
         const isActiveAndExpiringSoonSub =
-          status === "Active" &&
+          status !== "Cancelled" &&
           subscriptionTime >= dailyTime &&
           isWithinInterval(dailyTime, {
             start: subDays(subscriptionTime, 14),
             end: subDays(subscriptionTime, 7),
           });
         const isPendingRenewal =
-          !autoRenew && status === "Active" && isDue(nextBilling, new Date());
+          !autoRenew &&
+          status !== "Cancelled" &&
+          isDue(nextBilling, new Date());
         return (
           <div className="flex flex-col">
             <div>

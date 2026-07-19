@@ -21,14 +21,7 @@ export function ManualRenewalControls({
 }: ManualRenewalControlsProps) {
   const today = startOfDay(new Date());
 
-  const items = pendingRenewalSubscriptions.filter(
-    ({ autoRenew, status, nextBilling }) => {
-      const dueDate = startOfDay(new Date(nextBilling));
-      return !autoRenew && status === "Active" && dueDate <= today;
-    },
-  );
-
-  if (!items.length) return null;
+  if (!pendingRenewalSubscriptions.length) return null;
 
   return (
     <div className="space-y-1.5 mb-2">
