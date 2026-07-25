@@ -15,6 +15,7 @@ import {
   MessageSquareQuote,
   Bell,
   SquareChartGantt,
+  Wallet,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -66,15 +67,21 @@ export default function Navigation() {
       href: isSignedIn ? "/payments" : `/${locale}#reviews`,
       Icon: isSignedIn ? CreditCard : MessageSquareQuote,
     },
-    // Conditionally inject the Planner link only when signed in
+    // Conditionally inject links only when signed in
     ...(isSignedIn
       ? [
+          {
+            name: "Budget",
+            label: tCommonLinks("budget"),
+            href: "/budget",
+            Icon: Wallet,
+          },
           {
             name: "Planner",
             label: tCommonLinks("planner_link"),
             href: "/planner",
             Icon: SquareChartGantt,
-          },
+          }
         ]
       : []),
   ];
@@ -118,7 +125,7 @@ export default function Navigation() {
               <Link
                 key={name}
                 href={href as Route}
-                className="relative flex items-center gap-2 px-3 py-1 rounded-xl text-muted-foreground hover:text-foreground transition-all hover:underline hover:underline-offset-4 hover:decoration-primary decoration-2">
+                className="relative flex items-center gap-1 lg:gap-2 px-1 lg:px-3 py-1 rounded-xl text-muted-foreground hover:text-foreground transition-all hover:underline hover:underline-offset-4 hover:decoration-primary decoration-2">
                 {isActive && (
                   <motion.div
                     layoutId="active-nav-pill"

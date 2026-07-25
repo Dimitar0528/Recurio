@@ -24,6 +24,7 @@ declare global {
     };
   }
   interface UserUnsafeMetadata {
-    net_salary: number | null
+    net_salary?: number | null
+    overall_budget?: number | null;
   }
 }

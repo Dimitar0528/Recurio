@@ -48,10 +48,10 @@
                 "cannot_be_in_the_past": "Date cannot be in the past."
             }
         },
-        "netSalary": {
-            "min": "Net salary is required.",
-            "positive": "Net salary must be a positive number.",
-            "decimal_count": "Net salary can have at most 2 decimal places."
+        "numberInput": {
+            "min": "{subject} is required.",
+            "positive": "{subject} must be a positive number.",
+            "decimal_count": "{subject} can have at most 2 decimal places."
         },
         "customNotificationEmail": {
             "min": "The custom email is required"
@@ -89,7 +89,8 @@
         "common_links": {
             "dashboard_link": "Dashboard",
             "payments_link": "Payments",
-            "planner_link": "Planner"
+            "planner_link": "Planner",
+            "budget": "Budget"
         },
         "navigation_component": {
             "skip_link": "Skip to main content",

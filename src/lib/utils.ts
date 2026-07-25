@@ -120,12 +120,16 @@ export function getSubscriptionsWithinTimeInterval(
           start: subDays(today, 7),
           end: today,
         };
-  
+
   const subscriptionsWithinTimeInterval = subscriptions.filter((sub) => {
     if (mode === "upcoming-7-days" && sub.status === "Cancelled") {
       return false;
     }
-    if (mode === "previous-7-days" && billingEventSubscriptionNames && !billingEventSubscriptionNames.has(sub.name)) {
+    if (
+      mode === "previous-7-days" &&
+      billingEventSubscriptionNames &&
+      !billingEventSubscriptionNames.has(sub.name)
+    ) {
       return false;
     }
     const dateToCheck =
@@ -138,20 +142,10 @@ export function getSubscriptionsWithinTimeInterval(
   return subscriptionsWithinTimeInterval;
 }
 
-export const categoryColors = [
-  { hex: "#8B5CF6", dot: "bg-violet-500", text: "text-violet-500" },
-  { hex: "#0EA5E9", dot: "bg-sky-500", text: "text-sky-500" },
-  { hex: "#10B981", dot: "bg-emerald-500", text: "text-emerald-500" },
-  { hex: "#F59E0B", dot: "bg-amber-500", text: "text-amber-500" },
-  { hex: "#F43F5E", dot: "bg-rose-500", text: "text-rose-500" },
-  { hex: "#06B6D4", dot: "bg-cyan-500", text: "text-cyan-500" },
-  { hex: "#D946EF", dot: "bg-fuchsia-500", text: "text-fuchsia-500" },
-  { hex: "#84CC16", dot: "bg-lime-500", text: "text-lime-500" },
-  { hex: "#F97316", dot: "bg-orange-500", text: "text-orange-500" },
-  { hex: "#14B8A6", dot: "bg-teal-500", text: "text-teal-500" },
-];
-
-export function localizeFieldErrors(errors: unknown[], messages: Record<string, string>) {
+export function localizeFieldErrors(
+  errors: unknown[],
+  messages: Record<string, string>,
+) {
   return errors.map((error) => {
     const code =
       typeof error === "string"
@@ -166,3 +160,16 @@ export function localizeFieldErrors(errors: unknown[], messages: Record<string, 
     return { message };
   });
 }
+
+export const categoryColors = [
+  { hex: "#8B5CF6", dot: "bg-violet-500", text: "text-violet-500" },
+  { hex: "#0EA5E9", dot: "bg-sky-500", text: "text-sky-500" },
+  { hex: "#10B981", dot: "bg-emerald-500", text: "text-emerald-500" },
+  { hex: "#F59E0B", dot: "bg-amber-500", text: "text-amber-500" },
+  { hex: "#F43F5E", dot: "bg-rose-500", text: "text-rose-500" },
+  { hex: "#06B6D4", dot: "bg-cyan-500", text: "text-cyan-500" },
+  { hex: "#D946EF", dot: "bg-fuchsia-500", text: "text-fuchsia-500" },
+  { hex: "#84CC16", dot: "bg-lime-500", text: "text-lime-500" },
+  { hex: "#F97316", dot: "bg-orange-500", text: "text-orange-500" },
+  { hex: "#14B8A6", dot: "bg-teal-500", text: "text-teal-500" },
+];

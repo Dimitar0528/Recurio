@@ -113,8 +113,8 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                 emptyMessage={t("timeline_component.upcoming_empty")}
                 getLabel={(subscription) => {
                   const daysLeft = Math.max(
-                    0, 
-                    differenceInDays(subscription.nextBilling, today)
+                    0,
+                    differenceInDays(subscription.nextBilling, today),
                   );
                   return t("timeline_component.days_short", { days: daysLeft });
                 }}
@@ -131,7 +131,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
               {/* Today Marker */}
               <div className="pl-16 py-5 relative">
                 <div
-                  className="absolute left-[18px] top-1/2 -translate-y-1/2
+                  className="absolute left-4.5 top-1/2 -translate-y-1/2
                    w-3 h-3 rounded-full bg-primary
                    ring-8 ring-primary/10
                    shadow-[0_0_22px_var(--color-primary)]"

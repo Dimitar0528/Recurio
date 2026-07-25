@@ -22,10 +22,10 @@ const subscriptionErrorCodes = {
   NEXT_BILLING_PAST: "NEXT_BILLING_PAST",
 } as const;
 
-const netSalaryErrorCodes = {
-  NET_SALARY_REQUIRED: "NET_SALARY_REQUIRED",
-  NET_SALARY_NOT_POSITIVE: "NET_SALARY_NOT_POSITIVE",
-  NET_SALARY_DECIMALS: "NET_SALARY_DECIMALS",
+const inputNumberErrorCodes = {
+  INPUT_NUMBER_REQUIRED: "INPUT_NUMBER_REQUIRED",
+  INPUT_NUMBER_NOT_POSITIVE: "INPUT_NUMBER_NOT_POSITIVE",
+  INPUT_NUMBER_DECIMALS: "INPUT_NUMBER_DECIMALS",
 };
 const customNotificationEmailErrorCodes = {
   CUSTOM_NOTIFICATION_EMAIL_REQUIRED: "CUSTOM_NOTIFICATION_EMAIL_REQUIRED",
@@ -113,17 +113,17 @@ export const priceHistorySchema = z.object({
   createdAt: z.date(),
 });
 
-export const netSalarySchema = z.object({
-  netSalary: z
+export const inputNumberSchema = z.object({
+  inputNumber: z
     .string()
     .trim()
-    .min(1, { error: netSalaryErrorCodes.NET_SALARY_REQUIRED })
+    .min(1, { error: inputNumberErrorCodes.INPUT_NUMBER_REQUIRED })
     .transform((value) => Number(value))
     .refine((value) => Number.isFinite(value) && value > 0, {
-      error: netSalaryErrorCodes.NET_SALARY_NOT_POSITIVE,
+      error: inputNumberErrorCodes.INPUT_NUMBER_NOT_POSITIVE,
     })
     .refine((value) => Number(value.toFixed(2)) === value, {
-      error: netSalaryErrorCodes.NET_SALARY_DECIMALS
+      error: inputNumberErrorCodes.INPUT_NUMBER_DECIMALS
     }),
 });
 

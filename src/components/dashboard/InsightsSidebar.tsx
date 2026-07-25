@@ -15,12 +15,12 @@ import {
 } from "@/lib/validations/enums";
 import { Input } from "../ui/input";
 import { useUser } from "@clerk/nextjs";
-import { netSalarySchema } from "@/lib/validations/schemas";
+import { inputNumberSchema } from "@/lib/validations/schemas";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Skeleton } from "../ui/skeleton";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 type InsightsSidebarProps = {
   data: Subscription[];
   monthlySpend: number;
@@ -33,11 +33,17 @@ export default function InsightsSidebar({
   const tReusable = useTranslations("Reusable");
   const tValidation = useTranslations("Validation");
   const t = useTranslations("dashboard_page.insights_sidebar_component");
-
+  const locale = useLocale();
   const LOCALIZED_ERROR_MESSAGES = {
-    NET_SALARY_REQUIRED: tValidation("netSalary.min"),
-    NET_SALARY_NOT_POSITIVE: tValidation("netSalary.positive"),
-    NET_SALARY_DECIMALS: tValidation("netSalary.decimal_count"),
+    INPUT_NUMBER_REQUIRED: tValidation("numberInput.min", {
+      subject: locale === "bg" ? "Нетната заплата" : "Net salary",
+    }),
+    INPUT_NUMBER_NOT_POSITIVE: tValidation("numberInput.positive", {
+      subject: locale === "bg" ? "Нетната заплата" : "Net salary",
+    }),
+    INPUT_NUMBER_DECIMALS: tValidation("numberInput.decimal_count", {
+      subject: locale === "bg" ? "Нетната заплата" : "Net salary",
+    }),
   };
 
   const { user, isLoaded } = useUser();
@@ -49,15 +55,17 @@ export default function InsightsSidebar({
     netSalary && netSalary > 0 ? (monthlySpend / netSalary) * 100 : 0;
 
   const form = useForm({
-    defaultValues: { netSalary: netSalary?.toFixed(2) ?? "" },
-    validators: { onSubmit: netSalarySchema },
+    defaultValues: { inputNumber: netSalary?.toFixed(2) ?? "" },
+    validators: { onSubmit: inputNumberSchema },
     onSubmit: async ({ value }) => {
       if (!user) return;
-      const result = netSalarySchema.safeParse(value);
+      const result = inputNumberSchema.safeParse(value);
       if (!result.success) return toast.error(result.error.message);
-      const parsedNetSalary = result.data.netSalary;
+      const parsedNetSalary = result.data.inputNumber;
       try {
-        await user.update({ unsafeMetadata: { net_salary: parsedNetSalary } });
+        await user.updateMetadata({
+          unsafeMetadata: { net_salary: parsedNetSalary },
+        });
         setIsEditing(false);
       } catch (err) {
         console.error("Failed to update salary:", err);
@@ -68,7 +76,7 @@ export default function InsightsSidebar({
   const handleRemove = async () => {
     if (!user) return;
     try {
-      await user.update({ unsafeMetadata: { net_salary: null } });
+      await user.updateMetadata({ unsafeMetadata: { net_salary: null } });
     } catch (err) {
       console.error("Failed to remove salary:", err);
     }
@@ -173,7 +181,7 @@ export default function InsightsSidebar({
             <div>
               <p className="text-xs text-muted-foreground leading-relaxed mb-3">
                 {t("income_ratio.intro")}
-                <span className="block mt-0.25 italic opacity-70">
+                <span className="block mt-px italic opacity-70">
                   {t("income_ratio.disclaimer")}
                 </span>
               </p>
@@ -197,7 +205,7 @@ export default function InsightsSidebar({
                 form.handleSubmit();
               }}
               className="space-y-2.5">
-              <form.Field name="netSalary">
+              <form.Field name="inputNumber">
                 {(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
@@ -250,8 +258,7 @@ export default function InsightsSidebar({
                   size="sm"
                   variant="ghost"
                   className="h-7 text-xs cursor-pointer outline-dashed"
-                  onClick={() => setIsEditing(false)}
-                  disabled={form.state.isSubmitting}>
+                  onClick={() => setIsEditing(false)}>
                   {t("income_ratio.form.cancel")}
                 </Button>
               </div>
