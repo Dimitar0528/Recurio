@@ -19,6 +19,7 @@ export const BILLING_ENTRY_MODE_VALUES = [
   "Start_from_next_cycle",
 ] as const;
 export const CHANGE_REASON_VALUES = ["Increase", "Discount"] as const;
+export const GOAL_TYPE_VALUES = ["Category Budget", "Spending Limit"] as const;
 
 export const billingCycleEnum = z.enum(BILLING_CYCLE_VALUES);
 export const categoryEnum = z.enum(CATEGORY_VALUES, {
@@ -27,6 +28,7 @@ export const categoryEnum = z.enum(CATEGORY_VALUES, {
 export const statusEnum = z.enum(STATUS_VALUES);
 export const billingEntryModeEnum = z.enum(BILLING_ENTRY_MODE_VALUES);
 export const changeReasonEnum = z.enum(CHANGE_REASON_VALUES);
+export const goalTypeEnum = z.enum(GOAL_TYPE_VALUES)
 
 export type Category = z.infer<typeof categoryEnum>;
 export type BillingCycle = z.infer<typeof billingCycleEnum>;

@@ -23,6 +23,10 @@
             "title": "Planner",
             "description": "An interactive sandbox to model potential costs, visualize your subscription hierarchy, and translate recurring bills into real-world lifestyle impacts."
         },
+        "budget_page": {
+            "title": "Budget",
+            "description": "A financial intelligence console to establish subscription spending limits, analyze dynamic forecasting projections, track specific category targets, and receive proactive, cost-saving recommendations."
+        },
         "not_found_page": {
             "title": "404 - Page Not Found",
             "description": "The page you are looking for does not exist."
@@ -30,23 +34,19 @@
     },
     "Validation": {
         "subscription": {
-            "name": {
-                "min": "Name must be at least {min} characters.",
-                "max": "Name can't be more than {max} characters.'"
-            },
-            "price": {
-                "required": "Price is required.",
-                "positive": "Price must be a positive number.",
-                "decimal_count": "Price can have at most 2 decimal places."
-            },
             "category": {
-                "invalid": "Choose a valid category."
+                "invalid": "Choose a valid category.",
+                "placeholder": "Select a category"
             },
             "nextBilling": {
                 "required": "Next billing date is required.",
                 "invalid": "Invalid billing date.",
                 "cannot_be_in_the_past": "Date cannot be in the past."
             }
+        },
+        "stringInput": {
+            "min": "Name must be at least {min} characters.",
+            "max": "Name can't be more than {max} characters.'"
         },
         "numberInput": {
             "min": "{subject} is required.",

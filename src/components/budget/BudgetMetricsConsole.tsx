@@ -193,7 +193,6 @@ export default function BudgetMetricsConsole({
     }
   };
 
-  // IMPROVEMENT: Consolidated layout. The editing state utilizes an inline horizontal row.
   const renderBudgetForm = (isSetupMode: boolean) => (
     <form
       key={overallBudget ?? "unset"}
@@ -247,7 +246,6 @@ export default function BudgetMetricsConsole({
                   )}
                 </div>
 
-                {/* Horizontal Action buttons inline in both view and edit modes */}
                 {isSetupMode ? (
                   <Button
                     type="submit"
@@ -288,7 +286,6 @@ export default function BudgetMetricsConsole({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 border-b border-border/80">
-      {/* Panel 1: Primary Overall Budget */}
       <div className="py-8 pr-0 md:pr-8 md:border-r border-border/60 border-b md:border-b-0 flex flex-col justify-between h-full">
         {overallBudget == null ? (
           <div className="flex flex-col justify-between h-full w-full">
@@ -351,7 +348,6 @@ export default function BudgetMetricsConsole({
                 )}
               </div>
 
-              {/* IMPROVEMENT: Keeps the progress metrics and gauge rendered during edit mode */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-6 my-4">
                 <div className="space-y-2 text-xs flex-1 w-full sm:w-auto">
                   <div className="flex justify-between border-b border-border/30 pb-1.5">
@@ -430,7 +426,6 @@ export default function BudgetMetricsConsole({
         )}
       </div>
 
-      {/* Panel 2: Projected Forecast Panel */}
       <div className="py-8 md:px-8 md:border-r border-border/60 border-b md:border-b-0 flex flex-col justify-between h-full">
         <div>
           <div className="flex justify-between items-start mb-2">
@@ -510,7 +505,8 @@ export default function BudgetMetricsConsole({
                 onChange={(e) => setIncludeTrials(e.target.checked)}
                 className="rounded-none border-border text-primary focus:ring-primary size-3.5"
               />
-              Free Trials (+{priceFormatter(statusTotals.freeTrial)})
+              Free Trials (+
+              {priceFormatter(statusTotals.freeTrial * periodMultiplier)})
             </label>
             <label className="flex items-center gap-1.5 text-xs text-foreground cursor-pointer select-none">
               <input
@@ -519,13 +515,13 @@ export default function BudgetMetricsConsole({
                 onChange={(e) => setIncludeCancelled(e.target.checked)}
                 className="rounded-none border-border text-primary focus:ring-primary size-3.5"
               />
-              Cancelled (+{priceFormatter(statusTotals.cancelled)})
+              Cancelled (+
+              {priceFormatter(statusTotals.cancelled * periodMultiplier)})
             </label>
           </div>
         </div>
       </div>
 
-      {/* Panel 3: Remaining Space & Metrics */}
       <div className="py-8 pl-0 md:pl-8 flex flex-col justify-between h-full">
         <div>
           <div className="flex justify-between items-start mb-2">
@@ -560,7 +556,7 @@ export default function BudgetMetricsConsole({
                       </span>{" "}
                       subscriptions averaging{" "}
                       <span className="font-semibold text-foreground">
-                        €12/
+                        {priceFormatter(remainingBudget / potentialSubCount) } /
                         {period === "Monthly"
                           ? "mo"
                           : period === "Quarterly"

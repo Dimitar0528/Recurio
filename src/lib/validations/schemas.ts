@@ -4,6 +4,7 @@ import {
   billingCycleEnum,
   statusEnum,
   billingEntryModeEnum,
+  goalTypeEnum,
 } from "@/lib/validations/enums";
 import type { useTranslations } from "next-intl";
 import { startOfDay } from "date-fns";
@@ -11,22 +12,21 @@ import { changeReasonEnum } from "@/lib/validations/enums";
 
 export type ValidationTFunction = ReturnType<typeof useTranslations<"Validation">>;
 
-const subscriptionErrorCodes = {
+const generalErrorCodes = {
   NAME_TOO_SHORT: "NAME_TOO_SHORT",
   NAME_TOO_LONG: "NAME_TOO_LONG",
-  PRICE_REQUIRED: "PRICE_REQUIRED",
-  PRICE_NOT_POSITIVE: "PRICE_NOT_POSITIVE",
-  PRICE_DECIMALS: "PRICE_DECIMALS",
+  INPUT_NUMBER_REQUIRED: "INPUT_NUMBER_REQUIRED",
+  INPUT_NUMBER_NOT_POSITIVE: "INPUT_NUMBER_NOT_POSITIVE",
+  INPUT_NUMBER_DECIMALS: "INPUT_NUMBER_DECIMALS",
+} as const;
+
+const subscriptionErrorCodes = {
+  ...generalErrorCodes,
   NEXT_BILLING_REQUIRED: "NEXT_BILLING_REQUIRED",
   NEXT_BILLING_INVALID: "NEXT_BILLING_INVALID",
   NEXT_BILLING_PAST: "NEXT_BILLING_PAST",
 } as const;
 
-const inputNumberErrorCodes = {
-  INPUT_NUMBER_REQUIRED: "INPUT_NUMBER_REQUIRED",
-  INPUT_NUMBER_NOT_POSITIVE: "INPUT_NUMBER_NOT_POSITIVE",
-  INPUT_NUMBER_DECIMALS: "INPUT_NUMBER_DECIMALS",
-};
 const customNotificationEmailErrorCodes = {
   CUSTOM_NOTIFICATION_EMAIL_REQUIRED: "CUSTOM_NOTIFICATION_EMAIL_REQUIRED",
 };
@@ -36,10 +36,10 @@ export const subscriptionBaseSchema = z.object({
     .string()
     .trim()
     .min(3, {
-      error: subscriptionErrorCodes.NAME_TOO_SHORT,
+      error: generalErrorCodes.NAME_TOO_SHORT,
     })
     .max(50, {
-      error: subscriptionErrorCodes.NAME_TOO_LONG,
+      error: generalErrorCodes.NAME_TOO_LONG,
     }),
   category: categoryEnum,
   price: z.number().positive().gt(0),
@@ -55,14 +55,14 @@ export const subscriptionFormSchema = subscriptionBaseSchema.extend({
     .string()
     .trim()
     .min(1, {
-      error: subscriptionErrorCodes.PRICE_REQUIRED,
+      error: generalErrorCodes.INPUT_NUMBER_REQUIRED,
     })
     .transform((value) => Number(value))
     .refine((value) => Number.isFinite(value) && value > 0, {
-      error: subscriptionErrorCodes.PRICE_NOT_POSITIVE,
+      error: generalErrorCodes.INPUT_NUMBER_NOT_POSITIVE,
     })
     .refine((value) => Number(value.toFixed(2)) === value, {
-      error: subscriptionErrorCodes.PRICE_DECIMALS,
+      error: generalErrorCodes.INPUT_NUMBER_DECIMALS,
     }),
 
   nextBilling: z
@@ -117,19 +117,47 @@ export const inputNumberSchema = z.object({
   inputNumber: z
     .string()
     .trim()
-    .min(1, { error: inputNumberErrorCodes.INPUT_NUMBER_REQUIRED })
+    .min(1, { error: generalErrorCodes.INPUT_NUMBER_REQUIRED })
     .transform((value) => Number(value))
     .refine((value) => Number.isFinite(value) && value > 0, {
-      error: inputNumberErrorCodes.INPUT_NUMBER_NOT_POSITIVE,
+      error: generalErrorCodes.INPUT_NUMBER_NOT_POSITIVE,
     })
     .refine((value) => Number(value.toFixed(2)) === value, {
-      error: inputNumberErrorCodes.INPUT_NUMBER_DECIMALS
+      error: generalErrorCodes.INPUT_NUMBER_DECIMALS
     }),
 });
 
 export const customNotificationEmailSchema = z.object({
   customNotificationEmail:z.email().min(1, { error: customNotificationEmailErrorCodes.CUSTOM_NOTIFICATION_EMAIL_REQUIRED})
 })
+
+export const budgetSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(3, {
+      error: subscriptionErrorCodes.NAME_TOO_SHORT,
+    })
+    .max(50, {
+      error: subscriptionErrorCodes.NAME_TOO_LONG,
+    }),
+  type: goalTypeEnum,
+  category: categoryEnum.or(z.literal("")),
+  target_amount: z
+    .string()
+    .trim()
+    .min(1, {
+      error: generalErrorCodes.INPUT_NUMBER_REQUIRED,
+    })
+    .transform((value) => Number(value))
+    .refine((value) => Number.isFinite(value) && value > 0, {
+      error: generalErrorCodes.INPUT_NUMBER_NOT_POSITIVE,
+    })
+    .refine((value) => Number(value.toFixed(2)) === value, {
+      error: generalErrorCodes.INPUT_NUMBER_DECIMALS,
+    }),
+});
+
 export type SubscriptionFormValues = z.infer<typeof subscriptionFormSchema>;
 
 export type Subscription = z.infer<typeof subscriptionSchema>;

@@ -29,7 +29,6 @@ import {
   billingEntryModeEnum,
   CATEGORY_VALUES,
   statusEnum,
-  type Category,
 } from "@/lib/validations/enums";
 
 import { Switch } from "../ui/switch";
@@ -70,13 +69,17 @@ export default function SubscriptionForm({
   const t = useTranslations("dashboard_page.subscription_form_component");
 
   const LOCALIZED_ERROR_MESSAGES = {
-    NAME_TOO_SHORT: tValidation("subscription.name.min", { min: 3 }),
-    NAME_TOO_LONG: tValidation("subscription.name.max", { max: 50 }),
-
-    PRICE_REQUIRED: tValidation("subscription.price.required"),
-    PRICE_NOT_POSITIVE: tValidation("subscription.price.positive"),
-    PRICE_DECIMALS: tValidation("subscription.price.decimal_count"),
-
+    NAME_TOO_SHORT: tValidation("stringInput.min", { min: 3 }),
+    NAME_TOO_LONG: tValidation("stringInput.max", { max: 50 }),
+    INPUT_NUMBER_REQUIRED: tValidation("numberInput.min", {
+      subject: locale === "bg" ? "Цената" : "Price",
+    }),
+    INPUT_NUMBER_NOT_POSITIVE: tValidation("numberInput.positive", {
+      subject: locale === "bg" ? "Цената" : "Price",
+    }),
+    INPUT_NUMBER_DECIMALS: tValidation("numberInput.decimal_count", {
+      subject: locale === "bg" ? "Цената" : "Price",
+    }),
     NEXT_BILLING_REQUIRED: tValidation("subscription.nextBilling.required"),
     NEXT_BILLING_INVALID: tValidation("subscription.nextBilling.invalid"),
     NEXT_BILLING_PAST: tValidation(
@@ -232,7 +235,6 @@ export default function SubscriptionForm({
 
           <form.Field name="category">
             {(field) => {
-              const typedCategory = field.state.value as Category;
               return (
                 <Field orientation="responsive">
                   <FieldContent>
@@ -249,10 +251,10 @@ export default function SubscriptionForm({
                         id="select-category"
                         className="w-full"
                         aria-describedby="categoryError">
-                        <SelectValue>
-                          {field.state.value &&
-                            tReusable(`categories.${typedCategory}`)}
-                        </SelectValue>
+                        <SelectValue
+                          placeholder={tValidation(
+                            "subscription.category.placeholder",
+                          )}></SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         {CATEGORY_VALUES.map((category) => (
